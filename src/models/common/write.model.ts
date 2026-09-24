@@ -1,9 +1,18 @@
 // `id` keys the queue entry. An idempotent RPC takes its own `p_client_id` (newWriteId())
 // in `args`, fixed when the write is created, so a replay after a lost response is ignored.
+// `userId` is the signed-in user who made the write; only their session may send it.
 export type IQueuedWrite =
-  | { id: string; label: string; kind: "insert"; table: string; values: unknown }
   | {
       id: string;
+      userId: string | null;
+      label: string;
+      kind: "insert";
+      table: string;
+      values: unknown;
+    }
+  | {
+      id: string;
+      userId: string | null;
       label: string;
       kind: "update";
       table: string;
@@ -12,6 +21,7 @@ export type IQueuedWrite =
     }
   | {
       id: string;
+      userId: string | null;
       label: string;
       kind: "delete";
       table: string;
@@ -19,6 +29,7 @@ export type IQueuedWrite =
     }
   | {
       id: string;
+      userId: string | null;
       label: string;
       kind: "rpc";
       fn: string;
@@ -29,7 +40,7 @@ type DistributiveOmit<T, K extends keyof never> = T extends unknown
   ? Omit<T, K>
   : never;
 
-export type IQueuedWriteInput = DistributiveOmit<IQueuedWrite, "id">;
+export type IQueuedWriteInput = DistributiveOmit<IQueuedWrite, "id" | "userId">;
 
 export interface IMutationResult {
   queued: boolean;

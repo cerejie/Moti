@@ -19,3 +19,7 @@ export const topbarBack =
 export const topbarBackLabel = "truncate";
 
 export const topbarSpacer = "flex-1";
+
+// Superadmin's shop picker. It may shrink before the theme toggle does, and the
+// page title truncates first.
+export const topbarShopSwitcher = "w-40 min-w-0 shrink md:w-56";

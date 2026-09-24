@@ -42,7 +42,11 @@ Modals              src/store/common/modal.store.ts + src/hook/common/modal.hook
 Confirm             src/store/common/confirm.store.ts + src/hook/common/confirmation.hook.ts
 Pagination          src/store/common/pagination.store.ts + src/hook/common/pagination.hook.ts
 Auth                src/services/data/auth.services.ts + src/store/data/auth/auth.store.ts
-                    src/routes/route.guard.tsx
+                    src/hook/data/auth/auth.session.hook.ts   useAuthSession, useMe, usePermissions, useSignOut
+                    src/routes/route.guard.tsx                ProtectedRoute, PublicRoute, PermissionGate
+Permissions         src/models/common/permission.model.ts     derivePermissions; routes gate with `can`
+Tenancy             src/hook/data/shop/shop.list.hook.ts      useActiveShop (superadmin switcher or own shop)
+                    src/store/data/shop/shop.store.ts         superadmin's picked shop
 Shell               src/layouts/AppLayout.tsx + src/components/common/layout/
 Tokens              src/styles/common/theme.css
 PWA                 vite.config.ts (VitePWA), index.html, public/

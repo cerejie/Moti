@@ -16,6 +16,7 @@ import {
   topbarTrigger,
 } from "../../../styles/layout/topbar.styles";
 import AppButton from "../button/AppButton";
+import ShopSwitcher from "./ShopSwitcher";
 
 const Topbar = () => {
   const { current } = useBreadcrumbTrail();
@@ -46,6 +47,8 @@ const Topbar = () => {
       )}
 
       <div className={topbarSpacer} />
+
+      <ShopSwitcher />
 
       <AppButton
         type="button"

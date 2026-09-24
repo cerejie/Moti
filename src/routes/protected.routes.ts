@@ -1,13 +1,28 @@
 import AppLayout from "../layouts/AppLayout";
 import type { IRoute } from "../models/common/route.model";
 import { protectedViewRoutes } from "./protected.view.routes";
+import { PermissionGate, ProtectedRoute } from "./route.guard";
 
-// Sign-in guards wrap this tree in Phase 1; until then the shell is open.
+// Signed-in, active users only; each page is then checked against its `can`.
 export const protectedRoutes: IRoute[] = [
   {
-    key: "app-shell",
+    key: "protected",
     isNotNav: true,
-    Component: AppLayout,
-    children: protectedViewRoutes,
+    Component: ProtectedRoute,
+    children: [
+      {
+        key: "app-shell",
+        isNotNav: true,
+        Component: AppLayout,
+        children: [
+          {
+            key: "permission-gate",
+            isNotNav: true,
+            Component: PermissionGate,
+            children: protectedViewRoutes,
+          },
+        ],
+      },
+    ],
   },
 ];

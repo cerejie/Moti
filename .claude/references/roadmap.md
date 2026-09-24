@@ -8,7 +8,7 @@ plus the kickoff line for the next phase.
 
 - [x] Step 0: Save roadmap and convention additions
 - [x] Phase 0: Foundation
-- [ ] Phase 1: Multi-tenant auth and roles
+- [x] Phase 1: Multi-tenant auth and roles
 - [ ] Phase 2: Inventory catalog
 - [ ] Phase 3: Stock transactions
 - [ ] Phase 4: Dashboard and alerts
@@ -37,6 +37,19 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   message. It needs a toast; shadcn's React Aria choice is `sonner` (`npx shadcn@latest add sonner`),
   a new dependency to confirm then.
 - Carried to Phase 5: the `date` field type in `FormField` (aria `calendar`) for the custom range.
+- 2026-09-24 (Phase 1): role and shop are looked up in `profiles` on every request (security-definer
+  helpers), not carried in the JWT, so deactivation and suspension apply immediately.
+- 2026-09-24 (Phase 1): the roadmap's `current_role()` helper is `app.current_user_role()`, because
+  `current_role` is a reserved word in Postgres. Extra helper `app.profile_shop_id()` ignores the
+  active flags so a locked-out user can still read why.
+- 2026-09-24 (Phase 1): the seed adds a second shop with its own owner (`owner.b@moti.test`) for the
+  tenant isolation check. All demo logins share the password `Moti-demo-123`.
+- 2026-09-24 (Phase 1): Inventory, Dashboard and Shops are "Coming soon" placeholders
+  (`pages/Placeholder/ComingSoonView.tsx`, note in the route `handle`); each phase swaps its page in.
+- 2026-09-24 (Phase 1): the superadmin's picked shop lives in `store/data/shop/shop.store.ts`;
+  screens read the working shop through `useActiveShop()` in `hook/data/shop/shop.list.hook.ts`.
+- Still carried to Phase 2: `hook/common/mutation.hook.ts` + `sonner` (Phase 1 has no queueable write).
+- Carried to Phase 7: sign-out confirmation while writes are queued.
 
 ## What changed from the discovery plan
 

@@ -2,6 +2,7 @@ import { Bike } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,6 +25,8 @@ import {
   sidebarMenu,
   sidebarMenuButton,
 } from "../../../styles/layout/sidebar.styles";
+import { userMenuFooter } from "../../../styles/layout/userMenu.styles";
+import SidebarUserMenu from "./SidebarUserMenu";
 
 const AppSidebar = () => {
   const groups = useNavigationGroups();
@@ -74,6 +77,10 @@ const AppSidebar = () => {
           ))}
         </nav>
       </SidebarContent>
+
+      <SidebarFooter className={userMenuFooter}>
+        <SidebarUserMenu />
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

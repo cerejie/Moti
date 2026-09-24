@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import type { IHeaderBack, IRoute } from "../../models/common/route.model";
 import { useLayoutStore } from "../../store/common/layout.store";
+import { usePermissions } from "../data/auth/auth.session.hook";
 import {
   menuGroup,
   protectedViewRoutes,
@@ -22,11 +23,26 @@ const navigationRoutes = protectedViewRoutes.filter(
 
 export const useNavigationMenu = () => {
   const { pathname } = useLocation();
+  const permissions = usePermissions();
 
-  return navigationRoutes.map((route) => ({
-    route,
-    active: isRouteActive(route.path, pathname),
-  }));
+  return navigationRoutes
+    .filter((route) => !route.can || permissions[route.can])
+    .map((route) => ({
+      route,
+      active: isRouteActive(route.path, pathname),
+    }));
+};
+
+// False when the page at the current URL needs a permission the user lacks,
+// e.g. an employee typing an owner-only address.
+export const useRouteAllowed = () => {
+  const { pathname } = useLocation();
+  const permissions = usePermissions();
+  const route = protectedViewRoutes.find(
+    (entry) => entry.path && matchPath(entry.path, pathname),
+  );
+
+  return !route?.can || permissions[route.can];
 };
 
 export const useActiveNavRoute = () => {
