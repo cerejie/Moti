@@ -30,6 +30,8 @@ type IProps = {
   footer?: ReactNode;
   // Renders the whole tile as a link when given.
   to?: string;
+  // Runs before the link navigates, e.g. to preset the target page's filters.
+  onPress?: () => void;
   className?: string;
 };
 
@@ -43,6 +45,7 @@ const StatCard = ({
   trailing,
   footer,
   to,
+  onPress,
   className,
 }: IProps) => {
   const content = (
@@ -75,7 +78,7 @@ const StatCard = ({
   // keeps the navigation client-side.
   if (to) {
     return (
-      <Item variant="outline" className={rootClassName} href={to}>
+      <Item variant="outline" className={rootClassName} href={to} onPress={onPress}>
         {content}
       </Item>
     );

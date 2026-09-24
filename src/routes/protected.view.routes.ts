@@ -4,6 +4,7 @@ import HomeView from "../pages/Home/HomeView";
 import InventoryItemView from "../pages/Inventory/InventoryItemView";
 import InventoryView from "../pages/Inventory/InventoryView";
 import MovementsView from "../pages/Movements/MovementsView";
+import DashboardView from "../pages/Dashboard/DashboardView";
 import ComingSoonView from "../pages/Placeholder/ComingSoonView";
 import { ROUTES } from "./route.paths";
 
@@ -52,8 +53,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: LayoutDashboard,
     path: ROUTES.dashboard,
     can: "viewInsights",
-    handle: { note: "The owner dashboard arrives in Phase 4." },
-    Component: ComingSoonView,
+    badge: "stockAlerts",
+    Component: DashboardView,
   },
   {
     key: "shops",

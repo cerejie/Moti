@@ -37,3 +37,9 @@ export const sidebarMenu = "gap-3";
 // DOM and is clipped by the button's overflow as the width animates.
 export const sidebarMenuButton =
   "hover:bg-sidebar-hover hover:text-sidebar-foreground active:bg-sidebar-hover active:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground data-active:active:bg-sidebar-accent data-active:active:text-sidebar-accent-foreground h-12 text-lg [&_svg]:size-5 px-3 gap-3 group-data-[collapsible=icon]:size-12! group-data-[collapsible=icon]:p-3! group-data-[collapsible=icon]:[&_svg]:size-6";
+
+// Nav count, centred on the 48px item and coloured through toneSolid. The
+// registry badge recolours its text on hover and active, so white is forced.
+export const sidebarMenuBadge = "top-1/2! right-3 -translate-y-1/2 rounded-pill text-white!";
+
+export const sidebarBadgeLabel = "sr-only";

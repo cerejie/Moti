@@ -4,6 +4,7 @@ import { matchPath, useLocation } from "react-router-dom";
 import type { IHeaderBack, IRoute } from "../../models/common/route.model";
 import { useLayoutStore } from "../../store/common/layout.store";
 import { usePermissions } from "../data/auth/auth.session.hook";
+import { useStockAlerts } from "../data/dashboard/dashboard.list.hook";
 import {
   menuGroup,
   protectedViewRoutes,
@@ -24,12 +25,19 @@ const navigationRoutes = protectedViewRoutes.filter(
 export const useNavigationMenu = () => {
   const { pathname } = useLocation();
   const permissions = usePermissions();
+  const alerts = useStockAlerts();
+
+  const badgeFor = (route: INavRoute) =>
+    route.badge === "stockAlerts" && alerts.count > 0
+      ? { count: alerts.count, tone: alerts.tone }
+      : null;
 
   return navigationRoutes
     .filter((route) => !route.can || permissions[route.can])
     .map((route) => ({
       route,
       active: isRouteActive(route.path, pathname),
+      badge: badgeFor(route),
     }));
 };
 

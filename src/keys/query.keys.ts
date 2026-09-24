@@ -9,3 +9,6 @@ export const categoryOptionsKey = "category-options";
 // Both movement keys share the "movement" prefix, so one invalidation refreshes them.
 export const movementListKey = "movement-list";
 export const movementItemKey = "movement-item";
+// Both dashboard keys share the "dashboard" prefix, so one invalidation refreshes them.
+export const dashboardSummaryKey = "dashboard-summary";
+export const dashboardAlertsKey = "dashboard-alerts";

@@ -9,6 +9,8 @@ import {
   type StockMovementMode,
 } from "../../../enums/movement.enum";
 import {
+  dashboardAlertsKey,
+  dashboardSummaryKey,
   inventoryItemKey,
   inventoryListKey,
   movementItemKey,
@@ -29,7 +31,14 @@ type IStockMovementTarget = { item: IInventoryItem; mode: StockMovementMode };
 
 type IRecordMovement = { item: IInventoryItem; values: IStockMovementRequest };
 
-const affectedKeys = [inventoryListKey, inventoryItemKey, movementListKey, movementItemKey];
+const affectedKeys = [
+  inventoryListKey,
+  inventoryItemKey,
+  movementListKey,
+  movementItemKey,
+  dashboardSummaryKey,
+  dashboardAlertsKey,
+];
 
 const successMessages: Record<StockMovementMode, string> = {
   sale: "Sale recorded",

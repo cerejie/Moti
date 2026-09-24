@@ -23,3 +23,10 @@ export const topbarSpacer = "flex-1";
 // Superadmin's shop picker. It may shrink before the theme toggle does, and the
 // page title truncates first.
 export const topbarShopSwitcher = "w-40 min-w-0 shrink md:w-56";
+
+// Stock alerts bell. The count pill rides the corner, coloured by the most urgent
+// alert through toneSolid.
+export const topbarAlertsButton = "relative [&_svg:not([class*='size-'])]:size-6";
+
+export const topbarAlertsCount =
+  "absolute -top-0.5 -right-0.5 flex min-w-5 items-center justify-center rounded-pill px-1 text-xs font-semibold tabular-nums";

@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
   categoryOptionsKey,
+  dashboardAlertsKey,
+  dashboardSummaryKey,
   inventoryItemKey,
   inventoryListKey,
 } from "../../../keys/query.keys";
@@ -21,8 +23,14 @@ import { useActiveShop } from "../shop/shop.list.hook";
 
 type ISaveItem = { id?: string; values: IItemRequest };
 
-// Category counts include every item, so item writes refresh them too.
-const affectedKeys = [inventoryListKey, inventoryItemKey, categoryOptionsKey];
+// Category counts and the dashboard include every item, so item writes refresh them too.
+const affectedKeys = [
+  inventoryListKey,
+  inventoryItemKey,
+  categoryOptionsKey,
+  dashboardSummaryKey,
+  dashboardAlertsKey,
+];
 
 const toRequest = (item: IInventoryItem): IItemRequest => ({
   sku: item.sku,

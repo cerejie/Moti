@@ -59,6 +59,24 @@ Schema      supabase/migrations/20260924000003_create_stock_movement_history.sql
 
 - **Idempotency key per form open:** `client_id` is part of the form values, generated when the modal opens.
 
+## Third slice: `dashboard` (Phase 4)
+
+```
+Screen      src/pages/Dashboard/DashboardView.tsx               owners only
+UI          src/components/dashboard/panels/DashboardPanel.tsx     no-shop state + the three cards
+            src/components/dashboard/cards/StockSummaryCards.tsx   StatCard tiles; status tiles preset the Inventory tab
+            src/components/dashboard/cards/StockAlertsCard.tsx     + tables/StockAlertTable.tsx (shared with the sheet)
+            src/components/dashboard/cards/RecentMovementsCard.tsx reuses MovementTable
+            src/components/dashboard/modal/StockAlertsModal.tsx    bell sheet, mounted in AppLayout
+            src/components/common/layout/StockAlertsButton.tsx     topbar bell
+Data        src/hook/data/dashboard/dashboard.list.hook.ts      useStockSummary, useStockAlerts, useRecentMovements,
+                                                                useOpenStockStatus, useStockAlertsModal
+Calls       src/services/data/dashboard.services.ts             getSummary, getAlerts (read-only views)
+Models      src/models/data/dashboard/dashboard.response.ts
+Nav badge   route `badge: "stockAlerts"` → useNavigationMenu → AppSidebar / TabBar
+Schema      supabase/migrations/20260924000004_create_inventory_dashboard_views.sql
+```
+
 ## Infrastructure
 
 ```

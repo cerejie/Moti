@@ -6,3 +6,5 @@ export const movementTableKey = "movement-table";
 export const movementTypeKey = "movement-type";
 // Scoped per item with scopedKey, so each item's history starts on page one.
 export const itemMovementTableKey = "item-movement-table";
+export const recentMovementTableKey = "recent-movement-table";
+export const stockAlertTableKey = "stock-alert-table";

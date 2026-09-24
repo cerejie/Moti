@@ -62,6 +62,18 @@ export function formatDateTime(value: string | null | undefined): string {
   return dateTimeFormatter.format(date).replace(",", "");
 }
 
+const countFormatter = new Intl.NumberFormat("en-PH");
+
+// A whole-number total with thousands separators: 12,480.
+export function formatCount(value: number): string {
+  return countFormatter.format(value);
+}
+
+// A nav or bell badge: the count, capped at 99+.
+export function formatBadgeCount(value: number): string {
+  return value > 99 ? "99+" : String(value);
+}
+
 // A ledger quantity with its direction: +5 or −3 (a true minus sign).
 export function formatSignedQuantity(quantity: number): string {
   return quantity > 0 ? `+${quantity}` : `−${Math.abs(quantity)}`;

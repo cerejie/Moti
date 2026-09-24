@@ -11,7 +11,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 1: Multi-tenant auth and roles
 - [x] Phase 2: Inventory catalog
 - [x] Phase 3: Stock transactions
-- [ ] Phase 4: Dashboard and alerts
+- [x] Phase 4: Dashboard and alerts
 - [ ] Phase 5: Smart Analyzer
 - [ ] Phase 6: Shops, users and settings
 - [ ] Phase 7: PWA hardening
@@ -72,6 +72,14 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
 - Carried (bug, pre-existing): `TablePagination` and `useDebouncedSearch` ignore the `pageSize`
   default given to `usePagination`, so the inventory pager counts in 8s while the query pages by 10.
   Movement tables use the store default (8) to avoid it.
+- 2026-09-24 (Phase 4): dashboard counts and alerts read two security_invoker views
+  (`inventory_stock_summary`, `inventory_attention_items`) built on `inventory_item_status` with
+  the Inventory list's "not archived" rule, so counts equal the Inventory tabs. No table or RPC changed.
+- 2026-09-24 (Phase 4): an alert is any Low, Reorder or Out item; the bell and badge are red when
+  anything is out, amber otherwise. Only the Dashboard nav entry carries the badge; staff see none.
+- 2026-09-24 (Phase 4): summary and alerts re-check every 60 s while online (refetch-on-focus is
+  off app-wide), and every item or stock write invalidates them. A status tile opens Inventory on
+  that tab with search and category cleared.
 
 ## What changed from the discovery plan
 

@@ -13,6 +13,8 @@ export type IRoute = {
   isNotNav?: boolean;
   // Hides the route from navigation and blocks its URL without this permission.
   can?: IPermissionKey;
+  // A live count shown on the nav entry, e.g. items that need attention.
+  badge?: "stockAlerts";
   children?: IRoute[];
 } & RouteObject;
 

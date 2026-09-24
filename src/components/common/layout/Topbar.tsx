@@ -17,6 +17,7 @@ import {
 } from "../../../styles/layout/topbar.styles";
 import AppButton from "../button/AppButton";
 import ShopSwitcher from "./ShopSwitcher";
+import StockAlertsButton from "./StockAlertsButton";
 import SyncStatusButton from "./SyncStatusButton";
 
 const Topbar = () => {
@@ -50,6 +51,8 @@ const Topbar = () => {
       <div className={topbarSpacer} />
 
       <ShopSwitcher />
+
+      <StockAlertsButton />
 
       <SyncStatusButton />
 
