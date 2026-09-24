@@ -25,7 +25,7 @@ VitePWA({
     start_url: "/",
     scope: "/",
     display: "standalone",
-    orientation: "portrait",
+    orientation: "any",                   // tablets at the counter use landscape
     theme_color: "<matches --primary in theme.css>",
     background_color: "<matches --background in theme.css>",
     icons: [

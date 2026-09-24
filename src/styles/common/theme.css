@@ -1,0 +1,361 @@
+/* Full import, preflight included: this file owns the document reset. */
+@import "tailwindcss";
+
+/* Enter/exit animations for every shadcn overlay (dialog, sheet, popover, dropdown, tooltip). */
+@import "tw-animate-css";
+/* The data-open / data-checked / data-selected / data-disabled variants the aria-vega
+   components are written against. */
+@import "shadcn/tailwind.css";
+/* Dark mode is the .dark class on <html>, set by the layout store. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Digits only. This family carries nothing but U+0030-0039, so every numeral in the app
+  (stock counts, quantities) renders in Geist Mono while every other glyph falls through
+  to Geist. font-display: swap drops digits back to Geist if the URL ever moves.
+*/
+@font-face {
+  font-family: "Geist Numerals";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrcdmg.woff2")
+    format("woff2");
+  unicode-range: U+0030-0039;
+}
+
+/*
+  The single source of Moti design tokens: shadcn's neutral palette plus the few
+  semantic colours shadcn has no slot for. Every token has a light and a dark value.
+*/
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-hover: oklch(0.94 0 0);
+
+  /* Moti extras. */
+  --surface: oklch(1 0 0);
+  --text-subtle: oklch(0.556 0 0);
+  --primary-hover: oklch(0.3 0 0);
+  --primary-soft: oklch(0.205 0 0 / 6%);
+  --primary-border: oklch(0.205 0 0 / 25%);
+  --focus-ring: oklch(0.708 0 0 / 35%);
+  --success: oklch(0.6 0.13 163);
+  --success-bg: oklch(0.96 0.04 163);
+  --warning: oklch(0.6 0.14 65);
+  --warning-bg: oklch(0.97 0.05 85);
+  --danger: oklch(0.577 0.245 27.325);
+  --danger-bg: oklch(0.96 0.03 25);
+  --info: oklch(0.55 0.16 255);
+  --info-bg: oklch(0.96 0.03 255);
+  --required: oklch(0.63 0.21 25);
+  --link: oklch(0.55 0.16 255);
+  --input-bg: oklch(1 0 0);
+  --input-border: oklch(0.922 0 0);
+  --shadow-color: oklch(0.145 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-hover: oklch(0.25 0 0);
+
+  --surface: oklch(0.205 0 0);
+  --text-subtle: oklch(0.708 0 0);
+  --primary-hover: oklch(0.85 0 0);
+  --primary-soft: oklch(1 0 0 / 8%);
+  --primary-border: oklch(1 0 0 / 25%);
+  --focus-ring: oklch(0.556 0 0 / 45%);
+  --success: oklch(0.72 0.14 163);
+  --success-bg: oklch(0.3 0.05 163);
+  --warning: oklch(0.8 0.15 75);
+  --warning-bg: oklch(0.32 0.06 70);
+  --danger: oklch(0.704 0.191 22.216);
+  --danger-bg: oklch(0.3 0.07 25);
+  --info: oklch(0.72 0.13 255);
+  --info-bg: oklch(0.3 0.06 255);
+  --required: oklch(0.704 0.191 22.216);
+  --link: oklch(0.72 0.13 255);
+  --input-bg: oklch(1 0 0 / 4%);
+  --input-border: oklch(1 0 0 / 15%);
+  --shadow-color: oklch(0 0 0);
+}
+
+/*
+  Tailwind only emits bg-primary, text-foreground, border-border and the rest of the
+  semantic palette when each is a --color-* token in @theme.
+*/
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-hover: var(--sidebar-hover);
+
+  --color-surface: var(--surface);
+  --color-text-muted: var(--muted-foreground);
+  --color-text-subtle: var(--text-subtle);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-border: var(--primary-border);
+  --color-focus-ring: var(--focus-ring);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-required: var(--required);
+  --color-link: var(--link);
+  --color-input-bg: var(--input-bg);
+  --color-input-border: var(--input-border);
+
+  /* Named *-card-* to avoid colliding with Tailwind's own shadow scale. */
+  --shadow-card-sm: 0 1px 2px color-mix(in oklab, var(--shadow-color) 6%, transparent);
+  --shadow-card-md: 0 6px 24px color-mix(in oklab, var(--shadow-color) 8%, transparent);
+  --shadow-card-lg: 0 20px 55px color-mix(in oklab, var(--shadow-color) 18%, transparent);
+}
+
+@theme {
+  --font-sans: "Geist Numerals", "Geist", sans-serif;
+  /* Figures only. Reaches the UI through the numeric helpers in styles/. */
+  --font-mono: "Geist Mono", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.85rem;
+  --text-md: 0.92rem;
+  --text-lg: 1.05rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.9rem;
+
+  /* --radius-md must match --radius above. */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+
+  /* Installed-app chrome. Content reserves --spacing-tabbar plus the home-indicator inset. */
+  --spacing-tabbar: 3.75rem;
+  --spacing-topbar: 4.5rem;
+  /* Minimum comfortable touch target on touch breakpoints. */
+  --spacing-touch: 2.75rem;
+}
+
+@layer base {
+  /* Preflight resets border-color to currentcolor; shadcn's `border` utilities expect the token. */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  /* Desktop scale: from lg up the root size is a share of the window width, so the layout
+     keeps its proportions at 100%, 125% and 150% zoom. Phones keep the browser default. */
+  @media (min-width: 64rem) {
+    html {
+      font-size: clamp(var(--root-floor), 0.7vw, 1.25rem);
+    }
+  }
+
+  /* 13 physical pixels at every pixel density, so small screens stay readable. */
+  :root {
+    --root-floor: 0.8125rem;
+  }
+
+  @media (min-resolution: 1.1dppx) {
+    :root {
+      --root-floor: 0.7386rem;
+    }
+  }
+
+  @media (min-resolution: 1.25dppx) {
+    :root {
+      --root-floor: 0.65rem;
+    }
+  }
+
+  @media (min-resolution: 1.5dppx) {
+    :root {
+      --root-floor: 0.5417rem;
+    }
+  }
+
+  @media (min-resolution: 1.75dppx) {
+    :root {
+      --root-floor: 0.4643rem;
+    }
+  }
+
+  @media (min-resolution: 2dppx) {
+    :root {
+      --root-floor: 0.4063rem;
+    }
+  }
+
+  /* Lucide writes px width/height attributes, which would not follow the desktop scale. */
+  svg.lucide[width="12"] { width: 0.75rem; height: 0.75rem; }
+  svg.lucide[width="14"] { width: 0.875rem; height: 0.875rem; }
+  svg.lucide[width="16"] { width: 1rem; height: 1rem; }
+  svg.lucide[width="18"] { width: 1.125rem; height: 1.125rem; }
+  svg.lucide[width="20"] { width: 1.25rem; height: 1.25rem; }
+  svg.lucide[width="24"] { width: 1.5rem; height: 1.5rem; }
+  svg.lucide[width="28"] { width: 1.75rem; height: 1.75rem; }
+  svg.lucide[width="32"] { width: 2rem; height: 2rem; }
+  svg.lucide[width="40"] { width: 2.5rem; height: 2.5rem; }
+  svg.lucide[width="48"] { width: 3rem; height: 3rem; }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    background: var(--background);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Safe-area helpers. env() only reports non-zero once index.html sets viewport-fit=cover,
+   so these are inert in a browser tab and take effect when the app is installed. */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility px-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Content that scrolls above the fixed tab bar. */
+@utility pb-tabbar {
+  padding-bottom: calc(var(--spacing-tabbar) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Full app height that survives mobile browser chrome collapsing. */
+@utility h-dvh-safe {
+  height: 100dvh;
+}

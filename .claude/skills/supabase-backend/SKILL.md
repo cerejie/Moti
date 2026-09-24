@@ -96,6 +96,12 @@ through `runWrite`** (`src/store/common/sync.store.ts`), which executes `execute
 - Writes that need the server's answer immediately (sign-in, payments, uniqueness checks) are
   online-only: call `executeWrite` directly and show the offline state if `navigator.onLine` is false.
 - Never bypass the queue by calling `supabase.from(...).insert()` in a service.
+- **Idempotent:** every queued write carries a client UUID (`crypto.randomUUID()`), passed to the
+  RPC as `p_client_id` and stored in a unique column (`stock_movements.client_id`), so a write
+  replayed after a lost response is ignored, not applied twice.
+- **User-scoped:** the queue records the signed-in user's id; on sign-in as a different user,
+  queued writes from the previous user are never flushed under the new session. Sign-out with a
+  non-empty queue asks first.
 
 ## E. Auth, storage, realtime
 

@@ -9,7 +9,8 @@ Moti is a mobile-first **PWA**: React 19 + TypeScript + Vite, Tailwind v4 + **sh
 `Dcwd_Work/dcwd_apps-crm-customer2`; the Supabase layer mirrors `Ejie_Business/TARTAR`.
 
 The app is built feature by feature from the Moti spec. Never build the whole app at once
-unless explicitly instructed.
+unless explicitly instructed. **Read `.claude/references/roadmap.md` before starting a phase** —
+it holds the V1 scope, role matrix, data model and phase progress.
 
 ## Skills are mandatory — every prompt, no exceptions
 
@@ -106,7 +107,9 @@ src/
 ├── App.tsx                     # RouterProvider + the single ConfirmationModal
 └── main.tsx
 supabase/
-└── migrations/                 # <YYYYMMDDHHMMSS>_<snake_name>.sql
+├── migrations/                 # <YYYYMMDDHHMMSS>_<snake_name>.sql
+├── functions/<name>/index.ts   # Edge Functions (Deno) — e.g. staff account creation
+└── tests/                      # pgTAP tests: tenant isolation, role RLS, ledger rules
 public/                         # PWA icons, favicon, apple-touch-icon
 ```
 
