@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn build)",
+      "Bash(yarn lint)",
+      "Bash(npx tsc -b)",
+      "Bash(npx tsc -b *)",
+      "PowerShell(yarn build)",
+      "PowerShell(yarn lint)",
+      "PowerShell(npx tsc -b)"
+    ]
+  }
+}
