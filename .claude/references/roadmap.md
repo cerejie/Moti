@@ -9,7 +9,7 @@ plus the kickoff line for the next phase.
 - [x] Step 0: Save roadmap and convention additions
 - [x] Phase 0: Foundation
 - [x] Phase 1: Multi-tenant auth and roles
-- [ ] Phase 2: Inventory catalog
+- [x] Phase 2: Inventory catalog
 - [ ] Phase 3: Stock transactions
 - [ ] Phase 4: Dashboard and alerts
 - [ ] Phase 5: Smart Analyzer
@@ -48,7 +48,17 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   (`pages/Placeholder/ComingSoonView.tsx`, note in the route `handle`); each phase swaps its page in.
 - 2026-09-24 (Phase 1): the superadmin's picked shop lives in `store/data/shop/shop.store.ts`;
   screens read the working shop through `useActiveShop()` in `hook/data/shop/shop.list.hook.ts`.
-- Still carried to Phase 2: `hook/common/mutation.hook.ts` + `sonner` (Phase 1 has no queueable write).
+- 2026-09-24 (Phase 2): quantities are whole numbers; SKU is required and unique per shop; a
+  category with items can't be deleted; item detail is its own page (`/inventory/:itemId`);
+  categories are managed in a modal on the Inventory screen.
+- 2026-09-24 (Phase 2): Low = on-hand ≤ reorder level + ceil(reorder level × margin %).
+- 2026-09-24 (Phase 2): every catalog write is a security definer RPC keyed by a client id; the
+  tables have select policies only. `record_stock_movement` exists now (Phase 3 builds its UI) and
+  accepts the device's time, clamped to now, for offline sales.
+- 2026-09-24 (Phase 2): `sonner` added via shadcn (brings `next-themes`, unused: `AppToaster`
+  passes the theme store's value). `useAppMutation` is the shared mutation hook.
+- Carried to Phase 3: clearing an item's category from the form (the select has no "none" option yet);
+  movement history on the item detail page.
 - Carried to Phase 7: sign-out confirmation while writes are queued.
 
 ## What changed from the discovery plan

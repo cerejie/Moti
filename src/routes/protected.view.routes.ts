@@ -1,6 +1,8 @@
 import { House, LayoutDashboard, Package, Store } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
 import HomeView from "../pages/Home/HomeView";
+import InventoryItemView from "../pages/Inventory/InventoryItemView";
+import InventoryView from "../pages/Inventory/InventoryView";
 import ComingSoonView from "../pages/Placeholder/ComingSoonView";
 import { ROUTES } from "./route.paths";
 
@@ -25,8 +27,15 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Package,
     path: ROUTES.inventory,
     can: "browseInventory",
-    handle: { note: "The inventory catalog arrives in Phase 2." },
-    Component: ComingSoonView,
+    Component: InventoryView,
+  },
+  {
+    key: "inventory-item",
+    label: "Item",
+    path: ROUTES.inventoryItem,
+    isNotNav: true,
+    can: "browseInventory",
+    Component: InventoryItemView,
   },
   {
     key: "dashboard",

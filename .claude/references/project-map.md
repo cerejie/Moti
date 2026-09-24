@@ -3,30 +3,41 @@
 Worked examples of the fan-out described in `architecture-navigation`. Use them as templates;
 verify before assuming a file exists.
 
-**Status:** Moti has no modules yet. When the first real module ships, replace the template below
-with its actual paths and mark it as the reference module — every later screen copies it.
+**Status:** Inventory (Phase 2) is the reference module. Every later screen copies its shape.
 
-## Reference module — `<domain>` (template until the first module exists)
+## Reference module: `inventory` (+ its `category` sub-domain)
 
 ```
-Screen      src/pages/<Domain>/<Domain>View.tsx                 ContentView + feature components only
-UI          src/components/<domain>/tables/<Domain>Table.tsx    DataTable, columns, row actions
-            src/components/<domain>/modal/<Domain>FormModal.tsx EntityFormModal + IFieldConfig[]
-            src/components/<domain>/cards/<Domain>SummaryCards.tsx  StatCard in BentoGrid
-Data        src/hook/data/<domain>/<domain>.list.hook.ts        useQuery, filters, pagination, modal handles
-Form        src/hook/data/<domain>/<domain>.form.hook.ts        useForm + zodResolver + useMutation + error text
-Calls       src/services/data/<domain>.services.ts              getList (paged), getAll, create/update/remove via runWrite
-Input       src/models/data/<domain>/<domain>.request.ts        zod schemas + z.infer types
-Rows        src/models/data/<domain>/<domain>.response.ts       I<Domain> interfaces (snake_case columns)
-States      src/enums/<domain>.enum.ts                          status union + labels + tones
-UI state    src/store/data/<domain>/<domain>.store.ts           only if beyond the common registries
-Keys        src/keys/query.keys.ts      <domain>ListKey
-            src/keys/modal.keys.ts      <domain>FormModalKey
-            src/keys/table.keys.ts      <domain>TableKey
-Look        src/styles/<domain>/<domain>.styles.ts              domain-only styles; shared ones in styles/<kind>/
-Route       src/routes/route.paths.ts + src/routes/protected.view.routes.ts
-Schema      supabase/migrations/<timestamp>_create_<domain_plural>.sql   table, FKs, indexes, RLS, policies
+Screen      src/pages/Inventory/InventoryView.tsx              ContentView + panel + modals only
+            src/pages/Inventory/InventoryItemView.tsx          detail page, `back` link, no title
+UI          src/components/inventory/panels/InventoryPanel.tsx     TablePanel: toolbar, table, pagination, no-shop state
+            src/components/inventory/panels/InventoryToolbar.tsx   SegmentTabs (status) + FilterToolbar + sort SelectInput
+            src/components/inventory/panels/InventoryActions.tsx   header buttons, manager-only
+            src/components/inventory/tables/InventoryTable.tsx     DataTable columns; compact column set on phones
+            src/components/inventory/modal/ItemFormModal.tsx       EntityFormModal + IFieldSection[]
+            src/components/inventory/modal/CategoryManagerModal.tsx  AppModal list with RowActionMenu
+            src/components/inventory/cards/ItemSummaryCard.tsx     SectionCard + StatCards
+Data        src/hook/data/inventory/inventory.list.hook.ts     useInventoryList (query + tab/sort/filter/page), useInventoryItem
+Form        src/hook/data/inventory/inventory.form.hook.ts     useItemForm (useForm + useAppMutation), useItemArchive (useConfirm)
+Calls       src/services/data/inventory.services.ts            getList (paged view read), getById, create/update/setArchived via runWrite rpc
+Input       src/models/data/inventory/inventory.request.ts     itemSchema (text inputs; service converts numbers), IInventoryFilters
+Rows        src/models/data/inventory/inventory.response.ts    IInventoryItem (one view row)
+States      src/enums/inventory.enum.ts                        StockStatus labels + tones, tabs, sort, movement reasons
+Keys        src/keys/query.keys.ts      inventoryListKey, inventoryItemKey, categoryOptionsKey
+            src/keys/modal.keys.ts      itemFormModalKey, categoryManagerModalKey, categoryFormModalKey
+            src/keys/table.keys.ts      inventoryTableKey, inventoryStatusKey
+Look        src/styles/inventory/inventory.styles.ts
+Route       src/routes/route.paths.ts (inventory, inventoryItem) + src/routes/protected.view.routes.ts
+Schema      supabase/migrations/20260924000002_create_inventory_catalog.sql   tables, status view, RLS, write RPCs
 ```
+
+Patterns to copy:
+- **Writes are RPCs** that take a client-generated id (`newWriteId()` in the service), so an offline
+  replay is a no-op. Clients get select policies only.
+- **Mutations use `useAppMutation`** (`hook/common/mutation.hook.ts`), which shows the success or
+  "saved offline" toast, invalidates by key prefix, and uses `toastErrors` for writes started from a confirm.
+- **Modal openers are split from the form hook** (`useItemFormModal` vs `useItemForm`), so a button
+  never creates a second form instance.
 
 ## Infrastructure
 
@@ -45,6 +56,7 @@ Auth                src/services/data/auth.services.ts + src/store/data/auth/aut
                     src/hook/data/auth/auth.session.hook.ts   useAuthSession, useMe, usePermissions, useSignOut
                     src/routes/route.guard.tsx                ProtectedRoute, PublicRoute, PermissionGate
 Permissions         src/models/common/permission.model.ts     derivePermissions; routes gate with `can`
+Mutations + toasts  src/hook/common/mutation.hook.ts      useAppMutation; toaster in components/common/status/AppToaster.tsx
 Tenancy             src/hook/data/shop/shop.list.hook.ts      useActiveShop (superadmin switcher or own shop)
                     src/store/data/shop/shop.store.ts         superadmin's picked shop
 Shell               src/layouts/AppLayout.tsx + src/components/common/layout/
