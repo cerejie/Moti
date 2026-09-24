@@ -1,3 +1,4 @@
+import DateRangeFilter from "../../common/filter/DateRangeFilter";
 import FilterToolbar from "../../common/filter/FilterToolbar";
 import SegmentTabs from "../../common/view/SegmentTabs";
 import {
@@ -6,7 +7,10 @@ import {
   type MovementReason,
   type MovementTab,
 } from "../../../enums/movement.enum";
-import { useMovementTab } from "../../../hook/data/movement/movement.list.hook";
+import {
+  useMovementDateRange,
+  useMovementTab,
+} from "../../../hook/data/movement/movement.list.hook";
 import { movementTableKey } from "../../../keys/table.keys";
 import { movementToolbar } from "../../../styles/movement/movement.styles";
 
@@ -22,6 +26,7 @@ const reasonOptions = (Object.keys(movementReasonLabels) as MovementReason[]).ma
 
 const MovementToolbar = () => {
   const { tab, setTab } = useMovementTab();
+  const { range, today, setRange } = useMovementDateRange();
 
   return (
     <div className={movementToolbar}>
@@ -44,7 +49,14 @@ const MovementToolbar = () => {
             options: reasonOptions,
           },
         ]}
-      />
+      >
+        <DateRangeFilter
+          label="Date range"
+          value={range}
+          onChange={setRange}
+          maxDate={today ?? undefined}
+        />
+      </FilterToolbar>
     </div>
   );
 };

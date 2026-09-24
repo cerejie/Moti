@@ -8,3 +8,8 @@ export const movementTypeKey = "movement-type";
 export const itemMovementTableKey = "item-movement-table";
 export const recentMovementTableKey = "recent-movement-table";
 export const stockAlertTableKey = "stock-alert-table";
+// Period, step, custom range, metric, sort direction and tab — kept apart from
+// the ranking toolbar's filters so Clear leaves them alone.
+export const analyzerPeriodKey = "analyzer-period";
+export const analyzerTableKey = "analyzer-table";
+export const reorderTableKey = "reorder-table";

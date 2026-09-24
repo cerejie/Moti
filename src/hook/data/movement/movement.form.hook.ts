@@ -9,6 +9,9 @@ import {
   type StockMovementMode,
 } from "../../../enums/movement.enum";
 import {
+  analyzerRankingKey,
+  analyzerReorderKey,
+  analyzerSummaryKey,
   dashboardAlertsKey,
   dashboardSummaryKey,
   inventoryItemKey,
@@ -38,6 +41,9 @@ const affectedKeys = [
   movementItemKey,
   dashboardSummaryKey,
   dashboardAlertsKey,
+  analyzerRankingKey,
+  analyzerSummaryKey,
+  analyzerReorderKey,
 ];
 
 const successMessages: Record<StockMovementMode, string> = {

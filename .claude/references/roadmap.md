@@ -12,7 +12,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 2: Inventory catalog
 - [x] Phase 3: Stock transactions
 - [x] Phase 4: Dashboard and alerts
-- [ ] Phase 5: Smart Analyzer
+- [x] Phase 5: Smart Analyzer
 - [ ] Phase 6: Shops, users and settings
 - [ ] Phase 7: PWA hardening
 - [ ] Phase 8: Tests and release
@@ -80,6 +80,22 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
 - 2026-09-24 (Phase 4): summary and alerts re-check every 60 s while online (refetch-on-focus is
   off app-wide), and every item or stock write invalidates them. A status tile opens Inventory on
   that tab with search and category cleared.
+- 2026-09-24 (Phase 5): the analyzer is three security-invoker SQL functions (`analyzer_volume_ranking`,
+  `analyzer_period_summary`, `analyzer_reorder_items`) over the ledger; RLS on `stock_movements` keeps
+  staff out. Dates are resolved in `shop_settings.timezone` by `app.shop_period_bounds`. No table changed.
+- 2026-09-24 (Phase 5): only items that moved in the period are ranked (ties share a rank); archived
+  items are left out; the summary cards cover the whole shop and ignore the table filters; the
+  "Stocked, not sold" card is hidden under Added.
+- 2026-09-24 (Phase 5): the client computes Monday–Sunday weeks and calendar months with
+  `@internationalized/date` (now a direct dependency) in the shop's timezone (`useShopTimezone`).
+- 2026-09-24 (Phase 5): date ranges use `DateRangeFilter` (aria `RangeCalendar` in a Popover); the
+  `FormField` date type is still unbuilt because no form needs a date. The Stock movements page
+  now has the carried date-range filter.
+- 2026-09-24 (Phase 5): formulas open from a tap-to-open `InfoHint` (tooltips never open on touch):
+  one per summary card, one per table listing its columns. aria table headers can't hold a button.
+- 2026-09-24 (Phase 5): the shadcn aria-vega `calendar` imports `cn` from a package named `cn`; the
+  package was removed and that one import points at `@/utils/cn.utils`. Re-check after re-adding it.
+- Carried to Phase 7: with Analyzer, the superadmin's phone tab bar has six tabs.
 
 ## What changed from the discovery plan
 

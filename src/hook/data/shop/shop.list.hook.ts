@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { shopOptionsKey } from "../../../keys/query.keys";
+import { scopedKey, shopOptionsKey, shopTimezoneKey } from "../../../keys/query.keys";
 import shopServices from "../../../services/data/shop.services";
 import {
   selectActiveShopId,
@@ -30,4 +30,15 @@ export const useActiveShop = () => {
 
   const picked = shops.find((shop) => shop.id === pickedShopId);
   return { shopId: picked?.id ?? null, shopName: picked?.name ?? null };
+};
+
+// The working shop's timezone: every shop-local date is read in it.
+export const useShopTimezone = () => {
+  const { shopId } = useActiveShop();
+
+  return useQuery({
+    queryKey: [scopedKey(shopTimezoneKey, shopId)],
+    queryFn: ({ signal }) => shopServices.getTimezone(shopId ?? "", signal),
+    enabled: Boolean(shopId),
+  });
 };

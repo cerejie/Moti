@@ -6,5 +6,6 @@ export const ROUTES = {
   inventoryItem: "/inventory/:itemId",
   movements: "/movements",
   dashboard: "/dashboard",
+  analyzer: "/analyzer",
   shops: "/shops",
 } as const;

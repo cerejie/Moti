@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
+  analyzerRankingKey,
+  analyzerReorderKey,
   categoryOptionsKey,
   inventoryItemKey,
   inventoryListKey,
@@ -21,7 +23,14 @@ import { useActiveShop } from "../shop/shop.list.hook";
 type ISaveCategory = { id?: string; values: ICategoryRequest };
 
 // Item rows show their category's name, so a rename refreshes them too.
-const affectedKeys = [categoryOptionsKey, inventoryListKey, inventoryItemKey];
+// Analyzer rows carry the category name.
+const affectedKeys = [
+  categoryOptionsKey,
+  inventoryListKey,
+  inventoryItemKey,
+  analyzerRankingKey,
+  analyzerReorderKey,
+];
 
 export const useCategoryFormModal = () => {
   const { openModal } = useModal<ICategory>(categoryFormModalKey);

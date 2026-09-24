@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
+  analyzerRankingKey,
+  analyzerReorderKey,
+  analyzerSummaryKey,
   categoryOptionsKey,
   dashboardAlertsKey,
   dashboardSummaryKey,
@@ -30,6 +33,9 @@ const affectedKeys = [
   categoryOptionsKey,
   dashboardSummaryKey,
   dashboardAlertsKey,
+  analyzerRankingKey,
+  analyzerSummaryKey,
+  analyzerReorderKey,
 ];
 
 const toRequest = (item: IInventoryItem): IItemRequest => ({

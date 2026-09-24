@@ -77,6 +77,25 @@ Nav badge   route `badge: "stockAlerts"` → useNavigationMenu → AppSidebar / 
 Schema      supabase/migrations/20260924000004_create_inventory_dashboard_views.sql
 ```
 
+## Fourth slice: `analyzer` (Phase 5)
+
+```
+Screen      src/pages/Analyzer/AnalyzerView.tsx                 owners only
+UI          src/components/analyzer/panels/AnalyzerPanel.tsx       no-shop / timezone states + Ranking | Needs reorder tabs
+            src/components/analyzer/panels/RankingPanel.tsx        AnalyzerToolbar (period, step, metric) + summary + table
+            src/components/analyzer/panels/RankingToolbar.tsx      category / status filters + sort direction
+            src/components/analyzer/panels/ReorderPanel.tsx        + tables/ReorderTable.tsx
+            src/components/analyzer/cards/AnalyzerSummaryCards.tsx StatCards, each with an InfoHint formula
+Data        src/hook/data/analyzer/analyzer.list.hook.ts        useAnalyzerPeriod, useAnalyzerView, useVolumeRanking,
+                                                                usePeriodSummary, useReorderItems
+Calls       src/services/data/analyzer.services.ts              rpc reads: ranking (paged), summary, reorder (paged)
+Models      src/models/data/analyzer/analyzer.request.ts + analyzer.response.ts; enums/analyzer.enum.ts (labels + formulas)
+Dates       src/utils/date.utils.ts                             periodRange, todayIn, day start/end instants (shop tz)
+            src/hook/data/shop/shop.list.hook.ts                useShopTimezone
+Schema      supabase/migrations/20260924000005_create_smart_analyzer.sql
+Seed        supabase/seed.sql                                   Phase 5 scenario with hand-calculated results
+```
+
 ## Infrastructure
 
 ```
@@ -99,6 +118,8 @@ Permissions         src/models/common/permission.model.ts     derivePermissions;
 Mutations + toasts  src/hook/common/mutation.hook.ts      useAppMutation; toaster in components/common/status/AppToaster.tsx
 Tenancy             src/hook/data/shop/shop.list.hook.ts      useActiveShop (superadmin switcher or own shop)
                     src/store/data/shop/shop.store.ts         superadmin's picked shop
+Date range filter   src/components/common/filter/DateRangeFilter.tsx   Popover + aria RangeCalendar
+Formula hint        src/components/common/view/InfoHint.tsx            tap-to-open ⓘ popover
 Shell               src/layouts/AppLayout.tsx + src/components/common/layout/
 Tokens              src/styles/common/theme.css
 PWA                 vite.config.ts (VitePWA), index.html, public/

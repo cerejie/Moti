@@ -1,56 +1,11 @@
 -- Demo data for local development. `supabase db reset` runs this automatically;
 -- on a hosted project, paste it into the SQL editor once. Safe to re-run.
---
--- Every demo login uses the password: Moti-demo-123
---   superadmin@moti.test   superadmin (no shop) — change to your own email
---   owner@moti.test        owner of Demo Motor Parts
---   employee@moti.test     employee of Demo Motor Parts
---   owner.b@moti.test      owner of Other Moto Shop (for the tenant isolation check)
+-- Users and profiles are not seeded: create them in Supabase Auth and link each
+-- to a shop in public.profiles yourself.
 
 insert into public.shops (id, name) values
   ('11111111-1111-4111-8111-111111111111', 'Demo Motor Parts'),
   ('22222222-2222-4222-8222-222222222222', 'Other Moto Shop')
-on conflict (id) do nothing;
-
--- One statement: the Supabase SQL editor does not keep a temp table between
--- statements. Foreign keys are checked at the end of the statement, so profiles
--- may reference the users inserted above them.
-with demo_users (id, email, full_name, role, shop_id) as (
-  values
-    ('00000000-0000-4000-8000-000000000001'::uuid, 'superadmin@moti.test', 'Moti Superadmin', 'superadmin'::app.user_role, null::uuid),
-    ('00000000-0000-4000-8000-000000000002', 'owner@moti.test', 'Demo Owner', 'owner', '11111111-1111-4111-8111-111111111111'),
-    ('00000000-0000-4000-8000-000000000003', 'employee@moti.test', 'Demo Employee', 'employee', '11111111-1111-4111-8111-111111111111'),
-    ('00000000-0000-4000-8000-000000000004', 'owner.b@moti.test', 'Other Owner', 'owner', '22222222-2222-4222-8222-222222222222')
-),
--- The empty-string token columns are required: GoTrue fails on NULL there.
-new_users as (
-  insert into auth.users (
-    instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-    raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
-    confirmation_token, recovery_token, email_change_token_new, email_change
-  )
-  select
-    '00000000-0000-0000-0000-000000000000', u.id, 'authenticated', 'authenticated', u.email,
-    extensions.crypt('Moti-demo-123', extensions.gen_salt('bf')), now(),
-    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, now(), now(),
-    '', '', '', ''
-  from demo_users u
-  on conflict (id) do nothing
-),
-new_identities as (
-  insert into auth.identities (
-    id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at
-  )
-  select
-    gen_random_uuid(), u.id, u.id::text, 'email',
-    jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true),
-    now(), now(), now()
-  from demo_users u
-  on conflict do nothing
-)
-insert into public.profiles (id, shop_id, role, full_name)
-select u.id, u.shop_id, u.role, u.full_name
-from demo_users u
 on conflict (id) do nothing;
 
 -- Phase 2: demo catalog. Demo Motor Parts gets a mix of every stock status
@@ -109,3 +64,77 @@ from demo_items d
 join new_items n on n.id = d.id
 where d.on_hand > 0
 on conflict (client_id) do nothing;
+
+-- Phase 5: a sales scenario for the Smart Analyzer, recorded through the same
+-- function the app uses so on_hand and balance_after stay consistent. Every item
+-- nets to zero, so the Phase 2 stock statuses and the dashboard do not change.
+-- Restocks are 35 days back (outside this month and the 30-day window), sales are
+-- on last week's Monday and today. On a fresh `supabase db reset`, Demo Motor Parts
+-- shows (metric Sold):
+--
+--   This week: 31 units, 7 items sold, top Engine oil 10W-40 1L (7), 3 stocked unsold
+--     1 Engine oil 10W-40 1L 7 (2 sales) · 2 Headlight bulb 6 · 3 Scooter gear oil 5 ·
+--     4 Front brake pad set 4 · 4 Spark plug 4 · 6 CVT drive belt 3 · 7 Battery 2
+--   Last week: 20 units, 6 items sold, top Engine oil 10W-40 1L (5), 6 stocked unsold
+--     1 Engine oil 5 · 2 Brake fluid 4 · 2 Headlight bulb 4 · 4 Drive chain 3 ·
+--     5 Spark plug 2 · 5 Tire 2
+--   This month: this week, plus last week when its Monday falls in this month.
+--   Needs reorder (sold in 30 days): Brake fluid 4, Drive chain 3 (Out) ·
+--     Front brake pad set 4, CVT drive belt 3 (Reorder) ·
+--     Spark plug 6, Battery 2, Rear brake shoe set 0 (Low)
+do $$
+declare
+  v_timezone constant text := 'Asia/Manila';
+  v_restock timestamptz := now() - interval '35 days';
+  v_last_week timestamptz :=
+    (date_trunc('week', now() at time zone v_timezone) - interval '7 days' + interval '10 hours')
+      at time zone v_timezone;
+  v_row record;
+begin
+  for v_row in
+    select *
+    from (values
+      (1, 'a0000000-0000-4000-8000-000000000001'::uuid, 'stock_in', 'restock', 12, 'restock'),
+      (2, 'a0000000-0000-4000-8000-000000000002', 'stock_in', 'restock', 6, 'restock'),
+      (3, 'a0000000-0000-4000-8000-000000000003', 'stock_in', 'restock', 4, 'restock'),
+      (4, 'a0000000-0000-4000-8000-000000000004', 'stock_in', 'restock', 3, 'restock'),
+      (5, 'a0000000-0000-4000-8000-000000000005', 'stock_in', 'restock', 2, 'restock'),
+      (6, 'a0000000-0000-4000-8000-000000000006', 'stock_in', 'restock', 2, 'restock'),
+      (7, 'a0000000-0000-4000-8000-000000000008', 'stock_in', 'restock', 3, 'restock'),
+      (8, 'a0000000-0000-4000-8000-000000000009', 'stock_in', 'restock', 10, 'restock'),
+      (9, 'a0000000-0000-4000-8000-000000000010', 'stock_in', 'restock', 4, 'restock'),
+      (10, 'a0000000-0000-4000-8000-000000000011', 'stock_in', 'restock', 5, 'restock'),
+      (11, 'a0000000-0000-4000-8000-000000000001', 'stock_out', 'sale', 5, 'last_week'),
+      (12, 'a0000000-0000-4000-8000-000000000002', 'stock_out', 'sale', 2, 'last_week'),
+      (13, 'a0000000-0000-4000-8000-000000000004', 'stock_out', 'sale', 3, 'last_week'),
+      (14, 'a0000000-0000-4000-8000-000000000005', 'stock_out', 'sale', 2, 'last_week'),
+      (15, 'a0000000-0000-4000-8000-000000000009', 'stock_out', 'sale', 4, 'last_week'),
+      (16, 'a0000000-0000-4000-8000-000000000010', 'stock_out', 'sale', 4, 'last_week'),
+      (17, 'a0000000-0000-4000-8000-000000000001', 'stock_out', 'sale', 3, 'today'),
+      (18, 'a0000000-0000-4000-8000-000000000001', 'stock_out', 'sale', 4, 'today'),
+      (19, 'a0000000-0000-4000-8000-000000000002', 'stock_out', 'sale', 4, 'today'),
+      (20, 'a0000000-0000-4000-8000-000000000003', 'stock_out', 'sale', 4, 'today'),
+      (21, 'a0000000-0000-4000-8000-000000000006', 'stock_out', 'sale', 2, 'today'),
+      (22, 'a0000000-0000-4000-8000-000000000008', 'stock_out', 'sale', 3, 'today'),
+      (23, 'a0000000-0000-4000-8000-000000000009', 'stock_out', 'sale', 6, 'today'),
+      (24, 'a0000000-0000-4000-8000-000000000011', 'stock_out', 'sale', 5, 'today')
+    ) as scenario (seq, item_id, movement_type, reason, quantity, occurred)
+    order by seq
+  loop
+    -- A fixed client_id per row, so a re-run replays instead of applying twice.
+    perform app.apply_stock_movement(
+      v_row.item_id,
+      v_row.movement_type::app.movement_type,
+      v_row.reason::app.movement_reason,
+      v_row.quantity,
+      null,
+      case v_row.occurred
+        when 'restock' then v_restock
+        when 'last_week' then v_last_week
+        else now()
+      end,
+      ('b5000000-0000-4000-8000-' || lpad(v_row.seq::text, 12, '0'))::uuid
+    );
+  end loop;
+end;
+$$;

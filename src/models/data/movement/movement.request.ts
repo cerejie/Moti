@@ -39,4 +39,7 @@ export interface IMovementFilters {
   tab: MovementTab;
   reason?: string;
   search: string;
+  // Instants bounding a shop-local date range: from included, before excluded.
+  occurredFrom?: string;
+  occurredBefore?: string;
 }

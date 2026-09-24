@@ -1,5 +1,13 @@
-import { ArrowLeftRight, House, LayoutDashboard, Package, Store } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ChartColumnBig,
+  House,
+  LayoutDashboard,
+  Package,
+  Store,
+} from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
+import AnalyzerView from "../pages/Analyzer/AnalyzerView";
 import HomeView from "../pages/Home/HomeView";
 import InventoryItemView from "../pages/Inventory/InventoryItemView";
 import InventoryView from "../pages/Inventory/InventoryView";
@@ -55,6 +63,14 @@ export const protectedViewRoutes: IRoute[] = [
     can: "viewInsights",
     badge: "stockAlerts",
     Component: DashboardView,
+  },
+  {
+    key: "analyzer",
+    label: "Analyzer",
+    icon: ChartColumnBig,
+    path: ROUTES.analyzer,
+    can: "viewInsights",
+    Component: AnalyzerView,
   },
   {
     key: "shops",

@@ -58,6 +58,8 @@ const movementServices = {
     if (filters.tab !== "all") query = query.eq("movement_type", filters.tab);
     if (filters.reason) query = query.eq("reason", filters.reason);
     if (filters.search) query = query.ilike("item_search_text", likePattern(filters.search));
+    if (filters.occurredFrom) query = query.gte("occurred_at", filters.occurredFrom);
+    if (filters.occurredBefore) query = query.lt("occurred_at", filters.occurredBefore);
 
     const { data, error, count } = await query
       .order("occurred_at", { ascending: false })

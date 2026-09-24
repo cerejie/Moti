@@ -62,6 +62,22 @@ export function formatDateTime(value: string | null | undefined): string {
   return dateTimeFormatter.format(date).replace(",", "");
 }
 
+// Calendar dates carry no time, so they are formatted as UTC to keep the day as written.
+const dateRangeFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+
+// Two calendar dates (YYYY-MM-DD) as one range: "Sep 22 – 28, 2026".
+export function formatDateRange(from: string, to: string): string {
+  const start = new Date(from);
+  const end = new Date(to);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "—";
+  return dateRangeFormatter.formatRange(start, end);
+}
+
 const countFormatter = new Intl.NumberFormat("en-PH");
 
 // A whole-number total with thousands separators: 12,480.
