@@ -4,6 +4,7 @@ import CategoryManagerModal from "../../components/inventory/modal/CategoryManag
 import ItemFormModal from "../../components/inventory/modal/ItemFormModal";
 import InventoryActions from "../../components/inventory/panels/InventoryActions";
 import InventoryPanel from "../../components/inventory/panels/InventoryPanel";
+import StockMovementModal from "../../components/movement/modal/StockMovementModal";
 
 const InventoryView = () => (
   <ContentView
@@ -15,6 +16,7 @@ const InventoryView = () => (
     <ItemFormModal />
     <CategoryManagerModal />
     <CategoryFormModal />
+    <StockMovementModal />
   </ContentView>
 );
 

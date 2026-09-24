@@ -10,7 +10,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 0: Foundation
 - [x] Phase 1: Multi-tenant auth and roles
 - [x] Phase 2: Inventory catalog
-- [ ] Phase 3: Stock transactions
+- [x] Phase 3: Stock transactions
 - [ ] Phase 4: Dashboard and alerts
 - [ ] Phase 5: Smart Analyzer
 - [ ] Phase 6: Shops, users and settings
@@ -58,8 +58,20 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
 - 2026-09-24 (Phase 2): `sonner` added via shadcn (brings `next-themes`, unused: `AppToaster`
   passes the theme store's value). `useAppMutation` is the shared mutation hook.
 - Carried to Phase 3: clearing an item's category from the form (the select has no "none" option yet);
-  movement history on the item detail page.
+  movement history on the item detail page. (Both done in Phase 3.)
 - Carried to Phase 7: sign-out confirmation while writes are queued.
+- 2026-09-24 (Phase 3): history reads the `stock_movement_history` view (security_invoker: ledger
+  + item name/SKU/unit + recorder's name). No table or RPC changed.
+- 2026-09-24 (Phase 3): the stock form's `client_id` is fixed when the form opens, so a retried
+  submit is recorded once. An RPC write that fails on the network is queued, not shown as an error.
+- 2026-09-24 (Phase 3): Sell is on the item page (row → Sell → Record sale), not on each list row;
+  managers also get Sell / Add stock / Deduct in the row menu.
+- 2026-09-24 (Phase 3): a write the server refuses during a flush is marked `failedId` and holds
+  the queue; the topbar cloud button opens the Sync issues sheet to retry or discard it.
+- Carried to Phase 5: a date-range filter on the Stock movements page (needs the `date` field).
+- Carried (bug, pre-existing): `TablePagination` and `useDebouncedSearch` ignore the `pageSize`
+  default given to `usePagination`, so the inventory pager counts in 8s while the query pages by 10.
+  Movement tables use the store default (8) to avoid it.
 
 ## What changed from the discovery plan
 

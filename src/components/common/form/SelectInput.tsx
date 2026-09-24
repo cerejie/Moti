@@ -31,7 +31,12 @@ type IProps = {
   className?: string;
   // Type to filter the options — for lists too long to scroll through.
   searchable?: boolean;
+  // Adds the placeholder as a first option, so a picked value can be cleared again.
+  allowClear?: boolean;
 };
+
+// aria keys can't be empty strings, so the clear option carries its own key.
+const clearKey = "__clear__";
 
 const SelectInput = ({
   id,
@@ -44,6 +49,7 @@ const SelectInput = ({
   label,
   className,
   searchable = false,
+  allowClear = false,
 }: IProps) => {
   if (searchable) {
     return (
@@ -83,7 +89,9 @@ const SelectInput = ({
     <Select
       // An empty string means "nothing picked", which aria models as null.
       value={value === "" ? null : value}
-      onChange={(key) => onValueChange(key === null ? "" : String(key))}
+      onChange={(key) =>
+        onValueChange(key === null || key === clearKey ? "" : String(key))
+      }
       placeholder={placeholder}
       isDisabled={disabled}
       isInvalid={invalid}
@@ -95,6 +103,7 @@ const SelectInput = ({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
+          {allowClear && <SelectItem id={clearKey}>{placeholder}</SelectItem>}
           {options.map((option) => (
             <SelectItem
               key={option.value}

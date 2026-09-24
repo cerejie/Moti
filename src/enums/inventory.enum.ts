@@ -37,21 +37,3 @@ export const inventorySortLabels: Record<InventorySort, string> = {
   stock_desc: "Stock: high to low",
   updated: "Recently updated",
 };
-
-// Mirror the app.movement_type and app.movement_reason Postgres enums.
-export type MovementType = "stock_in" | "stock_out";
-
-export type MovementReason =
-  | "restock"
-  | "opening_balance"
-  | "correction"
-  | "sale"
-  | "damaged";
-
-export const movementReasonLabels: Record<MovementReason, string> = {
-  restock: "Restock",
-  opening_balance: "Opening balance",
-  correction: "Correction",
-  sale: "Sale",
-  damaged: "Damaged",
-};

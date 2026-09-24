@@ -11,6 +11,7 @@ import { formatDateTime } from "../../../utils/format.utils";
 import { detailGrid, detailItem } from "../../../styles/modal/detail.styles";
 import { detailLabel, detailValue } from "../../../styles/common/typography.styles";
 import { itemDetailStack } from "../../../styles/inventory/inventory.styles";
+import ItemMovementsCard from "../../movement/cards/ItemMovementsCard";
 import ItemSummaryCard from "../cards/ItemSummaryCard";
 
 const detailRows = (item: IInventoryItem) => [
@@ -65,6 +66,8 @@ const ItemDetailPanel = () => {
           ))}
         </dl>
       </SectionCard>
+
+      <ItemMovementsCard itemId={item.id} />
     </div>
   );
 };

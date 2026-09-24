@@ -6,10 +6,13 @@ export interface IErrorDescription {
   message: string;
 }
 
-// fetch rejects with a TypeError when the request never reaches the server.
-const isNetworkError = (error: unknown) =>
+// fetch rejects with a TypeError when the request never reaches the server;
+// supabase-js returns the same failure as an error whose message is prefixed "TypeError: ".
+export const isNetworkError = (error: unknown) =>
   (typeof navigator !== "undefined" && !navigator.onLine) ||
-  (error instanceof TypeError && /fetch|network/i.test(error.message));
+  (error instanceof TypeError && /fetch|network|load failed/i.test(error.message)) ||
+  (error instanceof Error &&
+    /^(TypeError|FetchError): .*(fetch|network|load failed)/i.test(error.message));
 
 export const describeError = (
   error: unknown,

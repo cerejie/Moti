@@ -39,12 +39,34 @@ Patterns to copy:
 - **Modal openers are split from the form hook** (`useItemFormModal` vs `useItemForm`), so a button
   never creates a second form instance.
 
+## Second slice: `movement` (Phase 3)
+
+```
+Screen      src/pages/Movements/MovementsView.tsx               shop-wide ledger, owners only
+UI          src/components/movement/modal/StockMovementModal.tsx  one form for sale / add / deduct
+            src/components/movement/cards/BalancePreview.tsx      before → after
+            src/components/movement/panels/StockActions.tsx       Sell / Add stock / Deduct on the item page
+            src/components/movement/panels/MovementsPanel.tsx + MovementToolbar.tsx
+            src/components/movement/tables/MovementTable.tsx      shared by the page and the item card (`showItem`)
+            src/components/movement/cards/ItemMovementsCard.tsx   item page history
+Data        src/hook/data/movement/movement.list.hook.ts        useMovementList, useMovementTab, useItemMovements
+Form        src/hook/data/movement/movement.form.hook.ts        useStockMovementModal, useStockMovementForm
+Calls       src/services/data/movement.services.ts              getList, getByItem, record (runWrite rpc)
+Models      src/models/data/movement/movement.request.ts / movement.response.ts
+States      src/enums/movement.enum.ts                          types, reasons, modes, tabs
+Schema      supabase/migrations/20260924000003_create_stock_movement_history.sql
+```
+
+- **Idempotency key per form open:** `client_id` is part of the form values, generated when the modal opens.
+
 ## Infrastructure
 
 ```
 Supabase client     src/utils/supabase.utils.ts          supabase, toError
 Env                 src/utils/env.utils.ts               the only import.meta.env reader
-Offline writes      src/store/common/sync.store.ts       runWrite, queue, flush
+Offline writes      src/store/common/sync.store.ts       runWrite, queue, flush, failedId
+Sync issues         src/hook/common/network.hook.ts      useSyncStatus, useSyncIssues
+                    src/components/common/layout/SyncStatusButton.tsx + common/modal/SyncIssuesModal.tsx
                     src/utils/write.utils.ts             executeWrite
                     src/models/common/write.model.ts     IQueuedWrite
 Network state       src/store/common/network.store.ts + src/hook/common/network.hook.ts

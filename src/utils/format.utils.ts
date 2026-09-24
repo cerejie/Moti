@@ -62,6 +62,11 @@ export function formatDateTime(value: string | null | undefined): string {
   return dateTimeFormatter.format(date).replace(",", "");
 }
 
+// A ledger quantity with its direction: +5 or −3 (a true minus sign).
+export function formatSignedQuantity(quantity: number): string {
+  return quantity > 0 ? `+${quantity}` : `−${Math.abs(quantity)}`;
+}
+
 // The ten digits a PH mobile number has after +63 / 0, always starting with 9.
 // Accepts a stored 09…, a pasted +639…, or whatever is being typed.
 function phMobileDigits(value: string): string {

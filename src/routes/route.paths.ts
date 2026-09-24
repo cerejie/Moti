@@ -4,6 +4,7 @@ export const ROUTES = {
   signIn: "/sign-in",
   inventory: "/inventory",
   inventoryItem: "/inventory/:itemId",
+  movements: "/movements",
   dashboard: "/dashboard",
   shops: "/shops",
 } as const;

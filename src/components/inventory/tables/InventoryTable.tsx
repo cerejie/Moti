@@ -1,4 +1,11 @@
-import { Archive, ArchiveRestore, Pencil } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  PackageMinus,
+  PackagePlus,
+  Pencil,
+  ShoppingCart,
+} from "lucide-react";
 import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import { dataTableColumns } from "../../common/table/dataTable.config";
@@ -6,6 +13,7 @@ import StatusBadge from "../../common/status/StatusBadge";
 import { stockStatusLabels, stockStatusTones } from "../../../enums/inventory.enum";
 import { useIsMobile } from "../../../hook/use-mobile";
 import { useItemArchive, useItemFormModal } from "../../../hook/data/inventory/inventory.form.hook";
+import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
 import { inventoryTableKey } from "../../../keys/table.keys";
 import type { IRowAction } from "../../../models/common/action.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -53,8 +61,32 @@ const InventoryTable = ({
   const isMobile = useIsMobile();
   const { openEdit } = useItemFormModal();
   const { archive, restore } = useItemArchive();
+  const { openSale, openAdd, openDeduct } = useStockMovementModal();
+
+  // Only managers get this menu; an archived item takes no stock until restored.
+  const stockActionsFor = (item: IInventoryItem): IRowAction[] =>
+    item.archived_at
+      ? []
+      : [
+          {
+            key: "sell",
+            label: "Sell",
+            icon: <ShoppingCart />,
+            disabled: item.on_hand === 0,
+            onSelect: () => openSale(item),
+          },
+          { key: "add", label: "Add stock", icon: <PackagePlus />, onSelect: () => openAdd(item) },
+          {
+            key: "deduct",
+            label: "Deduct",
+            icon: <PackageMinus />,
+            disabled: item.on_hand === 0,
+            onSelect: () => openDeduct(item),
+          },
+        ];
 
   const actionsFor = (item: IInventoryItem): IRowAction[] => [
+    ...stockActionsFor(item),
     { key: "edit", label: "Edit", icon: <Pencil />, onSelect: () => openEdit(item) },
     item.archived_at
       ? { key: "restore", label: "Restore", icon: <ArchiveRestore />, onSelect: () => restore(item) }

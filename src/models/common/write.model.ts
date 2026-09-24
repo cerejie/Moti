@@ -6,6 +6,8 @@ export type IQueuedWrite =
       id: string;
       userId: string | null;
       label: string;
+      // When it was queued; absent on writes queued before Phase 3.
+      queuedAt?: string;
       kind: "insert";
       table: string;
       values: unknown;
@@ -14,6 +16,8 @@ export type IQueuedWrite =
       id: string;
       userId: string | null;
       label: string;
+      // When it was queued; absent on writes queued before Phase 3.
+      queuedAt?: string;
       kind: "update";
       table: string;
       values: unknown;
@@ -23,6 +27,8 @@ export type IQueuedWrite =
       id: string;
       userId: string | null;
       label: string;
+      // When it was queued; absent on writes queued before Phase 3.
+      queuedAt?: string;
       kind: "delete";
       table: string;
       match: Record<string, unknown>;
@@ -31,6 +37,8 @@ export type IQueuedWrite =
       id: string;
       userId: string | null;
       label: string;
+      // When it was queued; absent on writes queued before Phase 3.
+      queuedAt?: string;
       kind: "rpc";
       fn: string;
       args: Record<string, unknown>;
@@ -40,7 +48,7 @@ type DistributiveOmit<T, K extends keyof never> = T extends unknown
   ? Omit<T, K>
   : never;
 
-export type IQueuedWriteInput = DistributiveOmit<IQueuedWrite, "id" | "userId">;
+export type IQueuedWriteInput = DistributiveOmit<IQueuedWrite, "id" | "userId" | "queuedAt">;
 
 export interface IMutationResult {
   queued: boolean;

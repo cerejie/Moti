@@ -7,6 +7,7 @@ import { stockStatusLabels, stockStatusTones } from "../../../enums/inventory.en
 import { useItemArchive, useItemFormModal } from "../../../hook/data/inventory/inventory.form.hook";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import { formatPeso } from "../../../utils/format.utils";
+import StockActions from "../../movement/panels/StockActions";
 import {
   inventoryActions,
   itemStats,
@@ -66,6 +67,8 @@ const ItemSummaryCard = ({ item, canManage }: IProps) => {
         />
         <StatCard label="Location" value={item.location ?? "—"} />
       </div>
+
+      <StockActions item={item} />
     </SectionCard>
   );
 };

@@ -20,6 +20,7 @@ const ItemFormModal = () => {
           label: "Category",
           type: "select",
           placeholder: "No category",
+          allowClear: true,
           options: categories.map((category) => ({ value: category.id, label: category.name })),
         },
         { name: "brand", label: "Brand", type: "text" },

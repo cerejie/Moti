@@ -6,6 +6,7 @@ import type {
   IQueuedWrite,
   IQueuedWriteInput,
 } from "../../models/common/write.model";
+import { isNetworkError } from "../../utils/error.utils";
 import { executeWrite, newWriteId } from "../../utils/write.utils";
 import { useAuthStore } from "../data/auth/auth.store";
 
@@ -13,6 +14,8 @@ type States = {
   queue: IQueuedWrite[];
   flushing: boolean;
   lastError: string | null;
+  // The write the server refused; it blocks the ones behind it until retried or discarded.
+  failedId: string | null;
 };
 
 type Actions = {
@@ -25,6 +28,7 @@ const initialValues: States = {
   queue: [],
   flushing: false,
   lastError: null,
+  failedId: null,
 };
 
 // Plain zustand create and persisted: queued writes must survive a reload and a
@@ -38,7 +42,10 @@ export const useSyncStore = create<States & Actions>()(
         const id = newWriteId();
         const userId = useAuthStore.getState().userId;
         set((state) => ({
-          queue: [...state.queue, { ...write, id, userId } as IQueuedWrite],
+          queue: [
+            ...state.queue,
+            { ...write, id, userId, queuedAt: new Date().toISOString() } as IQueuedWrite,
+          ],
         }));
         return id;
       },
@@ -47,7 +54,7 @@ export const useSyncStore = create<States & Actions>()(
         if (get().flushing) return;
         const userId = useAuthStore.getState().userId;
         if (!userId) return;
-        set({ flushing: true, lastError: null });
+        set({ flushing: true, lastError: null, failedId: null });
 
         // Another user's writes stay queued; they are never sent under this session.
         const nextOwn = () => get().queue.find((write) => write.userId === userId);
@@ -62,9 +69,13 @@ export const useSyncStore = create<States & Actions>()(
                 queue: state.queue.filter((write) => write.id !== sent.id),
               }));
             } catch (error) {
-              set({
-                lastError: error instanceof Error ? error.message : String(error),
-              });
+              // Losing the connection mid-flush is not the write's fault; it retries on reconnect.
+              if (!isNetworkError(error)) {
+                set({
+                  lastError: error instanceof Error ? error.message : String(error),
+                  failedId: sent.id,
+                });
+              }
               break;
             }
           }
@@ -76,6 +87,7 @@ export const useSyncStore = create<States & Actions>()(
       discard: (id) =>
         set((state) => ({
           queue: state.queue.filter((write) => write.id !== id),
+          ...(state.failedId === id ? { failedId: null, lastError: null } : {}),
         })),
     }),
     { name: syncStorageKey, partialize: (state) => ({ queue: state.queue }) },
@@ -92,10 +104,20 @@ export const runWrite = async (
     return { queued: true };
   }
 
-  await executeWrite({
-    ...write,
-    id: newWriteId(),
-    userId: useAuthStore.getState().userId,
-  } as IQueuedWrite);
+  try {
+    await executeWrite({
+      ...write,
+      id: newWriteId(),
+      userId: useAuthStore.getState().userId,
+    } as IQueuedWrite);
+  } catch (error) {
+    // A patchy connection: every RPC write carries its own client id, so queueing
+    // one that may already have landed is safe — the replay is ignored.
+    if (write.kind === "rpc" && isNetworkError(error)) {
+      useSyncStore.getState().enqueue(write);
+      return { queued: true };
+    }
+    throw error;
+  }
   return { queued: false };
 };

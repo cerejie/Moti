@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import AppShell from "../components/common/layout/AppShell";
+import SyncIssuesModal from "../components/common/modal/SyncIssuesModal";
 import ErrorBoundary from "../components/common/status/ErrorBoundary";
 import { useNetwork } from "../hook/common/network.hook";
 import { useScrollReset } from "../hook/layout/navigation.hook";
@@ -19,6 +20,7 @@ const AppLayout = () => {
       >
         <Outlet />
       </ErrorBoundary>
+      <SyncIssuesModal />
     </AppShell>
   );
 };

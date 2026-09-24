@@ -1,8 +1,9 @@
-import { House, LayoutDashboard, Package, Store } from "lucide-react";
+import { ArrowLeftRight, House, LayoutDashboard, Package, Store } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
 import HomeView from "../pages/Home/HomeView";
 import InventoryItemView from "../pages/Inventory/InventoryItemView";
 import InventoryView from "../pages/Inventory/InventoryView";
+import MovementsView from "../pages/Movements/MovementsView";
 import ComingSoonView from "../pages/Placeholder/ComingSoonView";
 import { ROUTES } from "./route.paths";
 
@@ -36,6 +37,14 @@ export const protectedViewRoutes: IRoute[] = [
     isNotNav: true,
     can: "browseInventory",
     Component: InventoryItemView,
+  },
+  {
+    key: "movements",
+    label: "Movements",
+    icon: ArrowLeftRight,
+    path: ROUTES.movements,
+    can: "viewInsights",
+    Component: MovementsView,
   },
   {
     key: "dashboard",
