@@ -10,10 +10,13 @@ export const paginationSizeGroup = "flex items-center gap-2";
 
 export const paginationSizeLabel = "text-sm text-muted-foreground";
 
-export const paginationSizeTrigger = "h-9 w-18";
+// Set on the Select root, so it reaches the trigger inside for a full touch target on a phone.
+export const paginationSizeTrigger =
+  "w-18 max-md:**:data-[slot=select-trigger]:min-h-touch";
 
 // Pagination links are buttons, so the disabled state must read as disabled.
-export const paginationStep = "cursor-pointer";
+// Icon-only on a phone, where they grow to a full touch target.
+export const paginationStep = "cursor-pointer max-md:min-h-touch max-md:min-w-touch";
 
 export const paginationStepDisabled =
   "pointer-events-none opacity-50";

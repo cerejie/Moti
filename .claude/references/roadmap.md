@@ -15,7 +15,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 5: Smart Analyzer
 - [x] Phase 6: Shops, users and settings
 - [x] Phase 7: PWA hardening
-- [ ] Phase 8: Tests and release
+- [x] Phase 8: Tests and release
 
 Kickoff line for a new conversation:
 
@@ -129,6 +129,14 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   in route order plus "More", a bottom sheet with the rest (`useTabBarMenu`, `TabBarMoreModal`). Owners and
   the superadmin get Home, Inventory, Movements, Dashboard + More; employees are unchanged. This closes
   the six/seven-tab items carried from Phases 5 and 6.
+- 2026-09-25 (Phase 8): pgTAP tests live in `supabase/tests/*.test.sql` (tenant isolation, role access,
+  stock ledger). Each file builds its own shops and users with `7e570000-…` ids, acts as a user through
+  `tests.act_as(uuid)` and rolls back. They run locally with `supabase test db`, never against production.
+- 2026-09-25 (Phase 8): hosting is Vercel (`vercel.json`: SPA rewrite, uncached `sw.js`/`index.html`/manifest,
+  immutable `/assets/`, nosniff/referrer/no-framing headers). The production steps are in
+  `.claude/references/release.md`; public sign-ups are turned off in the Supabase dashboard.
+- 2026-09-25 (Phase 8): the Inventory list now uses the shared page size (8), which closes the pager bug
+  carried from Phase 3. Topbar icon buttons, pager steps and the Rows picker are 44 px on phones.
 
 ## What changed from the discovery plan
 

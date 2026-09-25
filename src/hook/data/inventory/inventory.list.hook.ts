@@ -17,13 +17,11 @@ import { useActiveShop } from "../shop/shop.list.hook";
 type IToolbarFilters = { category_id?: string };
 type IStatusFilters = { tab?: InventoryTab };
 
-export const inventoryPageSize = 10;
-
 export const itemPath = (id: string) => ROUTES.inventoryItem.replace(":itemId", id);
 
 export const useInventoryTab = () => {
   const { filters, setFilters } = useFilters<IStatusFilters>(inventoryStatusKey);
-  const { setPagination } = usePagination(inventoryTableKey, { pageSize: inventoryPageSize });
+  const { setPagination } = usePagination(inventoryTableKey);
 
   return {
     tab: filters.tab ?? "all",
@@ -35,9 +33,7 @@ export const useInventoryTab = () => {
 };
 
 export const useInventorySort = () => {
-  const { pagination, setPagination } = usePagination(inventoryTableKey, {
-    pageSize: inventoryPageSize,
-  });
+  const { pagination, setPagination } = usePagination(inventoryTableKey);
 
   return {
     sort: (pagination.sort ?? "name") as InventorySort,
@@ -50,9 +46,7 @@ export const useInventorySort = () => {
 export const useInventoryList = () => {
   const { shopId } = useActiveShop();
   const { canManage, openItem } = useInventoryNavigation();
-  const { pagination, setPagination } = usePagination(inventoryTableKey, {
-    pageSize: inventoryPageSize,
-  });
+  const { pagination, setPagination } = usePagination(inventoryTableKey);
   const search = useDebouncedSearch(inventoryTableKey, inventoryTableKey);
   const { filters } = useFilters<IToolbarFilters>(inventoryTableKey);
   const { tab } = useInventoryTab();

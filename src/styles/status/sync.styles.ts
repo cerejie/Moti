@@ -1,7 +1,7 @@
 // Topbar sync indicator and the Sync issues sheet.
 
-// The count pill rides the icon button's corner.
-export const syncButton = "relative [&_svg:not([class*='size-'])]:size-6";
+// The count pill rides the icon button's corner. A full touch target on a phone, like the topbar's.
+export const syncButton = "relative max-md:size-touch [&_svg:not([class*='size-'])]:size-6";
 
 export const syncCount =
   "absolute -top-0.5 -right-0.5 flex min-w-5 items-center justify-center rounded-pill bg-primary px-1 text-xs font-semibold tabular-nums text-primary-foreground";
