@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import AppShell from "../components/common/layout/AppShell";
 import SyncIssuesModal from "../components/common/modal/SyncIssuesModal";
+import TabBarMoreModal from "../components/common/modal/TabBarMoreModal";
 import ErrorBoundary from "../components/common/status/ErrorBoundary";
 import StockAlertsModal from "../components/dashboard/modal/StockAlertsModal";
 import { useNetwork } from "../hook/common/network.hook";
@@ -22,6 +23,7 @@ const AppLayout = () => {
         <Outlet />
       </ErrorBoundary>
       <SyncIssuesModal />
+      <TabBarMoreModal />
       <StockAlertsModal />
     </AppShell>
   );

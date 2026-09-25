@@ -7,3 +7,4 @@ export const stockAlertsModalKey = "stock-alerts";
 export const shopFormModalKey = "shop-form";
 export const userFormModalKey = "user-form";
 export const temporaryPasswordModalKey = "temporary-password";
+export const tabBarMoreModalKey = "tab-bar-more";

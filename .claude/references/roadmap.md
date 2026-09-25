@@ -125,6 +125,10 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   With queued writes, sign-out asks first; the writes stay queued for that user's next sign-in.
 - 2026-09-25 (Phase 7): the update prompt waits while the queue is flushing; the service worker checks
   for a new version hourly while online. `meta[name=theme-color]` follows the theme (the topbar surface).
+- 2026-09-25 (Phase 7): the phone tab bar holds at most five entries. With more, it shows the first four
+  in route order plus "More", a bottom sheet with the rest (`useTabBarMenu`, `TabBarMoreModal`). Owners and
+  the superadmin get Home, Inventory, Movements, Dashboard + More; employees are unchanged. This closes
+  the six/seven-tab items carried from Phases 5 and 6.
 
 ## What changed from the discovery plan
 

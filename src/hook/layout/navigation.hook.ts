@@ -41,6 +41,26 @@ export const useNavigationMenu = () => {
     }));
 };
 
+// More than this and the phone bar keeps the first four and moves the rest behind "More".
+const tabBarLimit = 5;
+
+export const useTabBarMenu = () => {
+  const menu = useNavigationMenu();
+
+  if (menu.length <= tabBarLimit) return { tabs: menu, more: null };
+
+  const overflow = menu.slice(tabBarLimit - 1);
+
+  return {
+    tabs: menu.slice(0, tabBarLimit - 1),
+    more: {
+      items: overflow,
+      active: overflow.some((item) => item.active),
+      badge: overflow.find((item) => item.badge)?.badge ?? null,
+    },
+  };
+};
+
 // False when the page at the current URL needs a permission the user lacks,
 // e.g. an employee typing an owner-only address.
 export const useRouteAllowed = () => {
