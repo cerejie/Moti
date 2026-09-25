@@ -26,8 +26,9 @@ const authServices = {
     if (error) throw toError(error);
   },
 
-  signOut: async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
+  // "local" clears only this device's session, for when the server can't be reached.
+  signOut: async (scope: "global" | "local" = "global"): Promise<void> => {
+    const { error } = await supabase.auth.signOut({ scope });
     if (error) throw toError(error);
   },
 

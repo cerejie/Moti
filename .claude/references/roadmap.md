@@ -14,7 +14,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 4: Dashboard and alerts
 - [x] Phase 5: Smart Analyzer
 - [x] Phase 6: Shops, users and settings
-- [ ] Phase 7: PWA hardening
+- [x] Phase 7: PWA hardening
 - [ ] Phase 8: Tests and release
 
 Kickoff line for a new conversation:
@@ -115,6 +115,16 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   answer with data. `IFieldConfig.searchable` passes type-to-filter through to the select.
   `pages/Placeholder/ComingSoonView.tsx` is no longer routed but is kept.
 - Carried to Phase 7: the superadmin's phone tab bar now has seven tabs (Users added).
+- 2026-09-25 (Phase 7): final app mark from `src/assets/moti reference.png`: white M with a red motion
+  slash on the #171717 tile, drawn as `public/favicon.svg`. Every icon in `public/` is generated from it
+  with `yarn generate-pwa-assets` (`pwa-assets.config.ts`, dev dependency `@vite-pwa/assets-generator`).
+  The red lives only in the icon art; the UI keeps the neutral palette.
+- 2026-09-25 (Phase 7): install is offered by a dismissible banner in the shell (dismissal persisted
+  per device) and always by the Install app card in Settings; iOS gets Share → Add to Home Screen steps.
+- 2026-09-25 (Phase 7): signing out offline clears the session on this device only (`scope: "local"`).
+  With queued writes, sign-out asks first; the writes stay queued for that user's next sign-in.
+- 2026-09-25 (Phase 7): the update prompt waits while the queue is flushing; the service worker checks
+  for a new version hourly while online. `meta[name=theme-color]` follows the theme (the topbar surface).
 
 ## What changed from the discovery plan
 

@@ -32,7 +32,7 @@ import AppAvatar from "../view/AppAvatar";
 const SidebarUserMenu = () => {
   const { data: me } = useMe();
   const email = useAuthStore(selectEmail);
-  const signOut = useSignOut();
+  const { signOut, isPending } = useSignOut();
 
   const name = me?.full_name ?? email ?? "Account";
   const meta = me
@@ -61,8 +61,8 @@ const SidebarUserMenu = () => {
               <DropdownMenuItem
                 id="sign-out"
                 textValue="Sign out"
-                isDisabled={signOut.isPending}
-                onAction={() => signOut.mutate()}
+                isDisabled={isPending}
+                onAction={signOut}
               >
                 <LogOut />
                 Sign out

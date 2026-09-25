@@ -30,7 +30,7 @@ const describeBlock = (profile: IProfile | null) => {
 };
 
 const AccessBlocked = ({ profile }: IProps) => {
-  const signOut = useSignOut();
+  const { signOut, isPending } = useSignOut();
   const { title, message } = describeBlock(profile);
 
   return (
@@ -40,8 +40,8 @@ const AccessBlocked = ({ profile }: IProps) => {
       action={
         <AppButton
           variant="outline"
-          loading={signOut.isPending}
-          onPress={() => signOut.mutate()}
+          loading={isPending}
+          onPress={signOut}
         >
           Sign out
         </AppButton>

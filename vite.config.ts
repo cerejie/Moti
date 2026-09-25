@@ -18,6 +18,7 @@ export default defineConfig({
         short_name: 'Moti',
         description: 'Inventory for motorcycle parts shops: stock on hand, sales and reorder alerts.',
         id: '/',
+        lang: 'en',
         start_url: '/',
         scope: '/',
         display: 'standalone',
@@ -27,7 +28,9 @@ export default defineConfig({
         theme_color: '#171717',
         background_color: '#ffffff',
         categories: ['business', 'productivity'],
+        // Generated from public/favicon.svg by pwa-assets.config.ts.
         icons: [
+          { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png', purpose: 'any' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
           {
