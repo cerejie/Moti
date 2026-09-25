@@ -16,6 +16,9 @@ plus the kickoff line for the next phase.
 - [x] Phase 6: Shops, users and settings
 - [x] Phase 7: PWA hardening
 - [x] Phase 8: Tests and release
+- [x] Step 1: Save the V1.1 flow change (Transaction, Masterfile, item codes, navigation)
+- [ ] Phase 9: Masterfile, item codes and Settings hub
+- [ ] Phase 10: Transaction ordering and final navigation
 
 Kickoff line for a new conversation:
 
@@ -143,6 +146,9 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   the last 7 days. A replayed client id must match its item, and a replayed item or category id must be
   in the caller's shop. Measured at 20k items / 300k movements per shop: every query under 300 ms, no
   index change needed. Carried: route-level code splitting (one 1.44 MB bundle, 420 KB gzip).
+- 2026-09-25 (Step 1): V1.1 flow change agreed: order-based Transaction tab, Masterfile in
+  Settings, category item-code prefixes with auto numbers, SKU renamed to item code, Home removed.
+  Details in "V1.1 flow change" and Phases 9–10.
 - 2026-09-25 (code splitting): every page but Home and Sign-in is its own chunk (`lazyPage` in
   `route.utils.ts`, `React.lazy`, not React Router's `lazy`, which holds the old page until the chunk
   arrives). AppLayout's Suspense sits inside the pathname-keyed ErrorBoundary, so a tap switches the
@@ -152,6 +158,77 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   Page/Card/Table/List/Stats skeletons, and the Analyzer no longer blocks on the shop timezone. First
   load 1.25 MB / 370 KB gzip, from 1.44 MB / 420 KB; the rest is vendor code the shell needs.
   Data prefetch on tap is left out: list keys depend on filter and pagination stores.
+
+## V1.1 flow change (agreed 2026-09-25)
+
+Everything in this section overrides the V1 tables below where they disagree. The V1 sections
+stay as the record of what Phases 0–8 built.
+
+**Selling moves to orders.** A new **Transaction** tab works like an ordering screen, with no
+payments or revenue: products on the left (search, category filter), a cart on the right, and
+the total amount shown. Confirming an order deducts every line as a sale in one all-or-nothing
+write and saves the order with a per-shop order number. The one-item **Record sale** action is
+removed; every sale belongs to an order.
+
+**Decisions:**
+- Confirm = deduct stock as `stock_out / sale` per line **and** save the order (lines, unit-price
+  snapshot, displayed total). No payment, change or revenue tracking.
+- Transaction is for every role. Employees see their own orders; owners and the superadmin see
+  every order in the shop.
+- The owner can **void** an order with a reason: each line's stock comes back as
+  `stock_in / order_void`, the order stays visible as Voided, and the Analyzer's quantity sold
+  subtracts voided lines.
+- **SKU is renamed to Item code** everywhere: UI, models, services, the `inventory_items.sku`
+  column, views, RPCs, seed and tests. Existing codes are kept as they are.
+- **Categories carry the item code.** The owner sets a prefix per category (e.g. `BRK`); a new
+  item gets `BRK-0001`, `BRK-0002`… from the server, which locks the category row for the next
+  number. Nobody types an item code. An item created offline shows "Code assigned on sync".
+  Existing categories get a prefix backfilled from their name, editable by the owner.
+- **Category is required** on new items. The item form's category dropdown ends with
+  "+ Add category", which opens the Masterfile category form on top of the item form, keeps what
+  was typed, and auto-selects the new category when saved.
+- **Masterfile** (owner and superadmin) holds **Categories** (with item-code prefix), **Units** and
+  **Storage locations**. Units and locations become per-shop tables that items pick from; the
+  existing free-text values are converted into entries. Brand and fitment stay free text.
+- **Navigation.** Home is removed.
+
+| Role | Tabs (in order) | Opens on |
+|---|---|---|
+| Owner, superadmin | Dashboard, Transaction, Analyzer, Inventory, Settings | Dashboard |
+| Employee | Transaction, Inventory, Settings | Transaction |
+
+- **Inventory** gets two tabs: Items and Movements (the owner-only history moves here; the
+  per-item history stays on the item page).
+- **Settings** is the hub: Account, Install app, Shop settings, Masterfile, Users, Shops
+  (superadmin). Employees see Account and Install app only. The password reminder that lived on
+  Home moves to Settings and a shell banner.
+- Five tabs fit the phone bar, so "More" is no longer used by any role.
+
+**V1.1 role changes:**
+
+| Capability | Superadmin | Owner | Employee |
+|---|:-:|:-:|:-:|
+| Take an order (Transaction) | ✓ | ✓ | ✓ |
+| See orders | all shops | own shop | own orders |
+| Void an order | ✓ | ✓ | ✗ |
+| Masterfile: categories, units, locations | ✓ | ✓ | ✗ |
+| Record a one-item sale | removed | removed | removed |
+
+**V1.1 data model additions:**
+
+| Table / change | Purpose |
+|---|---|
+| `inventory_items.sku` → `item_code` | Rename; unique per shop as before |
+| `categories.code`, `categories.next_number` | Item-code prefix and its counter |
+| `units`, `storage_locations` | Per-shop masterfile lists; items reference them by id |
+| `orders` | Per shop: order_no, status `confirmed` / `voided`, total_amount (as displayed), created_by, occurred_at, client_id, voided_by / voided_at / void_reason |
+| `order_lines` | order_id, item_id, quantity, unit_price snapshot, line_amount, movement_id |
+| reason `order_void` | New `stock_in` reason written only by `void_order` |
+
+RPCs: `create_order(p_client_id, p_lines, p_occurred_at)` locks items in a fixed order and runs
+each line through `app.apply_stock_movement`; `void_order(p_order_id, p_reason)` is owner-only.
+A whole order is **one** queued offline write, idempotent by `client_id`; the order number is
+assigned when it syncs.
 
 ## What changed from the discovery plan
 
@@ -375,6 +452,67 @@ Update: Tenant Isolation Tests And Release Hardening
 
 - Added SQL tests for tenant isolation, role access and stock ledger rules
 - Fixed accessibility and mobile layout issues found in the release pass
+```
+
+### Step 1: Save the V1.1 flow change
+**Delivers:** the "V1.1 flow change" section above and Phases 9–10 below. Docs only.
+```
+Update: Roadmap For Transaction, Masterfile And Item Codes
+
+- Added V1.1 flow: order-based selling, masterfile, category item codes and new navigation
+```
+
+### Phase 9: Masterfile, item codes and Settings hub
+**Delivers:**
+- Migration: rename `sku` to `item_code` (column, views, RPCs, seed, tests); `categories.code` +
+  `next_number` with a backfill; `units` and `storage_locations` tables with RLS, converting the
+  existing text values and linking items to them; server-generated item codes in `create_item`;
+  category required on new items.
+- Masterfile screen with Categories, Units and Locations tabs (list, add, edit, delete blocked
+  while in use). Category management leaves the Inventory screen.
+- Item form: required category with "+ Add category" (stacked category form, returns with the new
+  category selected), unit and location pick lists, item code read-only.
+- "SKU" becomes "Item code" in every table, filter, search and form.
+- Settings becomes the hub (Account, Install app, Shop settings, Masterfile, Users, Shops); Users
+  and Shops move under it. Inventory gets Items and Movements tabs.
+- pgTAP: item-code numbering (no duplicates under concurrency), masterfile tenant isolation and roles.
+
+**Done when:** a new item gets its code from its category, no screen says SKU, and units and
+locations are picked, not typed.
+```
+Feature: Masterfile, Category Item Codes And Settings Hub
+
+- Renamed SKU to item code and generated codes from the category prefix
+- Added masterfile for categories, units and storage locations
+- Added add-category shortcut in the item form with auto-select
+- Moved users, shops and masterfile into Settings and movements into Inventory
+```
+
+### Phase 10: Transaction ordering and final navigation
+**Delivers:**
+- Migration: `orders`, `order_lines`, reason `order_void`, `create_order` and `void_order` RPCs;
+  the Analyzer's quantity sold subtracts voided lines.
+- Transaction screen, New order tab: product panel (search, category chips, on-hand, price,
+  out-of-stock disabled) and a cart (steppers capped at on-hand, remove, total amount, Confirm).
+  On phones the products fill the screen and a sticky cart bar opens the cart as a bottom sheet.
+  The cart lives in a persisted store so a reload keeps it.
+- Orders tab: employees see their own orders, owners all, with order detail and owner void.
+- One queued offline write per order; the success view shows the order number, or "Saved offline"
+  when queued.
+- The one-item Record sale action is removed.
+- Final navigation: Home removed; tabs and landing pages per the V1.1 table; "More" retired.
+- pgTAP: all-or-nothing orders, one sync per client_id, void returns stock, employee cannot void,
+  tenant isolation.
+
+**Done when:** an employee builds a multi-item order and confirms it in one step, stock and the
+ledger match, and a voided order no longer counts as sold.
+```
+Feature: Transaction Ordering With Order History And Voids
+
+- Added order-based selling with product panel, cart and total amount
+- Added orders and order lines with all-or-nothing stock deduction
+- Added order history with owner void that returns stock
+- Removed Home and single-item sale, and set tabs and landing page per role
 ```
 
 **LATER (out of V1 on purpose):** suppliers, cost/value/revenue, purchase orders, fast/slow classes, days of cover, suggested quantities, trends, a persisted notification feed with read/unread, CSV import/export, barcode scanning, SaaS billing and subscriptions, push notifications.
