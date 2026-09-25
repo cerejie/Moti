@@ -1,85 +1,85 @@
 # Graph Report - Moti  (2026-09-25)
 
 ## Corpus Check
-- 384 files · ~192,070 words
+- 411 files · ~201,765 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: (none) 2, .example 1, .ico 1)
 
 ## Summary
-- 2222 nodes · 6226 edges · 114 communities (110 shown, 4 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 393 edges (avg confidence: 0.94)
+- 2378 nodes · 6803 edges · 122 communities (118 shown, 4 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 392 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3b1dd6fc`
+- Built from commit: `75a0a13a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- FormField.tsx
-- user.form.hook.ts
-- cn
-- Component Structure → [composition.md](./rules/composition.md)
-- PageSkeleton.tsx
-- RankingPanel.tsx
-- inventory.list.hook.ts
-- Separator
-- Component Selection
 - react
-- masterfile.form.hook.ts
+- UserTable.tsx
+- cn
+- dropdown-menu.tsx
+- ContentView.tsx
+- RankingPanel.tsx
 - inventory.form.hook.ts
+- Separator
 - Button
-- shop.list.hook.ts
+- cn.utils.ts
+- masterfile.form.hook.ts
+- category.form.hook.ts
+- select.tsx
+- shop.form.hook.ts
 - ShopSettingsCard.tsx
 - Composition: asChild (radix) vs render (base)
 - InventoryTable.tsx
-- InventoryItemView.tsx
+- transaction.styles.ts
 - dashboard.list.hook.ts
 - movement.form.hook.ts
 - VolumeRankingTable.tsx
 - AppSidebar.tsx
 - lucide-react
 - TabBar.tsx
-- runWrite
+- user.services.ts
 - App.tsx
 - DataTable.tsx
-- StockAlertTable.tsx
+- StockSummaryCards.tsx
 - MovementTable.tsx
 - analyzer.list.hook.ts
 - package.json
-- react-router-dom
-- ContentView.tsx
-- table.keys.ts
+- navigation.hook.ts
+- EntityFormModal.tsx
+- shop.list.hook.ts
 - field.tsx
 - Roadmap
 - AppModal.tsx
 - SegmentTabs.tsx
 - movement.list.hook.ts
-- usePagination
+- pagination.hook.ts
 - dependencies
 - FilterToolbar.tsx
 - reset.store.ts
-- AppAlert.tsx
+- TransactionDetailModal.tsx
 - compilerOptions
 - auth.session.hook.ts
 - AppButton.tsx
-- category.form.hook.ts
-- SignInForm.tsx
-- route.guard.tsx
+- user.form.hook.ts
+- AccountCard.tsx
+- AccessBlocked.tsx
 - Topbar.tsx
 - MasterfileList.tsx
 - components.json
 - devDependencies
-- DetailModal.tsx
+- ItemDetailPanel.tsx
 - manage-staff/index.ts
 - ShopTable.tsx
-- navigation.hook.ts
+- CartPanel.tsx
 - compilerOptions
-- pwa.store.ts
-- useAppMutation
-- AppLayout.tsx
+- sync.store.ts
+- Project map — domain to path
+- AppShell.tsx
 - useModal
-- CLAUDE.md — Moti
+- EntityFormModal
 - SyncIssuesModal.tsx
 - SectionCard.tsx
 - ConfirmationModal.tsx
@@ -90,14 +90,14 @@
 - Commands
 - Tools
 - Styling & Customization
-- FormSection.tsx
+- pwa.hook.ts
 - confirmation.hook.ts
-- sync.store.ts
+- transaction.form.hook.ts
 - Token Efficiency
-- AppShell.tsx
+- Popover
 - TablePagination.tsx
 - InfoHint.tsx
-- auth.styles.ts
+- SignInForm.tsx
 - 3. The primitives — reuse before building
 - eslint.config.js
 - StatCard.tsx
@@ -109,258 +109,266 @@
 - shadcn/ui
 - Architecture Navigation
 - Componentization
-- PWA Conventions
+- Component Structure → [composition.md](./rules/composition.md)
 - format.utils.ts
 - vercel.json
 - Moti release checklist
 - Naming & Pathing Conventions
-- SegmentedControl.tsx
+- class-variance-authority
 - SuccessModal.tsx
 - Graphify Workflow
 - scripts
-- StatusBadge.tsx
+- DateRangeFilter.tsx
 - shadcn CLI Reference
 - Customizing Components
 - Icons
 - shadcn CLI Reference
-- Customizing Components
+- ViewTabs.tsx
 - Icons
 - tsconfig.json
 - vite-env.d.ts
 - pwa-assets.config.ts
+- TransactionTable.tsx
+- TemporaryPasswordModal.tsx
+- Component Composition
+- avatar.tsx
+- useAppMutation
+- Chat & Messaging
+- Component Composition
+- permission.model.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 284 edges
-2. `react` - 92 edges
-3. `lucide-react` - 71 edges
-4. `useActiveShop()` - 48 edges
-5. `useModal()` - 38 edges
-6. `AppButton()` - 32 edges
-7. `Button()` - 31 edges
-8. `usePermissions()` - 31 edges
-9. `scopedKey()` - 31 edges
-10. `class-variance-authority` - 28 edges
+1. `cn()` - 282 edges
+2. `react` - 94 edges
+3. `lucide-react` - 79 edges
+4. `useActiveShop()` - 54 edges
+5. `useModal()` - 41 edges
+6. `AppButton()` - 39 edges
+7. `usePermissions()` - 37 edges
+8. `scopedKey()` - 35 edges
+9. `useFilters()` - 32 edges
+10. `Button()` - 31 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Forms` --references--> `EntityFormModal()`  [INFERRED]
-  CLAUDE.md → src/components/common/form/EntityFormModal.tsx
+- `Message surfaces use Bubble` --references--> `Badge()`  [INFERRED]
+  .claude/skills/shadcn/rules/chat.md → src/components/ui/badge.tsx
 - `Icons → [icons.md](./rules/icons.md)` --references--> `Button()`  [INFERRED]
   .agents/skills/shadcn/SKILL.md → src/components/ui/button.tsx
 - `Icons → [icons.md](./rules/icons.md)` --references--> `Button()`  [INFERRED]
   .claude/skills/shadcn/SKILL.md → src/components/ui/button.tsx
-- `Scrollable threads use MessageScroller` --references--> `ScrollArea()`  [INFERRED]
-  .agents/skills/shadcn/rules/chat.md → src/components/ui/scroll-area.tsx
-- `Scrollable threads use MessageScroller` --references--> `ScrollArea()`  [INFERRED]
-  .claude/skills/shadcn/rules/chat.md → src/components/ui/scroll-area.tsx
+- `Attachments use Attachment` --references--> `Item()`  [INFERRED]
+  .claude/skills/shadcn/rules/chat.md → src/components/ui/item.tsx
+- `System notes and dividers use Marker` --references--> `Separator()`  [INFERRED]
+  .agents/skills/shadcn/rules/chat.md → src/components/ui/separator.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (114 total, 4 thin omitted)
+## Communities (122 total, 4 thin omitted)
 
-### Community 0 - "FormField.tsx"
-Cohesion: 0.06
-Nodes (58): 7. Forms, EntityFormModal(), IProps, asChecked(), asList(), asText(), FormField(), IProps (+50 more)
+### Community 0 - "react"
+Cohesion: 0.08
+Nodes (41): react, react-aria-components, IProps, IProps, PasswordInput(), IProps, SearchInput(), IProps (+33 more)
 
-### Community 1 - "user.form.hook.ts"
-Cohesion: 0.07
-Nodes (53): IFilterControl, ShopSwitcher(), TemporaryPasswordModal(), UserFormModal(), UserActions(), statusOptions, UsersPanel(), column (+45 more)
+### Community 1 - "UserTable.tsx"
+Cohesion: 0.17
+Nodes (18): statusOptions, column, IProps, StaffRole, userRoleLabels, UserStatus, userStatusLabels, userStatusOf() (+10 more)
 
 ### Community 2 - "cn"
-Cohesion: 0.06
-Nodes (58): AlertDialogAction(), AlertDialogCancel(), AlertDialogDescription(), AlertDialogFooter(), AlertDialogHeader(), AlertDialogMedia(), AlertDialogOverlay(), AlertDialogTitle() (+50 more)
-
-### Community 3 - "Component Structure → [composition.md](./rules/composition.md)"
 Cohesion: 0.07
-Nodes (54): Avatar always needs AvatarFallback, Button has no isPending or isLoading prop, Callouts use Alert, Card structure, Component Composition, Contents, Dialog, Sheet, and Drawer always need a Title, Empty states use Empty component (+46 more)
+Nodes (45): DialogDescription(), DialogFooter(), DialogHeader(), DialogOverlay(), PaginationContent(), PaginationEllipsis(), PaginationItem(), PaginationLink() (+37 more)
 
-### Community 4 - "PageSkeleton.tsx"
-Cohesion: 0.08
-Nodes (37): CardSkeleton(), IProps, IProps, ListSkeleton(), IProps, LoadingBar(), bodies, IProps (+29 more)
+### Community 3 - "dropdown-menu.tsx"
+Cohesion: 0.21
+Nodes (16): Items always inside their Group component, Workflow, Items always inside their Group component, Workflow, DropdownMenuGroup(), DropdownMenuItem(), dropdownMenuItemVariants, DropdownMenuLabel() (+8 more)
+
+### Community 4 - "ContentView.tsx"
+Cohesion: 0.06
+Nodes (48): CardSkeleton(), IProps, IProps, ListSkeleton(), IProps, bodies, IProps, PageSkeleton() (+40 more)
 
 ### Community 5 - "RankingPanel.tsx"
-Cohesion: 0.08
-Nodes (38): AnalyzerSummaryCards(), formulaHint(), AnalyzerPanel(), AnalyzerToolbar(), metricOptions, periodOptions, RankingPanel(), directionOptions (+30 more)
+Cohesion: 0.10
+Nodes (35): AnalyzerSummaryCards(), formulaHint(), AnalyzerToolbar(), metricOptions, periodOptions, RankingPanel(), directionOptions, RankingToolbar() (+27 more)
 
-### Community 6 - "inventory.list.hook.ts"
+### Community 6 - "inventory.form.hook.ts"
 Cohesion: 0.09
-Nodes (33): InventoryPanel(), InventorySections(), InventoryToolbar(), IProps, sortOptions, statusTabs, InventorySection, inventorySectionLabels (+25 more)
+Nodes (32): ItemFormModal(), InventoryActions(), InventorySections(), InventorySection, inventorySectionLabels, InventorySort, InventoryTab, affectedKeys (+24 more)
 
 ### Community 7 - "Separator"
-Cohesion: 0.06
-Nodes (40): Attachments use Attachment, Chat & Messaging, Contents, Escape hatch: the scroller hooks, Message rows use Message, Message surfaces use Bubble, Scrollable threads use MessageScroller, Streaming, anchoring, and jump-to-latest are built in (+32 more)
+Cohesion: 0.13
+Nodes (18): Chat & Messaging → [chat.md](./rules/chat.md), CLI, Critical Rules, Icons → [icons.md](./rules/icons.md), Styling & Tailwind → [styling.md](./rules/styling.md), Use Components, Not Custom Markup → [composition.md](./rules/composition.md), Chat & Messaging → [chat.md](./rules/chat.md), CLI (+10 more)
 
-### Community 8 - "Component Selection"
-Cohesion: 0.12
-Nodes (38): Choosing between overlay components, Buttons inside inputs use InputGroup + InputGroupAddon, Contents, Field validation and disabled states, Forms & Inputs, Forms use FieldGroup + Field, InputGroup requires InputGroupInput/InputGroupTextarea, Option sets (2–7 choices) use ToggleGroup (+30 more)
+### Community 8 - "Button"
+Cohesion: 0.14
+Nodes (39): Buttons inside inputs use InputGroup + InputGroupAddon, Contents, Field validation and disabled states, FieldSet + FieldLegend for grouping related fields, Forms & Inputs, Forms use FieldGroup + Field, InputGroup requires InputGroupInput/InputGroupTextarea, Option sets (2–7 choices) use ToggleGroup (+31 more)
 
-### Community 9 - "react"
-Cohesion: 0.08
-Nodes (28): react, IProps, IProps, AppAvatar(), IProps, BentoCell(), IProps, BentoGrid() (+20 more)
+### Community 9 - "cn.utils.ts"
+Cohesion: 0.10
+Nodes (19): Scrollable threads use MessageScroller, Scrollable threads use MessageScroller, IProps, IProps, BentoCell(), IProps, BentoGrid(), IProps (+11 more)
 
 ### Community 10 - "masterfile.form.hook.ts"
+Cohesion: 0.08
+Nodes (37): zod, IProps, MasterfileFormModal(), placeholders, emptyStates, IProps, MasterfileEntryPanel(), MasterfileList() (+29 more)
+
+### Community 11 - "category.form.hook.ts"
+Cohesion: 0.09
+Nodes (32): BrandFormModal(), CategoryFormModal(), BrandListPanel(), CategoryListPanel(), affectedKeys, IBrandModal, ISaveBrand, useBrandFormModal() (+24 more)
+
+### Community 12 - "select.tsx"
+Cohesion: 0.13
+Nodes (16): Select — multiple selection and object values (base only), Select — multiple selection and object values (base only), buttonVariants, LinkButton(), Calendar(), CalendarInner(), cellVariants, RangeCalendar() (+8 more)
+
+### Community 13 - "shop.form.hook.ts"
 Cohesion: 0.11
-Nodes (29): IProps, MasterfileFormModal(), placeholders, emptyStates, IProps, MasterfileEntryPanel(), MasterfilePanel(), MasterfileKind (+21 more)
-
-### Community 11 - "inventory.form.hook.ts"
-Cohesion: 0.12
-Nodes (29): ref_hookform_resolvers_zod, InventoryActions(), BrandListPanel(), CategoryListPanel(), MasterfileList(), affectedKeys, IBrandModal, ISaveBrand (+21 more)
-
-### Community 12 - "Button"
-Cohesion: 0.10
-Nodes (26): class-variance-authority, @internationalized/date, react-aria-components, IProps, Button(), buttonVariants, LinkButton(), Calendar() (+18 more)
-
-### Community 13 - "shop.list.hook.ts"
-Cohesion: 0.12
-Nodes (26): ShopFormModal(), ShopActions(), ShopStatus, ISaveShop, settingsKeys, shopKeys, toSettingsRequest(), useShopForm() (+18 more)
+Nodes (24): ShopFormModal(), ShopActions(), ShopStatus, ISaveShop, settingsKeys, shopKeys, useShopForm(), useShopFormModal() (+16 more)
 
 ### Community 14 - "ShopSettingsCard.tsx"
-Cohesion: 0.12
-Nodes (24): FormFieldGrid(), IProps, FormRoot(), IProps, AccountCard(), fields, InstallAppCard(), ISettingsLink (+16 more)
+Cohesion: 0.16
+Nodes (17): InstallAppCard(), ISettingsLink, links, ShopSettingsCard(), toSettingsRequest(), useShopSettingsForm(), settingsActions, settingsForm (+9 more)
 
 ### Community 15 - "Composition: asChild (radix) vs render (base)"
-Cohesion: 0.09
-Nodes (28): Accordion, Base vs Radix, Button / trigger as non-button element (base only), Composition: asChild (radix) vs render (base), Contents, Select, Select — multiple selection and object values (base only), Slider (+20 more)
+Cohesion: 0.08
+Nodes (34): Accordion, Base vs Radix, Button / trigger as non-button element (base only), Composition: asChild (radix) vs render (base), Contents, Select, Slider, ToggleGroup (+26 more)
 
 ### Community 16 - "InventoryTable.tsx"
 Cohesion: 0.12
-Nodes (26): IProps, ItemSummaryCard(), column, InventoryTable(), IProps, metaLine(), IProps, StockActions() (+18 more)
+Nodes (25): IProps, StatusBadge(), IProps, ItemSummaryCard(), column, InventoryTable(), IProps, metaLine() (+17 more)
 
-### Community 17 - "InventoryItemView.tsx"
-Cohesion: 0.14
-Nodes (17): Masterfile: `category`, `brand`, `masterfile` (units + locations) (Phase 9), zod, BrandFormModal(), CategoryFormModal(), ItemFormModal(), StockMovementModal(), useBrandForm(), useCategoryForm() (+9 more)
+### Community 17 - "transaction.styles.ts"
+Cohesion: 0.07
+Nodes (44): CartBar(), IProps, IProps, IProps, IProps, cartBar, cartBarButton, cartBarCount (+36 more)
 
 ### Community 18 - "dashboard.list.hook.ts"
-Cohesion: 0.09
-Nodes (22): @supabase/supabase-js, alertsPreviewSize, useRecentMovements(), useStockSummary(), brandFormModalKey, categoryFormModalKey, itemFormModalKey, masterfileFormModalKey (+14 more)
+Cohesion: 0.12
+Nodes (22): RecentMovementsCard(), useDisclosure(), settledSearchKey(), useSearch(), alertsPreviewSize, useOpenStockStatus(), useRecentMovements(), itemPath() (+14 more)
 
 ### Community 19 - "movement.form.hook.ts"
 Cohesion: 0.13
-Nodes (22): movementModeReasons, movementModeTitles, movementModeTypes, MovementReason, movementReasonLabels, MovementTab, MovementType, StockMovementMode (+14 more)
+Nodes (23): StockMovementModal(), movementModeReasons, movementModeTitles, movementModeTypes, MovementReason, movementReasonLabels, MovementTab, MovementType (+15 more)
 
 ### Community 20 - "VolumeRankingTable.tsx"
-Cohesion: 0.15
-Nodes (25): column, IProps, metaLine(), ReorderTable(), statusBadge(), column, countLabel(), IProps (+17 more)
+Cohesion: 0.10
+Nodes (33): column, IProps, metaLine(), ReorderTable(), statusBadge(), column, countLabel(), IProps (+25 more)
 
 ### Community 21 - "AppSidebar.tsx"
 Cohesion: 0.13
-Nodes (23): SidebarGroup(), SidebarGroupLabel(), SidebarMenu(), SidebarMenuBadge(), SidebarMenuItem(), sidebarBadgeLabel, sidebarBrandButton, sidebarBrandLogo (+15 more)
+Nodes (23): SidebarGroupContent(), SidebarHeader(), SidebarMenu(), SidebarMenuBadge(), SidebarMenuItem(), sidebarBadgeLabel, sidebarBrandButton, sidebarBrandLogo (+15 more)
 
 ### Community 22 - "lucide-react"
 Cohesion: 0.15
-Nodes (18): lucide-react, ref_virtual_pwa_register_react, InstallBanner(), IosInstallSteps(), OfflineBanner(), UpdatePrompt(), InstallBody(), useAppUpdate() (+10 more)
+Nodes (20): lucide-react, AppAlert(), defaultIcon, IProps, InstallBanner(), IosInstallSteps(), OfflineBanner(), BalancePreview() (+12 more)
 
 ### Community 23 - "TabBar.tsx"
-Cohesion: 0.15
-Nodes (22): AppSidebar(), IBadge, IProps, TabContent(), TabBarMoreModal(), tabBarMoreModalKey, toneChip, toneSolid (+14 more)
+Cohesion: 0.29
+Nodes (10): IBadge, IProps, tabbarBadge, tabbarBadgeLabel, tabbarIcon, tabbarItem, tabbarItemActive, tabbarLabel (+2 more)
 
-### Community 24 - "runWrite"
-Cohesion: 0.10
-Nodes (23): A. Understand, then plan, C. House rules, Codebase Engineering, D. Comments — short, and one line, E. Do not overengineer, F. Confirm before important changes, G. Validate, H. After a successful change — mandatory close-out (+15 more)
+### Community 24 - "user.services.ts"
+Cohesion: 0.06
+Nodes (34): A. Understand, then plan, C. House rules, Codebase Engineering, D. Comments — short, and one line, E. Do not overengineer, F. Confirm before important changes, G. Validate, H. After a successful change — mandatory close-out (+26 more)
 
 ### Community 25 - "App.tsx"
-Cohesion: 0.14
-Nodes (19): next-themes, ref_react_dom_client, sonner, @tanstack/react-query-devtools, App(), Topbar(), AppToaster(), Toaster() (+11 more)
+Cohesion: 0.16
+Nodes (17): next-themes, sonner, App(), Topbar(), AppToaster(), Toaster(), useInstallCapture(), useAuthSession() (+9 more)
 
 ### Community 26 - "DataTable.tsx"
-Cohesion: 0.14
-Nodes (22): @tanstack/react-table, dataTableFeatures, IDataTableColumn, IProps, dataTableCell, dataTableCellEnds, dataTableCellExpanded, dataTableGrid (+14 more)
+Cohesion: 0.12
+Nodes (24): @tanstack/react-table, dataTableColumns(), dataTableFeatures, IDataTableColumn, IProps, dataTableCell, dataTableCellEnds, dataTableCellExpanded (+16 more)
 
-### Community 27 - "StockAlertTable.tsx"
-Cohesion: 0.14
-Nodes (18): StockAlertsCard(), StockSummaryCards(), DashboardPanel(), column, IProps, metaLine(), StockAlertTable(), alertCell (+10 more)
+### Community 27 - "StockSummaryCards.tsx"
+Cohesion: 0.10
+Nodes (29): 5. Data views — four states, always, LoadingBar(), StateBox(), DataTable(), StockAlertsCard(), IStatusTile, statusTiles, StockSummaryCards() (+21 more)
 
 ### Community 28 - "MovementTable.tsx"
-Cohesion: 0.13
-Nodes (22): BalancePreview(), IProps, column, IProps, MovementTable(), quantityText(), reasonBadge(), movementReasonTones (+14 more)
+Cohesion: 0.12
+Nodes (24): IProps, IProps, column, IProps, MovementTable(), quantityText(), reasonBadge(), movementReasonTones (+16 more)
 
 ### Community 29 - "analyzer.list.hook.ts"
-Cohesion: 0.19
-Nodes (19): AnalyzerMetric, SortDirection, StockStatus, IToolbarFilters, IViewFilters, useAnalyzerPeriod(), usePeriodSummary(), useReorderItems() (+11 more)
+Cohesion: 0.24
+Nodes (15): AnalyzerMetric, SortDirection, StockStatus, IToolbarFilters, IViewFilters, useAnalyzerPeriod(), IDateRange, IPeriodRequest (+7 more)
 
 ### Community 30 - "package.json"
 Cohesion: 0.09
-Nodes (22): name, private, type, version, clsx, eslint, @hookform/resolvers, ref_node_url (+14 more)
+Nodes (23): name, private, type, version, clsx, eslint, @hookform/resolvers, ref_node_url (+15 more)
 
-### Community 31 - "react-router-dom"
+### Community 31 - "navigation.hook.ts"
+Cohesion: 0.09
+Nodes (34): react-router-dom, RouteRoot(), INavRoute, navigationRoutes, useActiveNavRoute(), useBackRoute(), useBreadcrumbTrail(), useHeaderBack() (+26 more)
+
+### Community 32 - "EntityFormModal.tsx"
 Cohesion: 0.12
-Nodes (17): react-router-dom, RouteRoot(), AuthLayout(), derivePermissions(), IPermissionKey, IHeaderBack, IRoute, PageSkeletonVariant (+9 more)
+Nodes (18): 7. Forms, react-hook-form, IProps, FormRoot(), IProps, FormSection(), IFieldConfig, IFieldSection (+10 more)
 
-### Community 32 - "ContentView.tsx"
+### Community 33 - "shop.list.hook.ts"
 Cohesion: 0.14
-Nodes (18): ContentView(), IBackLink, IProps, CardTone, ViewLayout, ViewSurface, ComingSoonView(), noteOf() (+10 more)
-
-### Community 33 - "table.keys.ts"
-Cohesion: 0.13
-Nodes (19): Decisions log, B. Nearest existing pattern — always copy, never invent, FilterToolbar(), TablePagination(), TablePanel(), InfoHint(), RecentMovementsCard(), ShopsPanel() (+11 more)
+Nodes (33): Decisions log, AnalyzerPanel(), InventoryToolbar(), pageSizes, ProductPanel(), useFilters(), usePagination(), useDebouncedSearch() (+25 more)
 
 ### Community 34 - "field.tsx"
-Cohesion: 0.16
-Nodes (18): FieldSet + FieldLegend for grouping related fields, Forms & Inputs → [forms.md](./rules/forms.md), FieldSet + FieldLegend for grouping related fields, Forms & Inputs → [forms.md](./rules/forms.md), IProps, Field(), FieldContent(), FieldDescription() (+10 more)
+Cohesion: 0.20
+Nodes (10): IProps, FieldContent(), FieldDescription(), FieldError(), FieldLabel(), FieldSeparator(), FieldTitle(), fieldVariants (+2 more)
 
 ### Community 35 - "Roadmap"
 Cohesion: 0.09
-Nodes (21): Data model (V1), Moti V1 roadmap: multi-tenant, inventory only, Phase 0: Foundation, Phase 10: Transaction ordering and final navigation, Phase 1: Multi-tenant auth and roles, Phase 2: Inventory catalog, Phase 3: Stock transactions, Phase 4: Dashboard and alerts (+13 more)
+Nodes (21): Data model (V1), Moti V1 roadmap: multi-tenant, inventory only, Phase 0: Foundation, Phase 10: Transaction selling and final navigation, Phase 1: Multi-tenant auth and roles, Phase 2: Inventory catalog, Phase 3: Stock transactions, Phase 4: Dashboard and alerts (+13 more)
 
 ### Community 36 - "AppModal.tsx"
-Cohesion: 0.15
-Nodes (20): 3. The shadcn boundary, TextInput(), AppModal(), IProps, drawerBody, drawerCloseBar, drawerContent, drawerFooter (+12 more)
+Cohesion: 0.20
+Nodes (16): AppModal(), IProps, drawerBody, drawerCloseBar, drawerContent, drawerFooter, drawerHeaderRuled, modalBody (+8 more)
 
 ### Community 37 - "SegmentTabs.tsx"
-Cohesion: 0.16
-Nodes (18): IProps, ISegmentTab, SegmentTabs(), IProps, IViewTab, IViewTabVariant, ViewTabs(), TabsContent() (+10 more)
+Cohesion: 0.22
+Nodes (15): TabsTrigger must be inside TabsList, TabsTrigger must be inside TabsList, IProps, ISegmentTab, SegmentTabs(), Tabs(), TabsContent(), TabsList() (+7 more)
 
 ### Community 38 - "movement.list.hook.ts"
-Cohesion: 0.16
-Nodes (18): IProps, ItemMovementsCard(), MovementsPanel(), MovementToolbar(), reasonOptions, tabs, movementTabLabels, IToolbarFilters (+10 more)
-
-### Community 39 - "usePagination"
 Cohesion: 0.17
-Nodes (16): usePagination(), settledSearchKey(), useDebouncedSearch(), useSearch(), useOpenStockStatus(), IPaginationFormValue, IPaginationRequest, IPaginationResponse (+8 more)
+Nodes (16): MovementsPanel(), MovementToolbar(), reasonOptions, tabs, movementTabLabels, IToolbarFilters, ITypeFilters, useMovementDateRange() (+8 more)
+
+### Community 39 - "pagination.hook.ts"
+Cohesion: 0.24
+Nodes (8): IPaginationFormValue, IPaginationRequest, Actions, defaultPagination, initialValues, selectPagination(), States, usePaginationStore
 
 ### Community 40 - "dependencies"
 Cohesion: 0.10
 Nodes (21): dependencies, class-variance-authority, clsx, @hookform/resolvers, @internationalized/date, lucide-react, next-themes, react (+13 more)
 
 ### Community 41 - "FilterToolbar.tsx"
-Cohesion: 0.17
-Nodes (16): IProps, useFilters(), hasActiveFilter(), IFilterValue, IFilterValues, Actions, emptyFilters, initialValues (+8 more)
+Cohesion: 0.10
+Nodes (24): FilterToolbar(), IFilterControl, IProps, IProps, sortOptions, statusTabs, inventorySortLabels, inventoryTabLabels (+16 more)
 
 ### Community 42 - "reset.store.ts"
-Cohesion: 0.14
-Nodes (16): PasswordInput(), useDisclosure(), rowExpansionPersistProps, useRowExpansion(), Actions, initialValues, selectCollapsingRow(), selectExpandedRow() (+8 more)
-
-### Community 43 - "AppAlert.tsx"
 Cohesion: 0.17
-Nodes (14): AppAlert(), defaultIcon, IProps, IProps, HomeWelcome(), PasswordReminder(), HomeView(), selectMustChangePassword() (+6 more)
+Nodes (14): E. Auth, storage, realtime, State, rowExpansionPersistProps, useRowExpansion(), clearSessionData(), Actions, initialValues, selectCollapsingRow() (+6 more)
+
+### Community 43 - "TransactionDetailModal.tsx"
+Cohesion: 0.13
+Nodes (18): TransactionLinesList(), summarySection, TransactionDetailModal(), voidSection, fields, VoidTransactionModal(), TransactionPanel(), TransactionSection (+10 more)
 
 ### Community 44 - "compilerOptions"
 Cohesion: 0.10
 Nodes (20): compilerOptions, allowArbitraryExtensions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection (+12 more)
 
 ### Community 45 - "auth.session.hook.ts"
-Cohesion: 0.22
-Nodes (16): zustand, useOwnQueue(), useSyncIssues(), useSyncStatus(), signOutAnywhere(), useLiveRefresh(), authMeKey, Actions (+8 more)
+Cohesion: 0.14
+Nodes (25): ref_react_dom_client, @tanstack/react-query, zustand, IOptions, queuedMessage, useNetwork(), useOwnQueue(), useSyncIssues() (+17 more)
 
 ### Community 46 - "AppButton.tsx"
-Cohesion: 0.18
-Nodes (14): 5. Data views — four states, always, AppButton(), IProps, SyncIssuesModal(), ErrorState(), StateBox(), IStatusTile, statusTiles (+6 more)
+Cohesion: 0.24
+Nodes (9): AppButton(), IProps, IProps, QuantityStepper(), buttonTone, IButtonTone, stepperButton, stepperRoot (+1 more)
 
-### Community 47 - "category.form.hook.ts"
+### Community 47 - "user.form.hook.ts"
+Cohesion: 0.16
+Nodes (18): TransactionHistoryPanel(), UserFormModal(), UserActions(), UsersPanel(), assignableRoles(), usePermissions(), useShopOptions(), useTransactionDetail() (+10 more)
+
+### Community 48 - "AccountCard.tsx"
 Cohesion: 0.15
-Nodes (13): react-hook-form, @tanstack/react-query, IOptions, queuedMessage, affectedKeys, emptyCategory, ICategoryModal, ISaveCategory (+5 more)
+Nodes (19): ref_hookform_resolvers_zod, SidebarUserMenu(), PasswordReminder(), AccountCard(), fields, emptyPassword, useChangePasswordForm(), changePasswordSchema (+11 more)
 
-### Community 48 - "SignInForm.tsx"
-Cohesion: 0.19
-Nodes (12): fields, SignInForm(), emptyPassword, useSignInForm(), changePasswordSchema, IChangePasswordRequest, ISignInRequest, signInSchema (+4 more)
-
-### Community 49 - "route.guard.tsx"
-Cohesion: 0.19
-Nodes (15): AccessBlocked(), describeBlock(), IProps, SidebarUserMenu(), useMe(), useSignOut(), ProtectedRoute(), PublicRoute() (+7 more)
+### Community 49 - "AccessBlocked.tsx"
+Cohesion: 0.31
+Nodes (7): AccessBlocked(), describeBlock(), IProps, useSignOut(), IAuthSession, IProfile, IProfileShop
 
 ### Community 50 - "Topbar.tsx"
-Cohesion: 0.19
-Nodes (16): StockAlertsButton(), SyncStatusButton(), StockAlertsModal(), alertTone(), useStockAlerts(), useStockAlertsModal(), topbarAction, topbarAlertsButton (+8 more)
+Cohesion: 0.18
+Nodes (18): AppSidebar(), ShopSwitcher(), StockAlertsButton(), TabContent(), selectActiveShopId(), useShopStore, toneSolid, topbarAction (+10 more)
 
 ### Community 51 - "MasterfileList.tsx"
 Cohesion: 0.18
@@ -374,61 +382,61 @@ Nodes (17): aliases, components, hooks, lib, ui, utils, iconLibrary, rsc (+9 mor
 Cohesion: 0.11
 Nodes (18): devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, shadcn, @tanstack/react-query-devtools (+10 more)
 
-### Community 54 - "DetailModal.tsx"
-Cohesion: 0.18
-Nodes (14): 6. Modals — one frame, never rebuilt, ConfirmationModal(), DetailModal(), IProps, SuccessModal(), IDetailItem, IDetailSection, ModalSize (+6 more)
+### Community 54 - "ItemDetailPanel.tsx"
+Cohesion: 0.19
+Nodes (14): IProps, detailRows(), ItemDetailPanel(), useInventoryItem(), detailLabel, detailValue, itemDetailStack, detailGrid (+6 more)
 
 ### Community 55 - "manage-staff/index.ts"
 Cohesion: 0.21
 Nodes (14): ref_npm_supabase_supabase_js_2, admin, assertCanManage(), corsHeaders, createStaff(), ICaller, internalError(), ITarget (+6 more)
 
 ### Community 56 - "ShopTable.tsx"
-Cohesion: 0.19
-Nodes (14): column, IProps, ShopTable(), staffLine(), shopStatusLabels, shopStatusOf(), shopStatusTones, shopCell (+6 more)
-
-### Community 57 - "navigation.hook.ts"
 Cohesion: 0.21
-Nodes (14): INavRoute, navigationRoutes, useActiveNavRoute(), useBackRoute(), useBreadcrumbTrail(), useHeaderBack(), useNavigationGroups(), useNavigationMenu() (+6 more)
+Nodes (13): column, IProps, ShopTable(), staffLine(), shopStatusLabels, shopStatusOf(), shopStatusTones, shopCell (+5 more)
+
+### Community 57 - "CartPanel.tsx"
+Cohesion: 0.23
+Nodes (14): CartLine(), CartTotal(), CartSheetModal(), CartContent(), CartPanel(), lineTotal(), useCart(), useCartSheet() (+6 more)
 
 ### Community 58 - "compilerOptions"
 Cohesion: 0.12
 Nodes (16): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, noEmit, noFallthroughCasesInSwitch (+8 more)
 
-### Community 59 - "pwa.store.ts"
-Cohesion: 0.16
-Nodes (12): ref_zustand_middleware, activeShopStorageKey, installDismissedStorageKey, syncStorageKey, themeStorageKey, IBeforeInstallPromptEvent, Actions, initialValues (+4 more)
+### Community 59 - "sync.store.ts"
+Cohesion: 0.12
+Nodes (21): ref_zustand_middleware, activeShopStorageKey, cartStorageKey, installDismissedStorageKey, syncStorageKey, themeStorageKey, DistributiveOmit, IQueuedWrite (+13 more)
 
-### Community 60 - "useAppMutation"
-Cohesion: 0.17
-Nodes (14): Fourth slice: `analyzer` (Phase 5), Infrastructure, Project map — domain to path, Reference module: `inventory`, Second slice: `movement` (Phase 3), Sibling references (read-only, outside this repo), Third slice: `dashboard` (Phase 4), UserTable() (+6 more)
-
-### Community 61 - "AppLayout.tsx"
+### Community 60 - "Project map — domain to path"
 Cohesion: 0.18
-Nodes (10): ErrorBoundary, IProps, IState, useNetwork(), useActivePage(), usePreloadPages(), useRouteAllowed(), useScrollReset() (+2 more)
+Nodes (10): Fourth slice: `analyzer` (Phase 5), Infrastructure, Masterfile: `category`, `brand`, `masterfile` (units + locations) (Phase 9), Project map — domain to path, Reference module: `inventory`, Second slice: `movement` (Phase 3), Sibling references (read-only, outside this repo), Third slice: `dashboard` (Phase 4) (+2 more)
+
+### Community 61 - "AppShell.tsx"
+Cohesion: 0.12
+Nodes (17): AppShell(), IProps, SyncIssuesModal(), ErrorBoundary, IProps, IState, SidebarInset(), SidebarProvider() (+9 more)
 
 ### Community 62 - "useModal"
-Cohesion: 0.23
-Nodes (11): useModal(), useModalActions(), ConfirmKind, IModalFormValue, IModalRequest, Actions, closedModal, initialValues (+3 more)
+Cohesion: 0.19
+Nodes (13): useModal(), useModalActions(), useBrandForm(), ConfirmKind, IConfirmRequest, IModalFormValue, IModalRequest, Actions (+5 more)
 
-### Community 63 - "CLAUDE.md — Moti"
-Cohesion: 0.14
-Nodes (13): CLAUDE.md — Moti, Code rules, Commands — yarn only, Completion checklist, Folder law — every file has exactly one home, Forms, Rules that hold everywhere, Skill router (+5 more)
+### Community 63 - "EntityFormModal"
+Cohesion: 0.18
+Nodes (10): CLAUDE.md — Moti, Code rules, Commands — yarn only, Completion checklist, Folder law — every file has exactly one home, Forms, Rules that hold everywhere, Skill router (+2 more)
 
 ### Community 64 - "SyncIssuesModal.tsx"
-Cohesion: 0.26
-Nodes (11): syncIssuesModalKey, syncButton, syncCount, syncCountFailed, syncError, syncIntro, syncLabel, syncList (+3 more)
+Cohesion: 0.24
+Nodes (12): SyncStatusButton(), syncIssuesModalKey, syncButton, syncCount, syncCountFailed, syncError, syncIntro, syncLabel (+4 more)
 
 ### Community 65 - "SectionCard.tsx"
 Cohesion: 0.27
 Nodes (11): IProps, SectionCard(), CardAction(), sectionCardActions, sectionCardBody, sectionCardFill, sectionCardFlush, sectionCardFooter (+3 more)
 
 ### Community 66 - "ConfirmationModal.tsx"
-Cohesion: 0.29
-Nodes (11): confirmBody, confirmClose, confirmCloseLabel, confirmDescription, confirmFooter, confirmItem, confirmLead, confirmLeadText (+3 more)
+Cohesion: 0.14
+Nodes (20): AlertDialogAction(), AlertDialogCancel(), AlertDialogDescription(), AlertDialogFooter(), AlertDialogHeader(), AlertDialogMedia(), AlertDialogOverlay(), AlertDialogTitle() (+12 more)
 
 ### Community 67 - "typography.styles.ts"
-Cohesion: 0.15
-Nodes (12): cardTitle, detailLabel, detailValue, fieldError, fieldHint, fieldLabel, link, money (+4 more)
+Cohesion: 0.13
+Nodes (16): IProps, cardTitle, fieldError, fieldHint, fieldLabel, link, money, numeric (+8 more)
 
 ### Community 68 - "Commands"
 Cohesion: 0.17
@@ -454,49 +462,49 @@ Nodes (11): Configuring Registries, Setup, `shadcn:get_add_command_for_items`, `
 Cohesion: 0.17
 Nodes (12): Built-in variants first, className for layout only, Contents, No manual dark: color overrides, No raw color values for status/state indicators, No space-x-* / space-y-*, Prefer size-* over w-* h-* when equal, Prefer truncate shorthand (+4 more)
 
-### Community 74 - "FormSection.tsx"
-Cohesion: 0.21
-Nodes (10): FormSection(), IProps, sectionTitle, formFieldFull, formFieldGrid, formFieldHalf, formSectionDescription, formSectionHeader (+2 more)
+### Community 74 - "pwa.hook.ts"
+Cohesion: 0.20
+Nodes (11): ref_virtual_pwa_register_react, UpdatePrompt(), useAppUpdate(), IBeforeInstallPromptEvent, Actions, initialValues, States, usePwaStore (+3 more)
 
 ### Community 75 - "confirmation.hook.ts"
-Cohesion: 0.29
-Nodes (10): useConfirmation(), IConfirmRequest, Actions, closedConfirm, initialValues, selectConfirm(), selectConfirmPhrase(), selectConfirmRunning() (+2 more)
+Cohesion: 0.33
+Nodes (9): useConfirmation(), Actions, closedConfirm, initialValues, selectConfirm(), selectConfirmPhrase(), selectConfirmRunning(), States (+1 more)
 
-### Community 76 - "sync.store.ts"
-Cohesion: 0.26
-Nodes (9): emptyMovement(), DistributiveOmit, IMutationResult, IQueuedWrite, IQueuedWriteInput, Actions, initialValues, States (+1 more)
+### Community 76 - "transaction.form.hook.ts"
+Cohesion: 0.11
+Nodes (25): TransactionSuccessModal(), TransactionStatus, TransactionStatusTab, affectedKeys, ICreateTransaction, ITransactionSuccess, IVoidTransaction, useTransactionSuccess() (+17 more)
 
 ### Community 77 - "Token Efficiency"
 Cohesion: 0.18
 Nodes (10): 1. Size it before you read it, 2. Read regions, not files, 3. Always exclude the noise, 4. Batch independent calls, 5. Validate at the narrowest scope, 6. Do not re-read what you already know, 7. Write once, in the right shape, 8. Answer at one altitude (+2 more)
 
-### Community 78 - "AppShell.tsx"
-Cohesion: 0.25
-Nodes (9): AppShell(), IProps, SidebarInset(), SidebarProvider(), appShellContent, appShellContentInner, appShellGutterBleed, appShellInset (+1 more)
+### Community 78 - "Popover"
+Cohesion: 0.26
+Nodes (13): Choosing between overlay components, No manual z-index on overlay components, Choosing between overlay components, No manual z-index on overlay components, AppTooltip(), IProps, AlertDialog(), Dialog() (+5 more)
 
 ### Community 79 - "TablePagination.tsx"
-Cohesion: 0.31
-Nodes (9): IProps, paginationControls, paginationRoot, paginationSizeGroup, paginationSizeLabel, paginationSizeTrigger, paginationStep, paginationStepDisabled (+1 more)
+Cohesion: 0.09
+Nodes (28): B. Nearest existing pattern — always copy, never invent, IProps, TablePagination(), IProps, TablePanel(), InventoryPanel(), IProps, ItemMovementsCard() (+20 more)
 
 ### Community 80 - "InfoHint.tsx"
 Cohesion: 0.31
 Nodes (9): IInfoHintItem, IProps, infoHintDialog, infoHintItem, infoHintList, infoHintPopover, infoHintTerm, infoHintText (+1 more)
 
-### Community 81 - "auth.styles.ts"
-Cohesion: 0.27
-Nodes (9): IProps, authBrand, authBrandLogo, authBrandName, authColumn, authForm, authHint, authScreen (+1 more)
+### Community 81 - "SignInForm.tsx"
+Cohesion: 0.16
+Nodes (15): fields, SignInForm(), FormFieldGrid(), IProps, useSignInForm(), IProps, authBrand, authBrandLogo (+7 more)
 
 ### Community 82 - "3. The primitives — reuse before building"
-Cohesion: 0.22
-Nodes (9): 1. The library — shadcn/ui on React Aria, nothing else, 2. Tokens and styling — non-negotiable, 3. The primitives — reuse before building, 4. Page shell, 8. Mobile-first — Moti is a PWA, 9. Verify, UI & Design Conventions, TextArea() (+1 more)
+Cohesion: 0.18
+Nodes (10): 1. The library — shadcn/ui on React Aria, nothing else, 2. Tokens and styling — non-negotiable, 3. The primitives — reuse before building, 4. Page shell, 8. Mobile-first — Moti is a PWA, 9. Verify, UI & Design Conventions, IProps (+2 more)
 
 ### Community 83 - "eslint.config.js"
 Cohesion: 0.20
 Nodes (9): GENERATED, RETIRED_BASE_PATTERNS, RETIRED_BASES, ref_eslint_config, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals (+1 more)
 
 ### Community 84 - "StatCard.tsx"
-Cohesion: 0.42
-Nodes (8): IProps, StatCard(), statCardIcon, statCardLabel, statCardRoot, statCardTrailing, statCardValue, statCardValueLoading
+Cohesion: 0.15
+Nodes (21): Attachments use Attachment, IProps, StatCard(), Item(), ItemActions(), ItemContent(), ItemDescription(), ItemFooter() (+13 more)
 
 ### Community 86 - "Customization & Theming"
 Cohesion: 0.22
@@ -511,8 +519,8 @@ Cohesion: 0.22
 Nodes (9): Component Docs, Examples, and Usage, Current Project Context, Detailed References, Key Fields, Key Patterns, Principles, Quick Reference, shadcn/ui (+1 more)
 
 ### Community 90 - "Customization & Theming"
-Cohesion: 0.22
-Nodes (9): Adding Custom Colors, Border Radius, Changing the Theme, Checking for Updates, Color Variables, Contents, Customization & Theming, Dark Mode (+1 more)
+Cohesion: 0.14
+Nodes (14): 1. Built-in variants, 2. Tailwind classes via `className`, 3. Add a new variant, 4. Wrapper components, Adding Custom Colors, Border Radius, Changing the Theme, Checking for Updates (+6 more)
 
 ### Community 91 - "Registry Authoring and Addresses"
 Cohesion: 0.22
@@ -527,16 +535,16 @@ Cohesion: 0.25
 Nodes (7): 1. Start with one command, always, 2. The layer flow — a feature is always these files, 3. Fallback — infer the path, 4. Progressive search ladder, 5. Entry points, 6. Impact check before editing shared code, Architecture Navigation
 
 ### Community 94 - "Componentization"
-Cohesion: 0.25
-Nodes (7): 1. Where each responsibility belongs, 2. The component tree, 4. Extract when, 5. Keep it inline when, 6. Guardrails on load-bearing files, 7. Splitting an existing large file, Componentization
+Cohesion: 0.20
+Nodes (9): 1. Where each responsibility belongs, 2. The component tree, 3. The shadcn boundary, 4. Extract when, 5. Keep it inline when, 6. Guardrails on load-bearing files, 7. Splitting an existing large file, Componentization (+1 more)
 
-### Community 95 - "PWA Conventions"
-Cohesion: 0.25
-Nodes (7): 1. vite-plugin-pwa, 2. Caching — what the service worker may hold, 3. index.html, 4. Online / offline state, 5. Install and update, 6. Verify, PWA Conventions
+### Community 95 - "Component Structure → [composition.md](./rules/composition.md)"
+Cohesion: 0.27
+Nodes (13): Card structure, Dialog, Sheet, and Drawer always need a Title, Component Structure → [composition.md](./rules/composition.md), Card structure, Dialog, Sheet, and Drawer always need a Title, Component Structure → [composition.md](./rules/composition.md), CardContent(), CardDescription() (+5 more)
 
 ### Community 96 - "format.utils.ts"
-Cohesion: 0.25
-Nodes (6): countFormatter, dateFormatter, dateRangeFormatter, dateTimeFormatter, pesoFormatter, shortDateFormatter
+Cohesion: 0.16
+Nodes (13): asChecked(), asList(), asText(), FormField(), countFormatter, dateFormatter, dateRangeFormatter, dateTimeFormatter (+5 more)
 
 ### Community 97 - "vercel.json"
 Cohesion: 0.25
@@ -550,13 +558,13 @@ Nodes (6): 1. Tests pass locally first, 2. Production Supabase project, 3. Verce
 Cohesion: 0.29
 Nodes (6): Database naming (Supabase / Postgres), Do not, Names inside files, Naming & Pathing Conventions, Reuse before creating, Where a new file goes
 
-### Community 100 - "SegmentedControl.tsx"
-Cohesion: 0.48
-Nodes (5): IProps, ISegmentedOption, SegmentedControl(), segmentedControlItem, segmentedControlRoot
+### Community 100 - "class-variance-authority"
+Cohesion: 0.26
+Nodes (9): class-variance-authority, IProps, ISegmentedOption, SegmentedControl(), ToggleGroupContext, Toggle(), toggleVariants, segmentedControlItem (+1 more)
 
 ### Community 101 - "SuccessModal.tsx"
-Cohesion: 0.48
-Nodes (5): IProps, successBadge, successBody, successText, successTitle
+Cohesion: 0.25
+Nodes (9): 6. Modals — one frame, never rebuilt, ConfirmationModal(), DetailModal(), IProps, SuccessModal(), successBadge, successBody, successText (+1 more)
 
 ### Community 102 - "Graphify Workflow"
 Cohesion: 0.33
@@ -566,9 +574,9 @@ Nodes (5): Commands, Do not use it when, Graphify Workflow, The refresh is the u
 Cohesion: 0.33
 Nodes (6): scripts, build, dev, generate-pwa-assets, lint, preview
 
-### Community 104 - "StatusBadge.tsx"
-Cohesion: 0.47
-Nodes (4): IProps, StatusBadge(), statusBadgeDot, statusBadgeRoot
+### Community 104 - "DateRangeFilter.tsx"
+Cohesion: 0.22
+Nodes (10): @internationalized/date, IProps, tabs, TransactionHistoryToolbar(), useTransactionDateRange(), transactionTableKey, dateRangeDialog, dateRangePopover (+2 more)
 
 ### Community 105 - "shadcn CLI Reference"
 Cohesion: 0.40
@@ -586,9 +594,9 @@ Nodes (4): Icons, Icons in Button use data-icon attribute, No sizing classes on 
 Cohesion: 0.40
 Nodes (5): Contents, Presets, shadcn CLI Reference, Switching Presets, Templates
 
-### Community 109 - "Customizing Components"
-Cohesion: 0.40
-Nodes (5): 1. Built-in variants, 2. Tailwind classes via `className`, 3. Add a new variant, 4. Wrapper components, Customizing Components
+### Community 109 - "ViewTabs.tsx"
+Cohesion: 0.33
+Nodes (9): IProps, IViewTab, IViewTabVariant, ViewTabs(), viewTabsBar, viewTabsContent, viewTabsList, viewTabsListInline (+1 more)
 
 ### Community 110 - "Icons"
 Cohesion: 0.40
@@ -598,25 +606,57 @@ Nodes (4): Icons, Icons in Button use data-icon attribute, No sizing classes on 
 Cohesion: 0.40
 Nodes (4): compilerOptions, paths, files, references
 
+### Community 114 - "TransactionTable.tsx"
+Cohesion: 0.20
+Nodes (10): column, IProps, statusBadge(), TransactionTable(), tableCellNumeric, historyAmount, historyAmountStack, historyCell (+2 more)
+
+### Community 115 - "TemporaryPasswordModal.tsx"
+Cohesion: 0.29
+Nodes (9): TemporaryPasswordModal(), useTemporaryPassword(), temporaryPasswordModalKey, passwordLabel, passwordNote, passwordPanel, passwordRow, passwordValue (+1 more)
+
+### Community 116 - "Component Composition"
+Cohesion: 0.20
+Nodes (10): Avatar always needs AvatarFallback, Button has no isPending or isLoading prop, Callouts use Alert, Component Composition, Contents, Empty states use Empty component, Toast notifications follow the project base, Use existing components instead of custom markup (+2 more)
+
+### Community 117 - "avatar.tsx"
+Cohesion: 0.25
+Nodes (7): AppAvatar(), IProps, AvatarBadge(), AvatarGroup(), AvatarGroupCount(), AvatarImage(), ImageState
+
+### Community 118 - "useAppMutation"
+Cohesion: 0.36
+Nodes (9): UserTable(), useConfirm(), useAppMutation(), capitalize(), useDeleteMasterfileEntry(), useMasterfileForm(), useShopSuspension(), useResetPassword() (+1 more)
+
+### Community 119 - "Chat & Messaging"
+Cohesion: 0.25
+Nodes (8): Attachments use Attachment, Chat & Messaging, Contents, Escape hatch: the scroller hooks, Message rows use Message, Message surfaces use Bubble, Streaming, anchoring, and jump-to-latest are built in, System notes and dividers use Marker
+
+### Community 120 - "Component Composition"
+Cohesion: 0.29
+Nodes (7): Button has no isPending or isLoading prop, Callouts use Alert, Component Composition, Contents, Empty states use Empty component, Toast notifications follow the project base, Use existing components instead of custom markup
+
+### Community 121 - "permission.model.ts"
+Cohesion: 0.50
+Nodes (4): UserRole, derivePermissions(), IPermissionKey, IPermissions
+
 ## Knowledge Gaps
-- **596 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+591 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 659 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **618 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+613 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 684 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `react` to `FormField.tsx`, `user.form.hook.ts`, `cn`, `Component Structure → [composition.md](./rules/composition.md)`, `PageSkeleton.tsx`, `inventory.list.hook.ts`, `Separator`, `masterfile.form.hook.ts`, `inventory.form.hook.ts`, `Button`, `shop.list.hook.ts`, `ShopSettingsCard.tsx`, `Composition: asChild (radix) vs render (base)`, `InventoryTable.tsx`, `movement.form.hook.ts`, `lucide-react`, `TabBar.tsx`, `App.tsx`, `DataTable.tsx`, `analyzer.list.hook.ts`, `package.json`, `ContentView.tsx`, `field.tsx`, `AppModal.tsx`, `SegmentTabs.tsx`, `movement.list.hook.ts`, `usePagination`, `FilterToolbar.tsx`, `reset.store.ts`, `AppAlert.tsx`, `auth.session.hook.ts`, `AppButton.tsx`, `category.form.hook.ts`, `MasterfileList.tsx`, `DetailModal.tsx`, `navigation.hook.ts`, `AppLayout.tsx`, `useModal`, `SectionCard.tsx`, `FormSection.tsx`, `AppShell.tsx`, `auth.styles.ts`, `StatCard.tsx`, `SegmentedControl.tsx`, `SuccessModal.tsx`, `StatusBadge.tsx`?**
-  _High betweenness centrality (0.186) - this node is a cross-community bridge._
-- **Why does `cn()` connect `cn` to `FormField.tsx`, `Component Structure → [composition.md](./rules/composition.md)`, `PageSkeleton.tsx`, `RankingPanel.tsx`, `Separator`, `Component Selection`, `react`, `Button`, `ShopSettingsCard.tsx`, `Composition: asChild (radix) vs render (base)`, `VolumeRankingTable.tsx`, `AppSidebar.tsx`, `lucide-react`, `TabBar.tsx`, `DataTable.tsx`, `MovementTable.tsx`, `ContentView.tsx`, `table.keys.ts`, `field.tsx`, `AppModal.tsx`, `SegmentTabs.tsx`, `FilterToolbar.tsx`, `AppAlert.tsx`, `AppButton.tsx`, `Topbar.tsx`, `MasterfileList.tsx`, `DetailModal.tsx`, `SyncIssuesModal.tsx`, `SectionCard.tsx`, `Styling & Customization`, `Styling & Customization`, `FormSection.tsx`, `AppShell.tsx`, `TablePagination.tsx`, `InfoHint.tsx`, `auth.styles.ts`, `3. The primitives — reuse before building`, `StatCard.tsx`, `SegmentedControl.tsx`, `StatusBadge.tsx`?**
-  _High betweenness centrality (0.164) - this node is a cross-community bridge._
-- **Why does `lucide-react` connect `lucide-react` to `FormField.tsx`, `user.form.hook.ts`, `cn`, `Component Structure → [composition.md](./rules/composition.md)`, `RankingPanel.tsx`, `inventory.list.hook.ts`, `Component Selection`, `react`, `masterfile.form.hook.ts`, `inventory.form.hook.ts`, `Button`, `ShopSettingsCard.tsx`, `InventoryTable.tsx`, `AppSidebar.tsx`, `TabBar.tsx`, `App.tsx`, `StockAlertTable.tsx`, `MovementTable.tsx`, `package.json`, `react-router-dom`, `ContentView.tsx`, `table.keys.ts`, `movement.list.hook.ts`, `FilterToolbar.tsx`, `AppAlert.tsx`, `AppButton.tsx`, `route.guard.tsx`, `Topbar.tsx`, `MasterfileList.tsx`, `ShopTable.tsx`, `navigation.hook.ts`, `SyncIssuesModal.tsx`, `ConfirmationModal.tsx`, `InfoHint.tsx`, `auth.styles.ts`, `SuccessModal.tsx`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+- **Why does `cn()` connect `cn` to `react`, `dropdown-menu.tsx`, `ContentView.tsx`, `RankingPanel.tsx`, `Separator`, `Button`, `cn.utils.ts`, `select.tsx`, `Composition: asChild (radix) vs render (base)`, `InventoryTable.tsx`, `AppSidebar.tsx`, `lucide-react`, `TabBar.tsx`, `DataTable.tsx`, `StockSummaryCards.tsx`, `MovementTable.tsx`, `EntityFormModal.tsx`, `shop.list.hook.ts`, `field.tsx`, `AppModal.tsx`, `SegmentTabs.tsx`, `FilterToolbar.tsx`, `AppButton.tsx`, `Topbar.tsx`, `MasterfileList.tsx`, `ItemDetailPanel.tsx`, `AppShell.tsx`, `SyncIssuesModal.tsx`, `SectionCard.tsx`, `ConfirmationModal.tsx`, `typography.styles.ts`, `Styling & Customization`, `Styling & Customization`, `Popover`, `TablePagination.tsx`, `InfoHint.tsx`, `SignInForm.tsx`, `3. The primitives — reuse before building`, `StatCard.tsx`, `Component Structure → [composition.md](./rules/composition.md)`, `format.utils.ts`, `class-variance-authority`, `SuccessModal.tsx`, `DateRangeFilter.tsx`, `ViewTabs.tsx`, `Component Composition`, `avatar.tsx`?**
+  _High betweenness centrality (0.180) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `UserTable.tsx`, `cn`, `dropdown-menu.tsx`, `ContentView.tsx`, `inventory.form.hook.ts`, `Separator`, `cn.utils.ts`, `masterfile.form.hook.ts`, `category.form.hook.ts`, `select.tsx`, `shop.form.hook.ts`, `InventoryTable.tsx`, `dashboard.list.hook.ts`, `movement.form.hook.ts`, `VolumeRankingTable.tsx`, `lucide-react`, `TabBar.tsx`, `App.tsx`, `DataTable.tsx`, `StockSummaryCards.tsx`, `analyzer.list.hook.ts`, `package.json`, `navigation.hook.ts`, `EntityFormModal.tsx`, `shop.list.hook.ts`, `field.tsx`, `AppModal.tsx`, `SegmentTabs.tsx`, `movement.list.hook.ts`, `pagination.hook.ts`, `FilterToolbar.tsx`, `reset.store.ts`, `TransactionDetailModal.tsx`, `auth.session.hook.ts`, `AppButton.tsx`, `user.form.hook.ts`, `MasterfileList.tsx`, `ItemDetailPanel.tsx`, `AppShell.tsx`, `useModal`, `SectionCard.tsx`, `ConfirmationModal.tsx`, `typography.styles.ts`, `pwa.hook.ts`, `transaction.form.hook.ts`, `Popover`, `TablePagination.tsx`, `SignInForm.tsx`, `3. The primitives — reuse before building`, `StatCard.tsx`, `Component Structure → [composition.md](./rules/composition.md)`, `class-variance-authority`, `SuccessModal.tsx`, `ViewTabs.tsx`, `avatar.tsx`?**
+  _High betweenness centrality (0.172) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `lucide-react` to `react`, `UserTable.tsx`, `cn`, `dropdown-menu.tsx`, `ContentView.tsx`, `RankingPanel.tsx`, `inventory.form.hook.ts`, `cn.utils.ts`, `masterfile.form.hook.ts`, `category.form.hook.ts`, `select.tsx`, `shop.form.hook.ts`, `ShopSettingsCard.tsx`, `InventoryTable.tsx`, `transaction.styles.ts`, `dashboard.list.hook.ts`, `AppSidebar.tsx`, `App.tsx`, `StockSummaryCards.tsx`, `MovementTable.tsx`, `package.json`, `navigation.hook.ts`, `shop.list.hook.ts`, `movement.list.hook.ts`, `FilterToolbar.tsx`, `TransactionDetailModal.tsx`, `AppButton.tsx`, `user.form.hook.ts`, `AccountCard.tsx`, `AccessBlocked.tsx`, `Topbar.tsx`, `MasterfileList.tsx`, `ItemDetailPanel.tsx`, `ShopTable.tsx`, `CartPanel.tsx`, `SyncIssuesModal.tsx`, `ConfirmationModal.tsx`, `pwa.hook.ts`, `TablePagination.tsx`, `InfoHint.tsx`, `SignInForm.tsx`, `SuccessModal.tsx`, `DateRangeFilter.tsx`, `TemporaryPasswordModal.tsx`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `cn()` (e.g. with `Use cn() for conditional classes` and `Styling & Tailwind → [styling.md](./rules/styling.md)`) actually correct?**
   _`cn()` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `useActiveShop()` (e.g. with `Decisions log` and `selectActiveShopId()`) actually correct?**
   _`useActiveShop()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _596 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `FormField.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
+  _618 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `react` be split into smaller, more focused modules?**
+  _Cohesion score 0.07756813417190776 - nodes in this community are weakly interconnected._
