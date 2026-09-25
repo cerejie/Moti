@@ -1,7 +1,8 @@
 import AppLayout from "../layouts/AppLayout";
 import type { IRoute } from "../models/common/route.model";
 import { protectedViewRoutes } from "./protected.view.routes";
-import { PermissionGate, ProtectedRoute } from "./route.guard";
+import { LandingRedirect, PermissionGate, ProtectedRoute } from "./route.guard";
+import { ROUTES } from "./route.paths";
 
 // Signed-in, active users only; each page is then checked against its `can`.
 export const protectedRoutes: IRoute[] = [
@@ -19,7 +20,10 @@ export const protectedRoutes: IRoute[] = [
             key: "permission-gate",
             isNotNav: true,
             Component: PermissionGate,
-            children: protectedViewRoutes,
+            children: [
+              { key: "home", path: ROUTES.home, isNotNav: true, Component: LandingRedirect },
+              ...protectedViewRoutes,
+            ],
           },
         ],
       },

@@ -18,7 +18,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 8: Tests and release
 - [x] Step 1: Save the V1.1 flow change (Transaction, Masterfile, item codes, navigation)
 - [x] Phase 9: Masterfile, item codes and Settings hub
-- [ ] Phase 10: Transaction ordering and final navigation
+- [x] Phase 10: Transaction selling and final navigation
 
 Kickoff line for a new conversation:
 
@@ -164,25 +164,33 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   reminder move and retiring "More" stay in Phase 10. `create_item` / `update_item` changed
   signature, so an item write queued offline before the update fails into sync issues;
   `create_category` / `update_category` keep their old arguments as defaults and still replay.
+- 2026-09-25 (Phase 10): selling is **transaction**-based, never "order": tables `transactions` /
+  `transaction_lines`, `create_transaction` / `void_transaction`, reason `transaction_void`, the
+  `transaction` domain in every layer. The cart's shown price is saved (an offline transaction keeps
+  what the customer was told); an item without a price can be sold and adds 0. `record_stock_movement`
+  refuses `sale` and `transaction_void` and is manager-only, so a single-item sale queued before the
+  update fails into sync issues. The analyzer's sold leaves out voided transactions and its added
+  leaves out void returns (`app.is_voided_sale`). Voiding needs the items unarchived. "/" redirects
+  to the role's landing page; Home and "More" are gone; the password reminder is a shell banner.
 
 ## V1.1 flow change (agreed 2026-09-25)
 
 Everything in this section overrides the V1 tables below where they disagree. The V1 sections
 stay as the record of what Phases 0–8 built.
 
-**Selling moves to orders.** A new **Transaction** tab works like an ordering screen, with no
+**Selling moves to transactions** (named *transaction*, never *order*, from Phase 10). A new **Transaction** tab works like a point-of-sale screen, with no
 payments or revenue: products on the left (search, category filter), a cart on the right, and
-the total amount shown. Confirming an order deducts every line as a sale in one all-or-nothing
-write and saves the order with a per-shop order number. The one-item **Record sale** action is
-removed; every sale belongs to an order.
+the total amount shown. Confirming a transaction deducts every line as a sale in one
+all-or-nothing write and saves it with a per-shop transaction number. The one-item **Record sale**
+action is removed; every sale belongs to a transaction.
 
 **Decisions:**
-- Confirm = deduct stock as `stock_out / sale` per line **and** save the order (lines, unit-price
+- Confirm = deduct stock as `stock_out / sale` per line **and** save the transaction (lines, unit-price
   snapshot, displayed total). No payment, change or revenue tracking.
-- Transaction is for every role. Employees see their own orders; owners and the superadmin see
-  every order in the shop.
-- The owner can **void** an order with a reason: each line's stock comes back as
-  `stock_in / order_void`, the order stays visible as Voided, and the Analyzer's quantity sold
+- Transaction is for every role. Employees see their own transactions; owners and the superadmin
+  see every transaction in the shop.
+- The owner can **void** a transaction with a reason: each line's stock comes back as
+  `stock_in / transaction_void`, the transaction stays visible as Voided, and the Analyzer's quantity sold
   subtracts voided lines.
 - **SKU is renamed to Item code** everywhere: UI, models, services, the `inventory_items.sku`
   column, views, RPCs, seed and tests. Existing codes are kept as they are.
@@ -223,9 +231,9 @@ removed; every sale belongs to an order.
 
 | Capability | Superadmin | Owner | Employee |
 |---|:-:|:-:|:-:|
-| Take an order (Transaction) | ✓ | ✓ | ✓ |
-| See orders | all shops | own shop | own orders |
-| Void an order | ✓ | ✓ | ✗ |
+| Sell (Transaction) | ✓ | ✓ | ✓ |
+| See transactions | all shops | own shop | own transactions |
+| Void a transaction | ✓ | ✓ | ✗ |
 | Masterfile: categories, brands, units, locations | ✓ | ✓ | ✗ |
 | Record a one-item sale | removed | removed | removed |
 
@@ -237,13 +245,13 @@ removed; every sale belongs to an order.
 | `categories.code`, `categories.next_number` | Item-code prefix and its per-category counter |
 | `brands` (name, code), `category_brands` | Per-shop brand list and which brands each category carries; items point at the pair |
 | `units`, `storage_locations` | Per-shop masterfile lists; items reference them by id |
-| `orders` | Per shop: order_no, status `confirmed` / `voided`, total_amount (as displayed), created_by, occurred_at, client_id, voided_by / voided_at / void_reason |
-| `order_lines` | order_id, item_id, quantity, unit_price snapshot, line_amount, movement_id |
-| reason `order_void` | New `stock_in` reason written only by `void_order` |
+| `transactions` | Per shop: transaction_no, status `confirmed` / `voided`, total_amount (as displayed), created_by, occurred_at, client_id, voided_by / voided_at / void_reason |
+| `transaction_lines` | transaction_id, item_id, quantity, unit_price snapshot, line_amount, movement_id, void_movement_id |
+| reason `transaction_void` | New `stock_in` reason written only by `void_transaction` |
 
-RPCs: `create_order(p_client_id, p_lines, p_occurred_at)` locks items in a fixed order and runs
-each line through `app.apply_stock_movement`; `void_order(p_order_id, p_reason)` is owner-only.
-A whole order is **one** queued offline write, idempotent by `client_id`; the order number is
+RPCs: `create_transaction(p_client_id, p_shop_id, p_lines, p_occurred_at)` locks items in a fixed
+order and runs each line through `app.apply_stock_movement`; `void_transaction(p_id, p_reason)` is
+owner-only. A whole transaction is **one** queued offline write, idempotent by `client_id`; the number is
 assigned when it syncs.
 
 ## What changed from the discovery plan
@@ -504,30 +512,31 @@ Feature: Masterfile, Category Item Codes And Settings Hub
 - Moved users, shops and masterfile into Settings and movements into Inventory
 ```
 
-### Phase 10: Transaction ordering and final navigation
+### Phase 10: Transaction selling and final navigation
 **Delivers:**
-- Migration: `orders`, `order_lines`, reason `order_void`, `create_order` and `void_order` RPCs;
+- Migration: `transactions`, `transaction_lines`, reason `transaction_void`, `create_transaction` and
+  `void_transaction` RPCs;
   the Analyzer's quantity sold subtracts voided lines.
-- Transaction screen, New order tab: product panel (search, category chips, on-hand, price,
+- Transaction screen, New tab: product panel (search, category chips, on-hand, price,
   out-of-stock disabled) and a cart (steppers capped at on-hand, remove, total amount, Confirm).
   On phones the products fill the screen and a sticky cart bar opens the cart as a bottom sheet.
   The cart lives in a persisted store so a reload keeps it.
-- Orders tab: employees see their own orders, owners all, with order detail and owner void.
-- One queued offline write per order; the success view shows the order number, or "Saved offline"
+- History tab: employees see their own transactions, owners all, with detail and owner void.
+- One queued offline write per transaction; the success view shows the transaction number, or "Saved offline"
   when queued.
 - The one-item Record sale action is removed.
 - Final navigation: Home removed; tabs and landing pages per the V1.1 table; "More" retired.
-- pgTAP: all-or-nothing orders, one sync per client_id, void returns stock, employee cannot void,
+- pgTAP: all-or-nothing transactions, one sync per client_id, void returns stock, employee cannot void,
   tenant isolation.
 
-**Done when:** an employee builds a multi-item order and confirms it in one step, stock and the
-ledger match, and a voided order no longer counts as sold.
+**Done when:** an employee builds a multi-item transaction and confirms it in one step, stock and the
+ledger match, and a voided transaction no longer counts as sold.
 ```
-Feature: Transaction Ordering With Order History And Voids
+Feature: Transaction Selling With History And Voids
 
-- Added order-based selling with product panel, cart and total amount
-- Added orders and order lines with all-or-nothing stock deduction
-- Added order history with owner void that returns stock
+- Added transaction-based selling with product panel, cart and total amount
+- Added transactions and transaction lines with all-or-nothing stock deduction
+- Added transaction history with owner void that returns stock
 - Removed Home and single-item sale, and set tabs and landing page per role
 ```
 

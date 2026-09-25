@@ -19,6 +19,9 @@ export const dashboardAlertsKey = "dashboard-alerts";
 export const analyzerRankingKey = "analyzer-ranking";
 export const analyzerSummaryKey = "analyzer-summary";
 export const analyzerReorderKey = "analyzer-reorder";
+// Both transaction keys share the "transaction" prefix, so one invalidation refreshes them.
+export const transactionListKey = "transaction-list";
+export const transactionLinesKey = "transaction-lines";
 export const shopTimezoneKey = "shop-timezone";
 export const shopListKey = "shop-list";
 export const shopSettingsKey = "shop-settings";

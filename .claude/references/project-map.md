@@ -44,9 +44,9 @@ Patterns to copy:
 
 ```
 Screen      Inventory → Movements tab (InventorySections)       shop-wide ledger, owners only
-UI          src/components/movement/modal/StockMovementModal.tsx  one form for sale / add / deduct
+UI          src/components/movement/modal/StockMovementModal.tsx  one form for add / deduct
             src/components/movement/cards/BalancePreview.tsx      before → after
-            src/components/movement/panels/StockActions.tsx       Sell / Add stock / Deduct on the item page
+            src/components/movement/panels/StockActions.tsx       Add stock / Deduct on the item page (managers)
             src/components/movement/panels/MovementsPanel.tsx + MovementToolbar.tsx
             src/components/movement/tables/MovementTable.tsx      shared by the page and the item card (`showItem`)
             src/components/movement/cards/ItemMovementsCard.tsx   item page history
@@ -84,6 +84,34 @@ Tests       supabase/tests/masterfile.test.sql
 - **Stacked forms:** the item page mounts `CategoryFormModal` and `BrandFormModal` after `ItemFormModal`, so
   "+ Add category / brand" opens on top and returns the new id through `onCreated`.
 - **Settings hub:** `SettingsLinksCard` lists the `/settings/*` sub-pages the role can open.
+
+## Transaction selling: `transaction` (Phase 10)
+
+```
+Screen      src/pages/Transaction/TransactionView.tsx           every role; the page mounts the cart sheet and the modals
+UI          src/components/transaction/panels/TransactionPanel.tsx   no-shop state + ViewTabs New | History
+            src/components/transaction/panels/NewTransactionPanel.tsx products + CartPanel (md up) or CartBar (phones)
+            src/components/transaction/panels/ProductPanel.tsx     FilterToolbar search + category SegmentTabs + ProductCard grid
+            src/components/transaction/panels/CartPanel.tsx, CartContent.tsx; cards/CartLine.tsx, CartTotal.tsx, CartBar.tsx
+            src/components/transaction/modal/CartSheetModal.tsx    phone cart (AppModal bottom sheet)
+            src/components/transaction/panels/TransactionHistoryPanel.tsx + TransactionHistoryToolbar.tsx + tables/TransactionTable.tsx
+            src/components/transaction/modal/TransactionDetailModal.tsx (+ cards/TransactionLinesList.tsx), VoidTransactionModal.tsx,
+            TransactionSuccessModal.tsx
+            src/components/common/form/QuantityStepper.tsx         − value + with 44 px buttons
+Data        src/hook/data/transaction/transaction.list.hook.ts   useProductList (inventory service, inventory key prefix),
+                                                                useProductCategory, useTransactionList, useTransactionLines
+Form        src/hook/data/transaction/transaction.form.hook.ts   useCart, useConfirmTransaction, useTransactionDetail, useVoidTransactionForm
+Calls       src/services/data/transaction.services.ts           getList, getLines, create (runWrite rpc, then reads the number back), void
+Store       src/store/data/transaction/transaction.store.ts     persisted cart: shopId, clientId (idempotency key), lines
+Models      src/models/data/transaction/*.ts; src/enums/transaction.enum.ts
+Look        src/styles/transaction/transaction.styles.ts
+Schema      supabase/migrations/20260925000004_add_transaction_void_reason.sql, 20260925000005_create_transactions.sql
+Tests       supabase/tests/transactions.test.sql
+```
+
+- **One write per cart:** the cart's `clientId` is the transaction's key, so a retried confirm or an
+  offline replay is saved once. Named *transaction* everywhere, never *order*.
+- **Landing:** "/" is `LandingRedirect` in `protected.routes.ts` — Dashboard for managers, Transaction for staff.
 
 ## Third slice: `dashboard` (Phase 4)
 

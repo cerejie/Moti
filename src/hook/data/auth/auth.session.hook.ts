@@ -12,6 +12,7 @@ import {
   useAuthStore,
 } from "../../../store/data/auth/auth.store";
 import { useShopStore } from "../../../store/data/shop/shop.store";
+import { useCartStore } from "../../../store/data/transaction/transaction.store";
 import { isNetworkError } from "../../../utils/error.utils";
 import { queryClient } from "../../../utils/query.utils";
 
@@ -20,6 +21,7 @@ import { queryClient } from "../../../utils/query.utils";
 const clearSessionData = () => {
   resetAllStores();
   useShopStore.getState().clear();
+  useCartStore.getState().clear();
   queryClient.clear();
 };
 

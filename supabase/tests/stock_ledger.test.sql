@@ -1,4 +1,4 @@
--- Stock ledger rules: on_hand changes only through record_stock_movement, every
+-- Stock ledger rules: on_hand changes only through the stock functions, every
 -- movement is logged with its running balance, replays are ignored, and the ledger
 -- is append-only. Self-contained: builds its own fixture and rolls back.
 --
@@ -9,7 +9,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(31);
+select plan(32);
 
 create schema if not exists tests;
 grant usage on schema tests to anon, authenticated;
@@ -95,34 +95,38 @@ select is(
   'stock_in/restock/5/15', 'a restock is positive and carries the new balance'
 );
 
--- Employee sells 3: 12.
-select tests.act_as('7e570000-0000-4000-8000-0000000000a2');
-
-select lives_ok(
+-- Sales belong to transactions (transactions.test.sql), never to this function.
+select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c002', '7e570000-0000-4000-8000-0000000001a0',
        'stock_out', 'sale', 3
      ) $$,
-  'employee sells'
+  'P0001', 'Sales are recorded as transactions.', 'a sale outside a transaction is refused'
 );
 
-select tests.act_as('7e570000-0000-4000-8000-0000000000a1');
-
+-- Damaged 3: 12.
+select lives_ok(
+  $$ select public.record_stock_movement(
+       '7e570000-0000-4000-8000-00000000c002', '7e570000-0000-4000-8000-0000000001a0',
+       'stock_out', 'damaged', 3
+     ) $$,
+  'owner deducts damaged stock'
+);
 select is(
   (select format('%s/%s/%s/%s', movement_type, reason, quantity, balance_after)
    from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c002'),
-  'stock_out/sale/-3/12', 'a sale is negative and carries the new balance'
+  'stock_out/damaged/-3/12', 'a deduction is negative and carries the new balance'
 );
 select is(
   (select created_by from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c002'),
-  '7e570000-0000-4000-8000-0000000000a2'::uuid, 'a movement records who made it'
+  '7e570000-0000-4000-8000-0000000000a1'::uuid, 'a movement records who made it'
 );
 
 -- A replayed offline write changes nothing.
 select is(
   public.record_stock_movement(
     '7e570000-0000-4000-8000-00000000c002', '7e570000-0000-4000-8000-0000000001a0',
-    'stock_out', 'sale', 3
+    'stock_out', 'damaged', 3
   ),
   (select id from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c002'),
   'a replay returns the original movement'
@@ -138,7 +142,7 @@ select is(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c002', '7e570000-0000-4000-8000-0000000001a1',
-       'stock_out', 'sale', 1
+       'stock_out', 'damaged', 1
      ) $$,
   'P0001', 'This change was already recorded for a different item.',
   'a key already used for another item is refused, not silently skipped'
@@ -148,14 +152,14 @@ select throws_ok(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c003', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_out', 'sale', 13
+       'stock_out', 'damaged', 13
      ) $$,
   'P0001', 'Not enough stock: only 12 pc on hand.', 'stock cannot go below zero'
 );
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c003', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_out', 'sale', 0
+       'stock_out', 'damaged', 0
      ) $$,
   'P0001', 'Enter a quantity greater than zero.', 'a zero quantity is refused'
 );
@@ -169,7 +173,7 @@ select throws_ok(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c003', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_in', 'sale', 1
+       'stock_in', 'damaged', 1
      ) $$,
   '23514', null, 'a reason must match its movement type'
 );
@@ -251,7 +255,7 @@ select lives_ok(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000c006', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_out', 'sale', 1
+       'stock_out', 'damaged', 1
      ) $$,
   'P0001', 'This item is archived. Restore it before changing its stock.', 'an archived item takes no movements'
 );

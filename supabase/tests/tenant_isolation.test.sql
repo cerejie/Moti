@@ -170,7 +170,7 @@ select throws_ok(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000f003', '7e570000-0000-4000-8000-0000000001b0',
-       'stock_out', 'sale', 1
+       'stock_out', 'damaged', 1
      ) $$,
   '42501', null, 'owner cannot record stock on another shop''s item'
 );
@@ -239,9 +239,9 @@ select is(
 select tests.act_as('7e570000-0000-4000-8000-0000000000a2');
 
 select throws_ok(
-  $$ select public.record_stock_movement(
-       '7e570000-0000-4000-8000-00000000f004', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_out', 'sale', 1
+  $$ select public.create_transaction(
+       '7e570000-0000-4000-8000-00000000f004', null,
+       '[{"item_id": "7e570000-0000-4000-8000-0000000001a0", "quantity": 1, "unit_price": null}]'::jsonb
      ) $$,
   '42501', null, 'employee of a suspended shop cannot sell'
 );
@@ -276,7 +276,7 @@ select throws_ok(
 select throws_ok(
   $$ select public.record_stock_movement(
        '7e570000-0000-4000-8000-00000000f006', '7e570000-0000-4000-8000-0000000001a0',
-       'stock_out', 'sale', 1
+       'stock_out', 'damaged', 1
      ) $$,
   '42501', null, 'anon cannot record stock'
 );

@@ -4,7 +4,7 @@ import type { IFieldConfig } from "../../../models/common/field.model";
 import type { IStockMovementRequest } from "../../../models/data/movement/movement.request";
 import BalancePreview from "../cards/BalancePreview";
 
-// Sale, add stock and deduct stock share this one form; the mode decides the reasons.
+// Add stock and deduct stock share this one form; the mode decides the reasons.
 const StockMovementModal = () => {
   const {
     form,
@@ -12,7 +12,6 @@ const StockMovementModal = () => {
     open,
     onOpenChange,
     item,
-    mode,
     title,
     reasonOptions,
     preview,
@@ -25,7 +24,7 @@ const StockMovementModal = () => {
       name: "quantity",
       label: "Quantity",
       type: "number",
-      span: mode === "sale" ? "full" : "half",
+      span: "half",
       required: true,
       autoComplete: "off",
     },
@@ -35,15 +34,13 @@ const StockMovementModal = () => {
       type: "select",
       required: true,
       options: reasonOptions,
-      // A sale has one reason, so there is nothing to pick.
-      hidden: (values) => values.mode === "sale",
     },
     {
       name: "note",
       label: "Note",
       type: "textarea",
       span: "full",
-      placeholder: mode === "sale" ? "Optional, e.g. customer or receipt no." : "Optional",
+      placeholder: "Optional",
     },
   ];
 

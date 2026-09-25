@@ -1,10 +1,7 @@
 import type { ReactNode } from "react";
-import { Ellipsis } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/utils/cn.utils";
-import { useModal } from "../../../hook/common/modal.hook";
-import { useTabBarMenu } from "../../../hook/layout/navigation.hook";
-import { tabBarMoreModalKey } from "../../../keys/modal.keys";
+import { useNavigationMenu } from "../../../hook/layout/navigation.hook";
 import type { Tone } from "../../../styles/common/tone.styles";
 import { toneSolid } from "../../../styles/common/tone.styles";
 import {
@@ -27,7 +24,7 @@ type IProps = {
   badge: IBadge;
 };
 
-// Icon, caption and count shared by the page tabs and the More tab.
+// Icon, caption and count of one tab.
 const TabContent = ({ icon, label, badge }: IProps) => (
   <>
     <span className={tabbarIcon}>
@@ -43,9 +40,9 @@ const TabContent = ({ icon, label, badge }: IProps) => (
   </>
 );
 
+// Every role has at most five tabs, so they all fit the phone bar.
 const TabBar = () => {
-  const { tabs, more } = useTabBarMenu();
-  const { openModal } = useModal(tabBarMoreModalKey);
+  const tabs = useNavigationMenu();
 
   return (
     <nav className={tabbarRoot} aria-label="Primary">
@@ -64,21 +61,6 @@ const TabBar = () => {
             />
           </Link>
         ))}
-
-        {more && (
-          <button
-            type="button"
-            onClick={() => openModal()}
-            className={cn(tabbarItem, more.active && tabbarItemActive)}
-            aria-haspopup="dialog"
-          >
-            <TabContent
-              icon={<Ellipsis size={20} aria-hidden="true" />}
-              label="More"
-              badge={more.badge}
-            />
-          </button>
-        )}
       </div>
     </nav>
   );

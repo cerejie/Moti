@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import AppShell from "../components/common/layout/AppShell";
 import SyncIssuesModal from "../components/common/modal/SyncIssuesModal";
-import TabBarMoreModal from "../components/common/modal/TabBarMoreModal";
 import ErrorBoundary from "../components/common/status/ErrorBoundary";
 import PageSkeleton from "../components/common/status/PageSkeleton";
 import StockAlertsModal from "../components/dashboard/modal/StockAlertsModal";
@@ -33,7 +32,6 @@ const AppLayout = () => {
         </Suspense>
       </ErrorBoundary>
       <SyncIssuesModal />
-      <TabBarMoreModal />
       <StockAlertsModal />
     </AppShell>
   );

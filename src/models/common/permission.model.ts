@@ -6,7 +6,9 @@ export interface IPermissions {
   role: UserRole | null;
   isSuperadmin: boolean;
   browseInventory: boolean;
-  recordSale: boolean;
+  // Sell through the Transaction screen; employees see only their own history.
+  takeTransaction: boolean;
+  voidTransaction: boolean;
   adjustStock: boolean;
   manageCatalog: boolean;
   // Movement history, dashboard, alerts, analyzer and the reorder list.
@@ -27,7 +29,8 @@ export const derivePermissions = (role: UserRole | null): IPermissions => {
     role,
     isSuperadmin,
     browseInventory: isMember,
-    recordSale: isMember,
+    takeTransaction: isMember,
+    voidTransaction: isManager,
     adjustStock: isManager,
     manageCatalog: isManager,
     viewInsights: isManager,

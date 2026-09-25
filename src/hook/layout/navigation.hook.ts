@@ -41,26 +41,6 @@ export const useNavigationMenu = () => {
     }));
 };
 
-// More than this and the phone bar keeps the first four and moves the rest behind "More".
-const tabBarLimit = 5;
-
-export const useTabBarMenu = () => {
-  const menu = useNavigationMenu();
-
-  if (menu.length <= tabBarLimit) return { tabs: menu, more: null };
-
-  const overflow = menu.slice(tabBarLimit - 1);
-
-  return {
-    tabs: menu.slice(0, tabBarLimit - 1),
-    more: {
-      items: overflow,
-      active: overflow.some((item) => item.active),
-      badge: overflow.find((item) => item.badge)?.badge ?? null,
-    },
-  };
-};
-
 // The page route at the current URL, sub-pages with params included.
 export const useActivePage = () => {
   const { pathname } = useLocation();

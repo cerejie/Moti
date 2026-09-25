@@ -9,7 +9,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(33);
+select plan(34);
 
 create schema if not exists tests;
 grant usage on schema tests to anon, authenticated;
@@ -89,11 +89,18 @@ select is_empty(
   'employee reads only their own profile'
 );
 select lives_ok(
+  $$ select public.create_transaction(
+       '7e570000-0000-4000-8000-00000000c001', null,
+       '[{"item_id": "7e570000-0000-4000-8000-0000000001a0", "quantity": 1, "unit_price": null}]'::jsonb
+     ) $$,
+  'employee sells through a transaction'
+);
+select throws_ok(
   $$ select public.record_stock_movement(
-       '7e570000-0000-4000-8000-00000000c001', '7e570000-0000-4000-8000-0000000001a0',
+       '7e570000-0000-4000-8000-00000000c00a', '7e570000-0000-4000-8000-0000000001a0',
        'stock_out', 'sale', 1
      ) $$,
-  'employee records a sale'
+  '42501', null, 'employee cannot record a sale outside a transaction'
 );
 select throws_ok(
   $$ select public.record_stock_movement(

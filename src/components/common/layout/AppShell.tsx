@@ -8,6 +8,7 @@ import {
 } from "../../../styles/layout/appShell.styles";
 import InstallBanner from "../status/InstallBanner";
 import OfflineBanner from "../status/OfflineBanner";
+import PasswordReminder from "../status/PasswordReminder";
 import AppSidebar from "./AppSidebar";
 import TabBar from "./TabBar";
 import Topbar from "./Topbar";
@@ -26,6 +27,7 @@ const AppShell = ({ children }: IProps) => (
       <div id="main-content" className={appShellContent}>
         <div className={appShellContentInner}>
           <InstallBanner />
+          <PasswordReminder />
           {children}
         </div>
       </div>

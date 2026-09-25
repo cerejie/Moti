@@ -8,7 +8,8 @@ export type MovementReason =
   | "opening_balance"
   | "correction"
   | "sale"
-  | "damaged";
+  | "damaged"
+  | "transaction_void";
 
 export const movementReasonLabels: Record<MovementReason, string> = {
   restock: "Restock",
@@ -16,6 +17,7 @@ export const movementReasonLabels: Record<MovementReason, string> = {
   correction: "Correction",
   sale: "Sale",
   damaged: "Damaged",
+  transaction_void: "Transaction void",
 };
 
 export const movementReasonTones: Record<MovementReason, Tone> = {
@@ -24,25 +26,24 @@ export const movementReasonTones: Record<MovementReason, Tone> = {
   correction: "warning",
   sale: "info",
   damaged: "danger",
+  transaction_void: "neutral",
 };
 
-// What the stock form records. Opening balance is never picked by hand: item creation writes it.
-export type StockMovementMode = "sale" | "stock_in" | "stock_out";
+// What the stock form records. Opening balance is written by item creation, sales
+// and void returns by transactions, so none of them is picked by hand.
+export type StockMovementMode = "stock_in" | "stock_out";
 
 export const movementModeTitles: Record<StockMovementMode, string> = {
-  sale: "Record sale",
   stock_in: "Add stock",
   stock_out: "Deduct stock",
 };
 
 export const movementModeTypes: Record<StockMovementMode, MovementType> = {
-  sale: "stock_out",
   stock_in: "stock_in",
   stock_out: "stock_out",
 };
 
 export const movementModeReasons: Record<StockMovementMode, MovementReason[]> = {
-  sale: ["sale"],
   stock_in: ["restock", "correction"],
   stock_out: ["damaged", "correction"],
 };

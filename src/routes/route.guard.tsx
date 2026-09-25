@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import AccessBlocked from "../components/auth/status/AccessBlocked";
 import ErrorState from "../components/common/status/ErrorState";
 import StateBox from "../components/common/status/StateBox";
-import { useMe } from "../hook/data/auth/auth.session.hook";
+import { useMe, usePermissions } from "../hook/data/auth/auth.session.hook";
 import { useRouteAllowed } from "../hook/layout/navigation.hook";
 import AuthLayout from "../layouts/AuthLayout";
 import {
@@ -79,13 +79,20 @@ export const PublicRoute = () => {
   return <Outlet />;
 };
 
-// A page the user's role may not open — typed or bookmarked — falls back to home.
+// A page the user's role may not open — typed or bookmarked — falls back to the landing page.
 export const PermissionGate = () => {
   const allowed = useRouteAllowed();
 
   if (!allowed) return <Navigate to={ROUTES.home} replace />;
 
   return <Outlet />;
+};
+
+// "/" is each role's landing page: the dashboard for managers, Transaction for staff.
+export const LandingRedirect = () => {
+  const { viewInsights } = usePermissions();
+
+  return <Navigate to={viewInsights ? ROUTES.dashboard : ROUTES.transaction} replace />;
 };
 
 // Anything unmatched falls back to home, which re-runs the auth gate.

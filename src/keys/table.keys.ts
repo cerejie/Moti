@@ -18,3 +18,9 @@ export const userTableKey = "user-table";
 // The Inventory screen's Items / Movements tab.
 export const inventorySectionKey = "inventory-section";
 export const masterfileTabKey = "masterfile-tab";
+// The Transaction screen: its New / History tab, the product panel, and the history list.
+export const transactionSectionKey = "transaction-section";
+export const productTableKey = "product-table";
+export const transactionTableKey = "transaction-table";
+// The history's status tab, kept apart from the toolbar's filters so Clear leaves it alone.
+export const transactionStatusKey = "transaction-status";

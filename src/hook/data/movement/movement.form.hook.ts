@@ -47,18 +47,17 @@ const affectedKeys = [
 ];
 
 const successMessages: Record<StockMovementMode, string> = {
-  sale: "Sale recorded",
   stock_in: "Stock added",
   stock_out: "Stock deducted",
 };
 
 // A fresh client id each time the form opens: a retried submit reuses it, a new movement never does.
 const emptyMovement = (target?: IStockMovementTarget): IStockMovementRequest => {
-  const mode = target?.mode ?? "sale";
+  const mode = target?.mode ?? "stock_in";
   return {
     mode,
     reason: movementModeReasons[mode][0] as IStockMovementRequest["reason"],
-    quantity: mode === "sale" ? "1" : "",
+    quantity: "",
     note: "",
     on_hand: target?.item.on_hand ?? 0,
     client_id: newWriteId(),
@@ -69,7 +68,6 @@ export const useStockMovementModal = () => {
   const { openModal } = useModal<IStockMovementTarget>(stockMovementModalKey);
 
   return {
-    openSale: (item: IInventoryItem) => openModal({ item, mode: "sale" }),
     openAdd: (item: IInventoryItem) => openModal({ item, mode: "stock_in" }),
     openDeduct: (item: IInventoryItem) => openModal({ item, mode: "stock_out" }),
   };
@@ -79,7 +77,7 @@ export const useStockMovementForm = () => {
   const { modal, openModal, closeModal } =
     useModal<IStockMovementTarget>(stockMovementModalKey);
   const target = modal.data;
-  const mode = target?.mode ?? "sale";
+  const mode = target?.mode ?? "stock_in";
 
   const form = useForm<IStockMovementRequest>({
     resolver: zodResolver(stockMovementSchema),

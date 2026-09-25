@@ -1,13 +1,13 @@
 import { KeyRound } from "lucide-react";
-import AppButton from "../../common/button/AppButton";
-import AppAlert from "../../common/status/AppAlert";
+import AppButton from "../button/AppButton";
+import AppAlert from "./AppAlert";
 import { ROUTES } from "../../../routes/route.paths";
 import {
   selectMustChangePassword,
   useAuthStore,
 } from "../../../store/data/auth/auth.store";
 
-// Shown until a user on a temporary password sets their own.
+// Shown on every page, Settings included, until a user on a temporary password sets their own.
 const PasswordReminder = () => {
   const mustChange = useAuthStore(selectMustChangePassword);
 

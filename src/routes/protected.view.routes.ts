@@ -1,12 +1,11 @@
 import {
   ChartColumnBig,
-  House,
   LayoutDashboard,
   Package,
   Settings,
+  ShoppingCart,
 } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
-import HomeView from "../pages/Home/HomeView";
 import { lazyPage } from "../utils/route.utils";
 import { ROUTES } from "./route.paths";
 
@@ -17,15 +16,37 @@ export const menuGroup = "Menu";
 // order here is the order they render in. `isNotNav` entries route but never
 // appear in navigation. `can` hides an entry and blocks its URL for roles
 // without that permission. A placeholder's `handle.note` says when its screen arrives.
-// Home, the landing page, ships in the main bundle; every other page is its own
-// chunk, and `skeleton` is the frame shown until that chunk arrives.
+// Every page is its own chunk, and `skeleton` is the frame shown until that
+// chunk arrives. "/" is no page: protected.routes.ts sends it to the role's landing page.
 export const protectedViewRoutes: IRoute[] = [
   {
-    key: "home",
-    label: "Home",
-    icon: House,
-    path: ROUTES.home,
-    Component: HomeView,
+    key: "dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    path: ROUTES.dashboard,
+    can: "viewInsights",
+    badge: "stockAlerts",
+    skeleton: "dashboard",
+    ...lazyPage(() => import("../pages/Dashboard/DashboardView")),
+  },
+  {
+    key: "transaction",
+    label: "Transaction",
+    shortLabel: "Sell",
+    icon: ShoppingCart,
+    path: ROUTES.transaction,
+    can: "takeTransaction",
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Transaction/TransactionView")),
+  },
+  {
+    key: "analyzer",
+    label: "Analyzer",
+    icon: ChartColumnBig,
+    path: ROUTES.analyzer,
+    can: "viewInsights",
+    skeleton: "dashboard",
+    ...lazyPage(() => import("../pages/Analyzer/AnalyzerView")),
   },
   {
     key: "inventory",
@@ -44,25 +65,6 @@ export const protectedViewRoutes: IRoute[] = [
     can: "browseInventory",
     skeleton: "detail",
     ...lazyPage(() => import("../pages/Inventory/InventoryItemView")),
-  },
-  {
-    key: "dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    path: ROUTES.dashboard,
-    can: "viewInsights",
-    badge: "stockAlerts",
-    skeleton: "dashboard",
-    ...lazyPage(() => import("../pages/Dashboard/DashboardView")),
-  },
-  {
-    key: "analyzer",
-    label: "Analyzer",
-    icon: ChartColumnBig,
-    path: ROUTES.analyzer,
-    can: "viewInsights",
-    skeleton: "dashboard",
-    ...lazyPage(() => import("../pages/Analyzer/AnalyzerView")),
   },
   // The hub for the account, shop defaults and the screens below it.
   {

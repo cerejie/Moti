@@ -122,3 +122,8 @@ export function toPhMobileValue(input: string): string {
   const digits = phMobileDigits(input);
   return digits === "" ? "" : `0${digits}`;
 }
+
+// A transaction's per-shop number: #1024.
+export function formatTransactionNo(value: number): string {
+  return `#${value}`;
+}

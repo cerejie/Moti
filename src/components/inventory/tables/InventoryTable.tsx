@@ -4,7 +4,6 @@ import {
   PackageMinus,
   PackagePlus,
   Pencil,
-  ShoppingCart,
 } from "lucide-react";
 import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
@@ -61,20 +60,13 @@ const InventoryTable = ({
   const isMobile = useIsMobile();
   const { openEdit } = useItemFormModal();
   const { archive, restore } = useItemArchive();
-  const { openSale, openAdd, openDeduct } = useStockMovementModal();
+  const { openAdd, openDeduct } = useStockMovementModal();
 
   // Only managers get this menu; an archived item takes no stock until restored.
   const stockActionsFor = (item: IInventoryItem): IRowAction[] =>
     item.archived_at
       ? []
       : [
-          {
-            key: "sell",
-            label: "Sell",
-            icon: <ShoppingCart />,
-            disabled: item.on_hand === 0,
-            onSelect: () => openSale(item),
-          },
           { key: "add", label: "Add stock", icon: <PackagePlus />, onSelect: () => openAdd(item) },
           {
             key: "deduct",

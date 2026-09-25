@@ -7,8 +7,8 @@ import {
 
 export const stockMovementSchema = z
   .object({
-    mode: z.enum(["sale", "stock_in", "stock_out"]),
-    reason: z.enum(["restock", "correction", "sale", "damaged"], { message: "Pick a reason" }),
+    mode: z.enum(["stock_in", "stock_out"]),
+    reason: z.enum(["restock", "correction", "damaged"], { message: "Pick a reason" }),
     // Text input; the service sends it as a number. Nine digits stays inside a Postgres integer.
     quantity: z
       .string()
