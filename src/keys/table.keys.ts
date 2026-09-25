@@ -13,3 +13,5 @@ export const stockAlertTableKey = "stock-alert-table";
 export const analyzerPeriodKey = "analyzer-period";
 export const analyzerTableKey = "analyzer-table";
 export const reorderTableKey = "reorder-table";
+export const shopTableKey = "shop-table";
+export const userTableKey = "user-table";

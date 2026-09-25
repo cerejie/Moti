@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { authMeKey, scopedKey } from "../../../keys/query.keys";
 import { derivePermissions } from "../../../models/common/permission.model";
 import authServices from "../../../services/data/auth.services";
+import { selectOnline, useNetworkStore } from "../../../store/common/network.store";
 import { resetAllStores } from "../../../store/common/reset.store";
 import {
   selectUserId,
@@ -35,14 +36,18 @@ export const useAuthSession = () => {
   );
 };
 
+// Re-read every minute while online, so a deactivated user or a suspended shop
+// reaches the locked-out screen without a reload.
 export const useMe = () => {
   const userId = useAuthStore(selectUserId);
+  const online = useNetworkStore(selectOnline);
 
   return useQuery({
     queryKey: [scopedKey(authMeKey, userId)],
     queryFn: async ({ signal }) =>
       userId ? authServices.getMe(userId, signal) : null,
     enabled: Boolean(userId),
+    refetchInterval: online ? 60_000 : false,
   });
 };
 

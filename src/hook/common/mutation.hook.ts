@@ -4,8 +4,9 @@ import type { IMutationResult } from "../../models/common/write.model";
 import { describeError } from "../../utils/error.utils";
 import { queryClient } from "../../utils/query.utils";
 
-type IOptions<TVariables> = {
-  mutationFn: (variables: TVariables) => Promise<IMutationResult>;
+// TResult widens the write result for an online-only call that answers with data.
+type IOptions<TVariables, TResult extends IMutationResult> = {
+  mutationFn: (variables: TVariables) => Promise<TResult>;
   // Toast text once the write reached the server.
   successMessage: string | ((variables: TVariables) => string);
   // Query-key prefixes whose cached rows the write changes.
@@ -13,7 +14,7 @@ type IOptions<TVariables> = {
   // A write started outside a form (a confirm, a row action) has nowhere to
   // show its error, so it raises a toast instead.
   toastErrors?: boolean;
-  onSuccess?: (result: IMutationResult, variables: TVariables) => void;
+  onSuccess?: (result: TResult, variables: TVariables) => void;
 };
 
 export const queuedMessage = "Saved offline — will sync when you're back online.";
@@ -22,13 +23,16 @@ const errorFallback = "Couldn't save. Please try again.";
 
 // Every runWrite-backed mutation goes through here, so a queued write always
 // says so instead of claiming success.
-export const useAppMutation = <TVariables>({
+export const useAppMutation = <
+  TVariables,
+  TResult extends IMutationResult = IMutationResult,
+>({
   mutationFn,
   successMessage,
   invalidates,
   toastErrors = false,
   onSuccess,
-}: IOptions<TVariables>) => {
+}: IOptions<TVariables, TResult>) => {
   const mutation = useMutation({
     mutationFn,
     onSuccess: (result, variables) => {

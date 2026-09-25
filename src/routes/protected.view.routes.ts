@@ -4,7 +4,9 @@ import {
   House,
   LayoutDashboard,
   Package,
+  Settings,
   Store,
+  UsersRound,
 } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
 import AnalyzerView from "../pages/Analyzer/AnalyzerView";
@@ -13,7 +15,9 @@ import InventoryItemView from "../pages/Inventory/InventoryItemView";
 import InventoryView from "../pages/Inventory/InventoryView";
 import MovementsView from "../pages/Movements/MovementsView";
 import DashboardView from "../pages/Dashboard/DashboardView";
-import ComingSoonView from "../pages/Placeholder/ComingSoonView";
+import SettingsView from "../pages/Settings/SettingsView";
+import ShopsView from "../pages/Shops/ShopsView";
+import UsersView from "../pages/Users/UsersView";
 import { ROUTES } from "./route.paths";
 
 // The one sidebar heading; every nav route falls under it.
@@ -78,7 +82,23 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Store,
     path: ROUTES.shops,
     can: "manageShops",
-    handle: { note: "Shop management arrives in Phase 6." },
-    Component: ComingSoonView,
+    Component: ShopsView,
+  },
+  {
+    key: "users",
+    label: "Users",
+    icon: UsersRound,
+    path: ROUTES.users,
+    can: "manageEmployees",
+    Component: UsersView,
+  },
+  // Reached from the account menu, so it takes no tab-bar slot.
+  {
+    key: "settings",
+    label: "Settings",
+    icon: Settings,
+    path: ROUTES.settings,
+    isNotNav: true,
+    Component: SettingsView,
   },
 ];

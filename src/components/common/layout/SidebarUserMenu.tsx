@@ -1,4 +1,4 @@
-import { ChevronsUpDown, LogOut, UserRound } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, UserRound } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuGroup,
@@ -15,6 +15,7 @@ import {
   useMe,
   useSignOut,
 } from "../../../hook/data/auth/auth.session.hook";
+import { ROUTES } from "../../../routes/route.paths";
 import {
   selectEmail,
   useAuthStore,
@@ -53,6 +54,10 @@ const SidebarUserMenu = () => {
 
           <DropdownMenu placement="top start" aria-label="Account">
             <DropdownMenuGroup>
+              <DropdownMenuItem id="settings" textValue="Settings" href={ROUTES.settings}>
+                <Settings />
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuItem
                 id="sign-out"
                 textValue="Sign out"

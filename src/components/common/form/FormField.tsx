@@ -95,6 +95,7 @@ const FormField = <TValues extends FieldValues>({
     autoComplete,
     mask,
     allowClear,
+    searchable,
   } = config;
 
   const fieldId = String(config.name);
@@ -257,6 +258,7 @@ const FormField = <TValues extends FieldValues>({
             invalid={invalid}
             label={label}
             allowClear={allowClear}
+            searchable={searchable}
           />
         );
       }

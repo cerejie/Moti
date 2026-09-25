@@ -37,6 +37,8 @@ export interface IFieldConfig<TValues extends FieldValues = FieldValues> {
   icon?: ReactNode;
   autoComplete?: string;
   allowClear?: boolean;
+  // A select long enough to need type-to-filter, e.g. timezones.
+  searchable?: boolean;
   disabled?: boolean;
   // Reshapes a text field's value on every keystroke, e.g. inserting dashes.
   mask?: (value: string) => string;

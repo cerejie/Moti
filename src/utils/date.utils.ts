@@ -29,3 +29,10 @@ export const dayStartInstant = (date: string, timezone: string) =>
 // The instant after a shop-local day ends: the next day's start, excluded.
 export const dayEndInstant = (date: string, timezone: string) =>
   toZoned(parseDate(date).add({ days: 1 }), timezone).toAbsoluteString();
+
+// Every IANA zone the browser knows, plus the saved one if the browser lacks it.
+export const timezoneOptions = (current: string) => {
+  const zones = Intl.supportedValuesOf("timeZone");
+  const all = current && !zones.includes(current) ? [current, ...zones] : zones;
+  return all.map((zone) => ({ value: zone, label: zone.replace(/_/g, " ") }));
+};

@@ -4,3 +4,6 @@ export const categoryFormModalKey = "category-form";
 export const stockMovementModalKey = "stock-movement";
 export const syncIssuesModalKey = "sync-issues";
 export const stockAlertsModalKey = "stock-alerts";
+export const shopFormModalKey = "shop-form";
+export const userFormModalKey = "user-form";
+export const temporaryPasswordModalKey = "temporary-password";

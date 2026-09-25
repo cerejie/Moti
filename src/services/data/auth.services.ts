@@ -10,7 +10,13 @@ const profileColumns =
   "id, shop_id, role, full_name, is_active, shop:shops(id, name, is_active)";
 
 const toSession = (session: Session | null): IAuthSession | null =>
-  session ? { userId: session.user.id, email: session.user.email ?? null } : null;
+  session
+    ? {
+        userId: session.user.id,
+        email: session.user.email ?? null,
+        mustChangePassword: session.user.user_metadata?.must_change_password === true,
+      }
+    : null;
 
 // Sign-in and sign-out need the server's answer, so they are online-only and
 // never go through the offline queue.
@@ -22,6 +28,16 @@ const authServices = {
 
   signOut: async (): Promise<void> => {
     const { error } = await supabase.auth.signOut();
+    if (error) throw toError(error);
+  },
+
+  // Online-only. Clears the temporary-password flag; the session subscription
+  // then receives the updated user.
+  changePassword: async (password: string): Promise<void> => {
+    const { error } = await supabase.auth.updateUser({
+      password,
+      data: { must_change_password: false },
+    });
     if (error) throw toError(error);
   },
 

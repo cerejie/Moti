@@ -4,6 +4,8 @@ import type { UserRole } from "../../../enums/role.enum";
 export interface IAuthSession {
   userId: string;
   email: string | null;
+  // Set by manage-staff on a new account or a reset; cleared by changing the password.
+  mustChangePassword: boolean;
 }
 
 export interface IProfileShop {

@@ -13,7 +13,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 3: Stock transactions
 - [x] Phase 4: Dashboard and alerts
 - [x] Phase 5: Smart Analyzer
-- [ ] Phase 6: Shops, users and settings
+- [x] Phase 6: Shops, users and settings
 - [ ] Phase 7: PWA hardening
 - [ ] Phase 8: Tests and release
 
@@ -96,6 +96,25 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
 - 2026-09-24 (Phase 5): the shadcn aria-vega `calendar` imports `cn` from a package named `cn`; the
   package was removed and that one import points at `@/utils/cn.utils`. Re-check after re-adding it.
 - Carried to Phase 7: with Analyzer, the superadmin's phone tab bar has six tabs.
+- 2026-09-25 (Phase 6): the `manage-staff` Edge Function (service role) creates accounts and resets
+  passwords, checking the caller's profile first: the superadmin adds owners or employees to any shop,
+  an owner adds employees to their own shop only. The server generates the temporary password and shows
+  it once. If the profile insert fails, the auth user is deleted.
+- 2026-09-25 (Phase 6): `profiles.email` is copied from `auth.users` by a before-insert trigger (and
+  filled in for existing rows), because clients can't read `auth.users`. A user's role, shop and email are
+  fixed at creation; `update_staff_profile` changes only the name and the active flag, and never your own row.
+- 2026-09-25 (Phase 6): a temporary password is marked by `user_metadata.must_change_password`. Home
+  shows a reminder until the user changes it in Settings. It is a nudge, not a block.
+- 2026-09-25 (Phase 6): a deactivated user or suspended shop is refused by RLS on the next request.
+  `useMe` re-checks every 60 s while online, so the locked-out screen follows. The guard keeps the
+  loaded profile when a background re-check fails.
+- 2026-09-25 (Phase 6): the Users screen is one list for owners (their shop) and the superadmin
+  (all shops, with shop and role filters). Settings (`/settings`) is off the tab bar and opens from
+  the account menu. `shop_settings.timezone` is checked against `pg_timezone_names` by a trigger.
+- 2026-09-25 (Phase 6): `useAppMutation` takes an optional result type for online-only calls that
+  answer with data. `IFieldConfig.searchable` passes type-to-filter through to the select.
+  `pages/Placeholder/ComingSoonView.tsx` is no longer routed but is kept.
+- Carried to Phase 7: the superadmin's phone tab bar now has seven tabs (Users added).
 
 ## What changed from the discovery plan
 

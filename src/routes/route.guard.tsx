@@ -42,7 +42,8 @@ export const ProtectedRoute = () => {
 
   if (me.isPending) return <SessionLoading />;
 
-  if (me.isError) {
+  // A failed background re-check keeps the profile it already has.
+  if (me.isError && !me.data) {
     return (
       <AuthLayout>
         <ErrorState error={me.error} onRetry={() => void me.refetch()} />

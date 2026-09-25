@@ -17,3 +17,6 @@ export const analyzerRankingKey = "analyzer-ranking";
 export const analyzerSummaryKey = "analyzer-summary";
 export const analyzerReorderKey = "analyzer-reorder";
 export const shopTimezoneKey = "shop-timezone";
+export const shopListKey = "shop-list";
+export const shopSettingsKey = "shop-settings";
+export const userListKey = "user-list";

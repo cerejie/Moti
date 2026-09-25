@@ -41,6 +41,9 @@ export const tableCellNumeric = "text-right tabular-nums";
 
 export const tableCellActions = "w-px whitespace-nowrap text-right";
 
+// Names the actions column for screen readers without a visible header.
+export const tableHeadHidden = "sr-only";
+
 // The expanded panel spans the full row beneath the record it belongs to, and
 // repeats the card shape so the pair reads as one record.
 export const tableExpansionCell =

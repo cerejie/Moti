@@ -7,6 +7,7 @@ type States = {
   status: AuthStatus;
   userId: string | null;
   email: string | null;
+  mustChangePassword: boolean;
 };
 
 type Actions = {
@@ -17,6 +18,7 @@ const initialValues: States = {
   status: "loading",
   userId: null,
   email: null,
+  mustChangePassword: false,
 };
 
 // Plain zustand create, not the reset-aware one: a sign-out reset would put the
@@ -27,8 +29,13 @@ export const useAuthStore = create<States & Actions>()((set) => ({
   setSession: (session) =>
     set(
       session
-        ? { status: "signedIn", userId: session.userId, email: session.email }
-        : { status: "signedOut", userId: null, email: null },
+        ? {
+            status: "signedIn",
+            userId: session.userId,
+            email: session.email,
+            mustChangePassword: session.mustChangePassword,
+          }
+        : { status: "signedOut", userId: null, email: null, mustChangePassword: false },
     ),
 }));
 
@@ -37,3 +44,5 @@ export const selectAuthStatus = (state: States) => state.status;
 export const selectUserId = (state: States) => state.userId;
 
 export const selectEmail = (state: States) => state.email;
+
+export const selectMustChangePassword = (state: States) => state.mustChangePassword;
