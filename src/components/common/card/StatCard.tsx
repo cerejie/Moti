@@ -15,11 +15,15 @@ import {
   statCardRoot,
   statCardTrailing,
   statCardValue,
+  statCardValueLoading,
 } from "../../../styles/cards/statCard.styles";
+import LoadingBar from "../status/LoadingBar";
 
 type IProps = {
   label: string;
   value: ReactNode;
+  // Label and icon stay; only the value is a placeholder until it arrives.
+  loading?: boolean;
   hint?: string;
   icon?: ReactNode;
   tone?: Tone;
@@ -38,6 +42,7 @@ type IProps = {
 const StatCard = ({
   label,
   value,
+  loading = false,
   hint,
   icon,
   tone = "neutral",
@@ -61,7 +66,11 @@ const StatCard = ({
       )}
       <ItemContent>
         <ItemTitle className={statCardLabel({ tone, size })}>{label}</ItemTitle>
-        <span className={statCardValue({ size })}>{value}</span>
+        {loading ? (
+          <LoadingBar className={statCardValueLoading} />
+        ) : (
+          <span className={statCardValue({ size })}>{value}</span>
+        )}
         {hint && <ItemDescription>{hint}</ItemDescription>}
         {footer}
       </ItemContent>

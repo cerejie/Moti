@@ -6,6 +6,7 @@ import FormFieldGrid from "../../common/form/FormFieldGrid";
 import FormRoot from "../../common/form/FormRoot";
 import AppAlert from "../../common/status/AppAlert";
 import ErrorState from "../../common/status/ErrorState";
+import ListSkeleton from "../../common/status/ListSkeleton";
 import StateBox from "../../common/status/StateBox";
 import { useShopSettingsForm } from "../../../hook/data/shop/shop.form.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
@@ -72,7 +73,7 @@ const ShopSettingsCard = () => {
         </StateBox>
       );
     }
-    if (isPending) return <StateBox loading title="Loading settings…" />;
+    if (isPending) return <ListSkeleton rows={fields.length} kind="field" />;
     if (isError) return <ErrorState error={error} onRetry={() => void refetch()} />;
 
     return (

@@ -10,7 +10,7 @@ import ReorderPanel from "./ReorderPanel";
 
 const AnalyzerPanel = () => {
   const { shopId } = useActiveShop();
-  const { isLoading, isError, error, refetch } = useShopTimezone();
+  const { isError, error, refetch } = useShopTimezone();
   const { tab, setTab } = useAnalyzerView();
 
   if (!shopId) {
@@ -21,8 +21,7 @@ const AnalyzerPanel = () => {
     );
   }
 
-  // Every period is read in the shop's timezone, so nothing can be ranked before it loads.
-  if (isLoading) return <StateBox loading title="Loading analyzer…" />;
+  // Every period is read in the shop's timezone; while it loads the tabs show their skeletons.
   if (isError) return <ErrorState error={error} onRetry={() => void refetch()} />;
 
   return (

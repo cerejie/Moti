@@ -2,6 +2,7 @@ import { Pencil, Plus, Tags, Trash2 } from "lucide-react";
 import AppButton from "../../common/button/AppButton";
 import AppModal from "../../common/modal/AppModal";
 import ErrorState from "../../common/status/ErrorState";
+import ListSkeleton from "../../common/status/ListSkeleton";
 import StateBox from "../../common/status/StateBox";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import { useModal } from "../../../hook/common/modal.hook";
@@ -42,7 +43,7 @@ const CategoryManagerModal = () => {
   ];
 
   const renderBody = () => {
-    if (isLoading) return <StateBox loading>Loading categories…</StateBox>;
+    if (isLoading) return <ListSkeleton rows={4} />;
     if (isError) return <ErrorState error={error} onRetry={() => void refetch()} />;
     if (categories.length === 0) {
       return (

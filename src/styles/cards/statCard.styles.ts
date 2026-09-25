@@ -74,3 +74,6 @@ export const statCardValue = cva(
 );
 
 export const statCardTrailing = "text-muted-foreground";
+
+// A value still loading, on the value's own line height so the tile keeps its size.
+export const statCardValueLoading = "my-0.5 h-5 w-16";

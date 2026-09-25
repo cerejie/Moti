@@ -147,6 +147,8 @@ export const useVolumeRanking = () => {
 
   return {
     ...query,
+    // Still loading while the period waits on the shop's timezone.
+    isLoading: query.isLoading || !range,
     range,
     metric,
     openItem: (row: IVolumeRank) => navigate(itemPath(row.item_id)),
@@ -168,7 +170,7 @@ export const usePeriodSummary = () => {
     placeholderData: keepPreviousData,
   });
 
-  return { ...query, metric };
+  return { ...query, isLoading: query.isLoading || !range, metric };
 };
 
 export const useReorderItems = () => {

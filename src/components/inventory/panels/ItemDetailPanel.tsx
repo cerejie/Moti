@@ -3,6 +3,7 @@ import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import AppAlert from "../../common/status/AppAlert";
 import ErrorState from "../../common/status/ErrorState";
+import PageSkeleton from "../../common/status/PageSkeleton";
 import StateBox from "../../common/status/StateBox";
 import { useInventoryItem } from "../../../hook/data/inventory/inventory.list.hook";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -26,7 +27,7 @@ const detailRows = (item: IInventoryItem) => [
 const ItemDetailPanel = () => {
   const { data: item, isLoading, isError, error, refetch, canManage } = useInventoryItem();
 
-  if (isLoading) return <StateBox loading>Loading item…</StateBox>;
+  if (isLoading) return <PageSkeleton variant="detail" header={false} />;
   if (isError) return <ErrorState error={error} onRetry={() => void refetch()} />;
 
   if (!item) {

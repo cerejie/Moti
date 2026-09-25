@@ -41,10 +41,11 @@ const StockSummaryCards = () => {
   const { data, isLoading, isError, error, refetch } = useStockSummary();
   const openStatus = useOpenStockStatus();
 
-  if (isLoading) return <StateBox loading title="Loading stock summary…" />;
-  if (isError || !data) return <ErrorState error={error} onRetry={() => void refetch()} />;
+  if (isError || (!isLoading && !data)) {
+    return <ErrorState error={error} onRetry={() => void refetch()} />;
+  }
 
-  if (data.item_count === 0) {
+  if (data?.item_count === 0) {
     return (
       <StateBox
         icon={<PackageOpen />}
@@ -56,24 +57,32 @@ const StockSummaryCards = () => {
     );
   }
 
+  // The real tiles render while loading, so nothing moves when the numbers land.
   return (
-    <div className={summaryGrid}>
+    <div className={summaryGrid} aria-busy={isLoading}>
       <StatCard
         label="Items"
-        value={formatCount(data.item_count)}
+        value={data && formatCount(data.item_count)}
+        loading={isLoading}
         icon={<Package />}
         trailing={<ChevronRight />}
         to={ROUTES.inventory}
         onPress={() => openStatus("all")}
       />
-      <StatCard label="Units on hand" value={formatCount(data.units_on_hand)} icon={<Boxes />} />
+      <StatCard
+        label="Units on hand"
+        value={data && formatCount(data.units_on_hand)}
+        loading={isLoading}
+        icon={<Boxes />}
+      />
       {statusTiles.map((tile) => {
-        const count = tile.count(data);
+        const count = data ? tile.count(data) : 0;
         return (
           <StatCard
             key={tile.status}
             label={stockStatusLabels[tile.status]}
             value={formatCount(count)}
+            loading={isLoading}
             icon={tile.icon}
             // A zero stays quiet; only a status with items carries its colour.
             tone={count > 0 ? stockStatusTones[tile.status] : "neutral"}

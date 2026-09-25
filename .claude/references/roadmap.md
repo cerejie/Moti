@@ -143,6 +143,15 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   the last 7 days. A replayed client id must match its item, and a replayed item or category id must be
   in the caller's shop. Measured at 20k items / 300k movements per shop: every query under 300 ms, no
   index change needed. Carried: route-level code splitting (one 1.44 MB bundle, 420 KB gzip).
+- 2026-09-25 (code splitting): every page but Home and Sign-in is its own chunk (`lazyPage` in
+  `route.utils.ts`, `React.lazy`, not React Router's `lazy`, which holds the old page until the chunk
+  arrives). AppLayout's Suspense sits inside the pathname-keyed ErrorBoundary, so a tap switches the
+  route at once and shows the route's `skeleton` frame (`PageSkeleton`) until the code lands;
+  `usePreloadPages` fetches the role's page chunks when the shell is idle. Sections load on their own:
+  StatCard takes `loading` (real tiles, value placeholder), spinner StateBoxes became
+  Page/Card/Table/List/Stats skeletons, and the Analyzer no longer blocks on the shop timezone. First
+  load 1.25 MB / 370 KB gzip, from 1.44 MB / 420 KB; the rest is vendor code the shell needs.
+  Data prefetch on tap is left out: list keys depend on filter and pagination stores.
 
 ## What changed from the discovery plan
 

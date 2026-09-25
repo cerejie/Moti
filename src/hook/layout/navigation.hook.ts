@@ -61,16 +61,50 @@ export const useTabBarMenu = () => {
   };
 };
 
+// The page route at the current URL, sub-pages with params included.
+export const useActivePage = () => {
+  const { pathname } = useLocation();
+
+  return (
+    protectedViewRoutes.find(
+      (entry) => entry.path && matchPath(entry.path, pathname),
+    ) ?? null
+  );
+};
+
 // False when the page at the current URL needs a permission the user lacks,
 // e.g. an employee typing an owner-only address.
 export const useRouteAllowed = () => {
-  const { pathname } = useLocation();
   const permissions = usePermissions();
-  const route = protectedViewRoutes.find(
-    (entry) => entry.path && matchPath(entry.path, pathname),
-  );
+  const route = useActivePage();
 
   return !route?.can || permissions[route.can];
+};
+
+// Once the shell is idle, fetches the code of every page this role can open, so
+// a first tap on a tab renders the page itself rather than its skeleton.
+export const usePreloadPages = () => {
+  const permissions = usePermissions();
+  const allowed = protectedViewRoutes.filter(
+    (route) => route.preload && (!route.can || permissions[route.can]),
+  );
+  // A string, so the effect reruns when the role changes, not on every render.
+  const allowedKeys = allowed.map((route) => route.key).join();
+
+  useEffect(() => {
+    const preload = () => {
+      protectedViewRoutes
+        .filter((route) => route.key && allowedKeys.split(",").includes(route.key))
+        // A failed prefetch is ignored; the page's own load reports any error.
+        .forEach((route) => void route.preload?.().catch(() => undefined));
+    };
+
+    // Safari has no requestIdleCallback; the imports are async either way.
+    if (!("requestIdleCallback" in window)) return preload();
+
+    const id = window.requestIdleCallback(preload);
+    return () => window.cancelIdleCallback(id);
+  }, [allowedKeys]);
 };
 
 export const useActiveNavRoute = () => {

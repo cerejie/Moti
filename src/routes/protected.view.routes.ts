@@ -9,15 +9,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
-import AnalyzerView from "../pages/Analyzer/AnalyzerView";
 import HomeView from "../pages/Home/HomeView";
-import InventoryItemView from "../pages/Inventory/InventoryItemView";
-import InventoryView from "../pages/Inventory/InventoryView";
-import MovementsView from "../pages/Movements/MovementsView";
-import DashboardView from "../pages/Dashboard/DashboardView";
-import SettingsView from "../pages/Settings/SettingsView";
-import ShopsView from "../pages/Shops/ShopsView";
-import UsersView from "../pages/Users/UsersView";
+import { lazyPage } from "../utils/route.utils";
 import { ROUTES } from "./route.paths";
 
 // The one sidebar heading; every nav route falls under it.
@@ -27,6 +20,8 @@ export const menuGroup = "Menu";
 // order here is the order they render in. `isNotNav` entries route but never
 // appear in navigation. `can` hides an entry and blocks its URL for roles
 // without that permission. A placeholder's `handle.note` says when its screen arrives.
+// Home, the landing page, ships in the main bundle; every other page is its own
+// chunk, and `skeleton` is the frame shown until that chunk arrives.
 export const protectedViewRoutes: IRoute[] = [
   {
     key: "home",
@@ -41,7 +36,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Package,
     path: ROUTES.inventory,
     can: "browseInventory",
-    Component: InventoryView,
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Inventory/InventoryView")),
   },
   {
     key: "inventory-item",
@@ -49,7 +45,8 @@ export const protectedViewRoutes: IRoute[] = [
     path: ROUTES.inventoryItem,
     isNotNav: true,
     can: "browseInventory",
-    Component: InventoryItemView,
+    skeleton: "detail",
+    ...lazyPage(() => import("../pages/Inventory/InventoryItemView")),
   },
   {
     key: "movements",
@@ -57,7 +54,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: ArrowLeftRight,
     path: ROUTES.movements,
     can: "viewInsights",
-    Component: MovementsView,
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Movements/MovementsView")),
   },
   {
     key: "dashboard",
@@ -66,7 +64,8 @@ export const protectedViewRoutes: IRoute[] = [
     path: ROUTES.dashboard,
     can: "viewInsights",
     badge: "stockAlerts",
-    Component: DashboardView,
+    skeleton: "dashboard",
+    ...lazyPage(() => import("../pages/Dashboard/DashboardView")),
   },
   {
     key: "analyzer",
@@ -74,7 +73,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: ChartColumnBig,
     path: ROUTES.analyzer,
     can: "viewInsights",
-    Component: AnalyzerView,
+    skeleton: "dashboard",
+    ...lazyPage(() => import("../pages/Analyzer/AnalyzerView")),
   },
   {
     key: "shops",
@@ -82,7 +82,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Store,
     path: ROUTES.shops,
     can: "manageShops",
-    Component: ShopsView,
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Shops/ShopsView")),
   },
   {
     key: "users",
@@ -90,7 +91,8 @@ export const protectedViewRoutes: IRoute[] = [
     icon: UsersRound,
     path: ROUTES.users,
     can: "manageEmployees",
-    Component: UsersView,
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Users/UsersView")),
   },
   // Reached from the account menu, so it takes no tab-bar slot.
   {
@@ -99,6 +101,7 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Settings,
     path: ROUTES.settings,
     isNotNav: true,
-    Component: SettingsView,
+    skeleton: "form",
+    ...lazyPage(() => import("../pages/Settings/SettingsView")),
   },
 ];
