@@ -40,7 +40,7 @@ const MovementToolbar = () => {
       <FilterToolbar
         filterKey={movementTableKey}
         searchKey={movementTableKey}
-        searchPlaceholder="Search item name or SKU"
+        searchPlaceholder="Search item name or code"
         controls={[
           {
             key: "reason",

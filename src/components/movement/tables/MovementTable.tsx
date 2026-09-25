@@ -66,7 +66,7 @@ const MovementTable = ({
     cell: ({ row }) => (
       <div className={movementCell}>
         <span className={movementTitle}>{row.original.item_name}</span>
-        <span className={movementMeta}>SKU {row.original.item_sku}</span>
+        <span className={movementMeta}>{row.original.item_code}</span>
       </div>
     ),
   });

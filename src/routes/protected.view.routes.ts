@@ -1,12 +1,9 @@
 import {
-  ArrowLeftRight,
   ChartColumnBig,
   House,
   LayoutDashboard,
   Package,
   Settings,
-  Store,
-  UsersRound,
 } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
 import HomeView from "../pages/Home/HomeView";
@@ -49,15 +46,6 @@ export const protectedViewRoutes: IRoute[] = [
     ...lazyPage(() => import("../pages/Inventory/InventoryItemView")),
   },
   {
-    key: "movements",
-    label: "Movements",
-    icon: ArrowLeftRight,
-    path: ROUTES.movements,
-    can: "viewInsights",
-    skeleton: "list",
-    ...lazyPage(() => import("../pages/Movements/MovementsView")),
-  },
-  {
     key: "dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
@@ -76,32 +64,40 @@ export const protectedViewRoutes: IRoute[] = [
     skeleton: "dashboard",
     ...lazyPage(() => import("../pages/Analyzer/AnalyzerView")),
   },
-  {
-    key: "shops",
-    label: "Shops",
-    icon: Store,
-    path: ROUTES.shops,
-    can: "manageShops",
-    skeleton: "list",
-    ...lazyPage(() => import("../pages/Shops/ShopsView")),
-  },
-  {
-    key: "users",
-    label: "Users",
-    icon: UsersRound,
-    path: ROUTES.users,
-    can: "manageEmployees",
-    skeleton: "list",
-    ...lazyPage(() => import("../pages/Users/UsersView")),
-  },
-  // Reached from the account menu, so it takes no tab-bar slot.
+  // The hub for the account, shop defaults and the screens below it.
   {
     key: "settings",
     label: "Settings",
     icon: Settings,
     path: ROUTES.settings,
-    isNotNav: true,
     skeleton: "form",
     ...lazyPage(() => import("../pages/Settings/SettingsView")),
+  },
+  {
+    key: "masterfile",
+    label: "Masterfile",
+    path: ROUTES.masterfile,
+    isNotNav: true,
+    can: "manageCatalog",
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Masterfile/MasterfileView")),
+  },
+  {
+    key: "users",
+    label: "Users",
+    path: ROUTES.users,
+    isNotNav: true,
+    can: "manageEmployees",
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Users/UsersView")),
+  },
+  {
+    key: "shops",
+    label: "Shops",
+    path: ROUTES.shops,
+    isNotNav: true,
+    can: "manageShops",
+    skeleton: "list",
+    ...lazyPage(() => import("../pages/Shops/ShopsView")),
   },
 ];

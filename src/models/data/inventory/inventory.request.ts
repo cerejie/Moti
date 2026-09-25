@@ -12,35 +12,36 @@ const optionalWholeNumber = (message: string) =>
   z.string().trim().regex(/^\d*$/, message);
 
 export const itemSchema = z.object({
-  sku: z.string().trim().min(1, "Enter a SKU").max(60, "Keep the SKU under 60 characters"),
+  // Display only: the server sets the code from the category and brand.
+  item_code: z.string(),
   name: z.string().trim().min(1, "Enter the item name").max(160, "Keep the name under 160 characters"),
-  category_id: z.string(),
-  brand: optionalText(80),
+  category_id: z.string().min(1, "Choose a category"),
+  brand_id: z.string().min(1, "Choose a brand"),
   part_number: optionalText(80),
   fitment: optionalText(240),
-  unit: z.string().trim().min(1, "Enter a unit, e.g. pc").max(20, "Keep the unit under 20 characters"),
+  unit_id: z.string().min(1, "Choose a unit"),
   reorder_level: optionalWholeNumber("Enter the reorder level as a whole number"),
   selling_price: z
     .string()
     .trim()
     .regex(/^(\d{1,10}(\.\d{1,2})?)?$/, "Enter a price like 250 or 250.50"),
-  location: optionalText(80),
+  location_id: z.string(),
   opening_quantity: optionalWholeNumber("Enter the opening stock as a whole number"),
 });
 
 export type IItemRequest = z.infer<typeof itemSchema>;
 
 export const emptyItemRequest: IItemRequest = {
-  sku: "",
+  item_code: "",
   name: "",
   category_id: "",
-  brand: "",
+  brand_id: "",
   part_number: "",
   fitment: "",
-  unit: "pc",
+  unit_id: "",
   reorder_level: "",
   selling_price: "",
-  location: "",
+  location_id: "",
   opening_quantity: "",
 };
 

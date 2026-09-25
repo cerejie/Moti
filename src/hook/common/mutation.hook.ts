@@ -14,6 +14,8 @@ type IOptions<TVariables, TResult extends IMutationResult> = {
   // A write started outside a form (a confirm, a row action) has nowhere to
   // show its error, so it raises a toast instead.
   toastErrors?: boolean;
+  // Replaces the default queued toast when a queued write has more to say.
+  queuedText?: (variables: TVariables) => string | null;
   onSuccess?: (result: TResult, variables: TVariables) => void;
 };
 
@@ -31,13 +33,14 @@ export const useAppMutation = <
   successMessage,
   invalidates,
   toastErrors = false,
+  queuedText,
   onSuccess,
 }: IOptions<TVariables, TResult>) => {
   const mutation = useMutation({
     mutationFn,
     onSuccess: (result, variables) => {
       if (result.queued) {
-        toast.info(queuedMessage);
+        toast.info(queuedText?.(variables) ?? queuedMessage);
       } else {
         toast.success(
           typeof successMessage === "function" ? successMessage(variables) : successMessage,

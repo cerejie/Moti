@@ -24,6 +24,13 @@ export interface IFieldOption {
   disabled?: boolean;
 }
 
+// A last entry in a select that runs an action instead of picking a value,
+// e.g. "+ Add category".
+export interface ISelectAction {
+  label: string;
+  onSelect: () => void;
+}
+
 export interface IFieldConfig<TValues extends FieldValues = FieldValues> {
   name: Path<TValues>;
   label: string;
@@ -39,6 +46,7 @@ export interface IFieldConfig<TValues extends FieldValues = FieldValues> {
   allowClear?: boolean;
   // A select long enough to need type-to-filter, e.g. timezones.
   searchable?: boolean;
+  selectAction?: ISelectAction;
   disabled?: boolean;
   // Reshapes a text field's value on every keystroke, e.g. inserting dashes.
   mask?: (value: string) => string;

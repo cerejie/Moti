@@ -11,7 +11,7 @@ const summaryColumns =
 
 const alertsView = "inventory_attention_items";
 const alertColumns =
-  "id, shop_id, category_name, sku, name, unit, on_hand, reorder_level, stock_status, severity";
+  "id, shop_id, category_name, item_code, name, unit, on_hand, reorder_level, stock_status, severity";
 
 const emptySummary = (shopId: string): IStockSummary => ({
   shop_id: shopId,

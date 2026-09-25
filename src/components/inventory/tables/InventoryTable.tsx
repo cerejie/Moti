@@ -46,7 +46,7 @@ type IProps = {
 const column = dataTableColumns<IInventoryItem>();
 
 const metaLine = (item: IInventoryItem) =>
-  [item.sku, item.brand, item.fitment].filter(Boolean).join(" · ");
+  [item.item_code, item.brand, item.fitment].filter(Boolean).join(" · ");
 
 const InventoryTable = ({
   items,

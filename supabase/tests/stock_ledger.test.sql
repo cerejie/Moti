@@ -3,7 +3,7 @@
 -- is append-only. Self-contained: builds its own fixture and rolls back.
 --
 -- Fixture ids (prefix 7e570000-0000-4000-8000-):
---   shop A ...00000000000a  owner ...a1  employee ...a2
+--   shop A ...00000000000a  owner ...a1  employee ...a2  category ...ca  brand ...ba
 --   item ...1a0 (created in the test), item ...1a1  movement client ids ...c001 to ...c007
 begin;
 
@@ -44,9 +44,18 @@ insert into public.profiles (id, shop_id, role, full_name) values
   ('7e570000-0000-4000-8000-0000000000a1', '7e570000-0000-4000-8000-00000000000a', 'owner', 'Owner A'),
   ('7e570000-0000-4000-8000-0000000000a2', '7e570000-0000-4000-8000-00000000000a', 'employee', 'Employee A');
 
+insert into public.categories (id, shop_id, name, code) values
+  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-00000000000a', 'Ledger Category', 'LDG');
+
+insert into public.brands (id, shop_id, name, code) values
+  ('7e570000-0000-4000-8000-0000000000ba', '7e570000-0000-4000-8000-00000000000a', 'Test Brand', 'TBR');
+
+insert into public.category_brands (category_id, brand_id, shop_id) values
+  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba', '7e570000-0000-4000-8000-00000000000a');
+
 -- A second item, for keys and dates that must not touch the first one's balance.
-insert into public.inventory_items (id, shop_id, sku, name, on_hand, reorder_level) values
-  ('7e570000-0000-4000-8000-0000000001a1', '7e570000-0000-4000-8000-00000000000a', 'LEDGER-2', 'Second item', 5, 1);
+insert into public.inventory_items (id, shop_id, item_code, name, unit_id, on_hand, reorder_level) values
+  ('7e570000-0000-4000-8000-0000000001a1', '7e570000-0000-4000-8000-00000000000a', 'LEDGER-2', 'Second item', (select id from public.units where shop_id = '7e570000-0000-4000-8000-00000000000a' and name = 'pc'), 5, 1);
 
 insert into public.stock_movements (shop_id, item_id, movement_type, reason, quantity, balance_after, client_id) values
   ('7e570000-0000-4000-8000-00000000000a', '7e570000-0000-4000-8000-0000000001a1',
@@ -57,8 +66,8 @@ select tests.act_as('7e570000-0000-4000-8000-0000000000a1');
 
 select lives_ok(
   $$ select public.create_item(
-       '7e570000-0000-4000-8000-0000000001a0', null, null,
-       'LEDGER-1', 'Ledger item', null, null, null, null, 2, null, null, 10
+       '7e570000-0000-4000-8000-0000000001a0', null, '7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba',
+       'Ledger item', null, null, null, 2, null, null, 10
      ) $$,
   'owner creates an item with opening stock'
 );
@@ -203,8 +212,8 @@ select is(
 -- on_hand has no other way in.
 select lives_ok(
   $$ select public.update_item(
-       '7e570000-0000-4000-8000-0000000001a0', null, 'LEDGER-1', 'Ledger item renamed',
-       null, null, null, null, 2, null, null
+       '7e570000-0000-4000-8000-0000000001a0', '7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba', 'Ledger item renamed',
+       null, null, null, 2, null, null
      ) $$,
   'owner edits the item'
 );

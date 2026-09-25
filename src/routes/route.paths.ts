@@ -4,10 +4,10 @@ export const ROUTES = {
   signIn: "/sign-in",
   inventory: "/inventory",
   inventoryItem: "/inventory/:itemId",
-  movements: "/movements",
   dashboard: "/dashboard",
   analyzer: "/analyzer",
-  shops: "/shops",
-  users: "/users",
   settings: "/settings",
+  masterfile: "/settings/masterfile",
+  users: "/settings/users",
+  shops: "/settings/shops",
 } as const;

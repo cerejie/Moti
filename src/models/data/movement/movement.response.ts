@@ -6,7 +6,7 @@ export interface IStockMovement {
   shop_id: string;
   item_id: string;
   item_name: string;
-  item_sku: string;
+  item_code: string;
   item_unit: string;
   movement_type: MovementType;
   reason: MovementReason;

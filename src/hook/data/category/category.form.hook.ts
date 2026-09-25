@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import {
   analyzerRankingKey,
   analyzerReorderKey,
+  brandOptionsKey,
   categoryOptionsKey,
+  dashboardAlertsKey,
   inventoryItemKey,
   inventoryListKey,
 } from "../../../keys/query.keys";
@@ -15,49 +17,66 @@ import {
 } from "../../../models/data/category/category.request";
 import type { ICategory } from "../../../models/data/category/category.response";
 import categoryServices from "../../../services/data/category.services";
+import { newWriteId } from "../../../utils/write.utils";
 import { useConfirm } from "../../common/confirmation.hook";
 import { useAppMutation } from "../../common/mutation.hook";
 import { useModal } from "../../common/modal.hook";
 import { useActiveShop } from "../shop/shop.list.hook";
 
-type ISaveCategory = { id?: string; values: ICategoryRequest };
+// Editing carries the category; creating may carry a callback that receives the
+// new id, e.g. the item form selecting the category it just added.
+type ICategoryModal = {
+  category?: ICategory;
+  onCreated?: (id: string) => void;
+};
 
-// Item rows show their category's name, so a rename refreshes them too.
-// Analyzer rows carry the category name.
+type ISaveCategory = { id?: string; newId?: string; values: ICategoryRequest };
+
+// Item rows, analyzer rows and alerts show the category's name; brands list the
+// categories that carry them.
 const affectedKeys = [
   categoryOptionsKey,
+  brandOptionsKey,
   inventoryListKey,
   inventoryItemKey,
   analyzerRankingKey,
   analyzerReorderKey,
+  dashboardAlertsKey,
 ];
 
+const emptyCategory: ICategoryRequest = { name: "", code: "", brand_ids: [] };
+
 export const useCategoryFormModal = () => {
-  const { openModal } = useModal<ICategory>(categoryFormModalKey);
+  const { openModal } = useModal<ICategoryModal>(categoryFormModalKey);
 
   return {
-    openCreate: () => openModal(),
-    openRename: (category: ICategory) => openModal(category),
+    openCreate: (onCreated?: (id: string) => void) => openModal({ onCreated }),
+    openEdit: (category: ICategory) => openModal({ category }),
   };
 };
 
-// The modal's data is the category being renamed; without it the form creates one.
 export const useCategoryForm = () => {
-  const { modal, openModal, closeModal } = useModal<ICategory>(categoryFormModalKey);
+  const { modal, openModal, closeModal } = useModal<ICategoryModal>(categoryFormModalKey);
   const { shopId } = useActiveShop();
-  const editing = modal.data;
+  const editing = modal.data?.category;
+  const onCreated = modal.data?.onCreated;
 
   const form = useForm<ICategoryRequest>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: "" },
+    defaultValues: emptyCategory,
   });
 
   const mutation = useAppMutation<ISaveCategory>({
-    mutationFn: ({ id, values }) =>
-      id ? categoryServices.rename(id, values) : categoryServices.create(shopId, values),
-    successMessage: ({ id }) => (id ? "Category renamed" : "Category added"),
+    mutationFn: ({ id, newId, values }) =>
+      id
+        ? categoryServices.update(id, values)
+        : categoryServices.create(newId ?? newWriteId(), shopId, values),
+    successMessage: ({ id }) => (id ? "Category saved" : "Category added"),
     invalidates: affectedKeys,
-    onSuccess: () => closeModal(),
+    onSuccess: (_result, { newId }) => {
+      if (newId) onCreated?.(newId);
+      closeModal();
+    },
   });
 
   const { reset } = form;
@@ -65,19 +84,23 @@ export const useCategoryForm = () => {
 
   useEffect(() => {
     if (!modal.visible) return;
-    reset({ name: editing?.name ?? "" });
+    reset(
+      editing
+        ? { name: editing.name, code: editing.code, brand_ids: editing.brand_ids }
+        : emptyCategory,
+    );
     resetMutation();
   }, [modal.visible, editing, reset, resetMutation]);
 
   const onSubmit = (values: ICategoryRequest) =>
-    mutation.mutate({ id: editing?.id, values });
+    mutation.mutate(editing ? { id: editing.id, values } : { newId: newWriteId(), values });
 
   return {
     form,
     onSubmit,
     open: modal.visible,
     isEditing: Boolean(editing),
-    onOpenChange: (open: boolean) => (open ? openModal(editing) : closeModal()),
+    onOpenChange: (open: boolean) => (open ? openModal(modal.data) : closeModal()),
     errorText: mutation.errorText,
     isPending: mutation.isPending,
   };
@@ -89,7 +112,7 @@ export const useDeleteCategory = () => {
   const mutation = useAppMutation<string>({
     mutationFn: categoryServices.remove,
     successMessage: "Category deleted",
-    invalidates: [categoryOptionsKey],
+    invalidates: [categoryOptionsKey, brandOptionsKey],
     toastErrors: true,
   });
 

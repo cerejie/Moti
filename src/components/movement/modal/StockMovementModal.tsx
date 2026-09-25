@@ -52,7 +52,7 @@ const StockMovementModal = () => {
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      description={item ? `${item.name} · SKU ${item.sku}` : undefined}
+      description={item ? `${item.name} · ${item.item_code}` : undefined}
       size="sm"
       form={form}
       fields={fields}

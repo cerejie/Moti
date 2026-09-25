@@ -54,6 +54,9 @@ const PH_COUNTRY_CODE = "+63";
 
 const EM_DASH = "—";
 
+// Native option values can't be empty; this one marks the select's action entry.
+const selectActionKey = "__action__";
+
 // The control receives whatever the schema typed the value as, so each branch
 // narrows it rather than asserting.
 const asText = (value: unknown): string =>
@@ -96,6 +99,7 @@ const FormField = <TValues extends FieldValues>({
     mask,
     allowClear,
     searchable,
+    selectAction,
   } = config;
 
   const fieldId = String(config.name);
@@ -231,7 +235,11 @@ const FormField = <TValues extends FieldValues>({
               ref={bound.ref}
               value={value}
               onBlur={bound.onBlur}
-              onChange={(event) => bound.onChange(event.target.value)}
+              onChange={(event) => {
+                // The action entry runs and the controlled value snaps back.
+                if (event.target.value === selectActionKey) return selectAction?.onSelect();
+                bound.onChange(event.target.value);
+              }}
               disabled={disabled}
               className={fieldInput}
             >
@@ -243,6 +251,11 @@ const FormField = <TValues extends FieldValues>({
                   {option.label}
                 </NativeSelectOption>
               ))}
+              {selectAction && (
+                <NativeSelectOption value={selectActionKey}>
+                  {selectAction.label}
+                </NativeSelectOption>
+              )}
             </NativeSelect>
           );
         }
@@ -259,6 +272,7 @@ const FormField = <TValues extends FieldValues>({
             label={label}
             allowClear={allowClear}
             searchable={searchable}
+            action={selectAction}
           />
         );
       }

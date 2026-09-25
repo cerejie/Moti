@@ -15,3 +15,6 @@ export const analyzerTableKey = "analyzer-table";
 export const reorderTableKey = "reorder-table";
 export const shopTableKey = "shop-table";
 export const userTableKey = "user-table";
+// The Inventory screen's Items / Movements tab.
+export const inventorySectionKey = "inventory-section";
+export const masterfileTabKey = "masterfile-tab";

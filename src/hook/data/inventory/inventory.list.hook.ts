@@ -1,9 +1,17 @@
 import { useEffect, useRef } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import type { InventorySort, InventoryTab } from "../../../enums/inventory.enum";
+import type {
+  InventorySection,
+  InventorySort,
+  InventoryTab,
+} from "../../../enums/inventory.enum";
 import { inventoryItemKey, inventoryListKey, scopedKey } from "../../../keys/query.keys";
-import { inventoryStatusKey, inventoryTableKey } from "../../../keys/table.keys";
+import {
+  inventorySectionKey,
+  inventoryStatusKey,
+  inventoryTableKey,
+} from "../../../keys/table.keys";
 import type { IInventoryFilters } from "../../../models/data/inventory/inventory.request";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import { ROUTES } from "../../../routes/route.paths";
@@ -16,8 +24,32 @@ import { useActiveShop } from "../shop/shop.list.hook";
 
 type IToolbarFilters = { category_id?: string };
 type IStatusFilters = { tab?: InventoryTab };
+type ISectionFilters = { section?: InventorySection };
 
 export const itemPath = (id: string) => ROUTES.inventoryItem.replace(":itemId", id);
+
+// Items or Movements. Movements is for managers, so anyone else stays on Items.
+export const useInventorySection = () => {
+  const { viewInsights } = usePermissions();
+  const { filters, setFilters } = useFilters<ISectionFilters>(inventorySectionKey);
+
+  return {
+    section: viewInsights ? (filters.section ?? "items") : "items",
+    showMovements: viewInsights,
+    setSection: (section: InventorySection) => setFilters({ section }),
+  };
+};
+
+// "View all" on the dashboard: Inventory, opened on its Movements tab.
+export const useOpenMovements = () => {
+  const navigate = useNavigate();
+  const { setSection } = useInventorySection();
+
+  return () => {
+    setSection("movements");
+    navigate(ROUTES.inventory);
+  };
+};
 
 export const useInventoryTab = () => {
   const { filters, setFilters } = useFilters<IStatusFilters>(inventoryStatusKey);

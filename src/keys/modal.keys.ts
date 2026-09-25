@@ -1,6 +1,8 @@
 export const itemFormModalKey = "item-form";
-export const categoryManagerModalKey = "category-manager";
 export const categoryFormModalKey = "category-form";
+export const brandFormModalKey = "brand-form";
+// Scoped per kind with scopedKey, so the unit and location forms open independently.
+export const masterfileFormModalKey = "masterfile-form";
 export const stockMovementModalKey = "stock-movement";
 export const syncIssuesModalKey = "sync-issues";
 export const stockAlertsModalKey = "stock-alerts";

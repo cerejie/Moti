@@ -54,7 +54,7 @@ const InventoryToolbar = ({ showArchived }: IProps) => {
       <FilterToolbar
         filterKey={inventoryTableKey}
         searchKey={inventoryTableKey}
-        searchPlaceholder="Search name, SKU, brand or fitment"
+        searchPlaceholder="Search name, item code, brand or fitment"
         controls={[
           {
             key: "category_id",

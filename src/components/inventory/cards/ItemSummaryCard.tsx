@@ -51,7 +51,7 @@ const ItemSummaryCard = ({ item, canManage }: IProps) => {
           {stockStatusLabels[item.stock_status]}
         </StatusBadge>
         {item.archived_at && <StatusBadge tone="neutral">Archived</StatusBadge>}
-        <span className={itemSummaryMeta}>SKU {item.sku}</span>
+        <span className={itemSummaryMeta}>{item.item_code}</span>
       </div>
 
       <div className={itemStats}>

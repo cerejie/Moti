@@ -3,7 +3,7 @@
 -- nobody writes to a table directly. Self-contained: builds its own fixture and rolls back.
 --
 -- Fixture ids (prefix 7e570000-0000-4000-8000-):
---   shop A ...00000000000a  owners ...a1 ...a3  employee ...a2  category ...ca  item ...1a0
+--   shop A ...00000000000a  owners ...a1 ...a3  employee ...a2  category ...ca  brand ...ba  item ...1a0
 --   superadmin ...000000000001
 begin;
 
@@ -48,12 +48,18 @@ insert into public.profiles (id, shop_id, role, full_name) values
   ('7e570000-0000-4000-8000-0000000000a2', '7e570000-0000-4000-8000-00000000000a', 'employee', 'Employee A'),
   ('7e570000-0000-4000-8000-0000000000a3', '7e570000-0000-4000-8000-00000000000a', 'owner', 'Second Owner A');
 
-insert into public.categories (id, shop_id, name) values
-  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-00000000000a', 'Test Category');
+insert into public.categories (id, shop_id, name, code) values
+  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-00000000000a', 'Test Category', 'TST');
 
-insert into public.inventory_items (id, shop_id, category_id, sku, name, on_hand, reorder_level) values
+insert into public.brands (id, shop_id, name, code) values
+  ('7e570000-0000-4000-8000-0000000000ba', '7e570000-0000-4000-8000-00000000000a', 'Test Brand', 'TBR');
+
+insert into public.category_brands (category_id, brand_id, shop_id) values
+  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba', '7e570000-0000-4000-8000-00000000000a');
+
+insert into public.inventory_items (id, shop_id, category_id, brand_id, item_code, name, unit_id, on_hand, reorder_level) values
   ('7e570000-0000-4000-8000-0000000001a0', '7e570000-0000-4000-8000-00000000000a',
-   '7e570000-0000-4000-8000-0000000000ca', 'TEST-A', 'Test item A', 10, 2);
+   '7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba', 'TST-TBR-001', 'Test item A', (select id from public.units where shop_id = '7e570000-0000-4000-8000-00000000000a' and name = 'pc'), 10, 2);
 
 insert into public.stock_movements (shop_id, item_id, movement_type, reason, quantity, balance_after, client_id) values
   ('7e570000-0000-4000-8000-00000000000a', '7e570000-0000-4000-8000-0000000001a0',
@@ -112,15 +118,15 @@ select throws_ok(
 );
 select throws_ok(
   $$ select public.create_item(
-       '7e570000-0000-4000-8000-00000000f001', null, null,
-       'EMP-1', 'Employee item', null, null, null, null, null, null, null, 0
+       '7e570000-0000-4000-8000-00000000f001', null, '7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba',
+       'Employee item', null, null, null, null, null, null, 0
      ) $$,
   '42501', null, 'employee cannot create items'
 );
 select throws_ok(
   $$ select public.update_item(
-       '7e570000-0000-4000-8000-0000000001a0', null, 'TEST-A', 'Renamed by employee',
-       null, null, null, null, null, null, null
+       '7e570000-0000-4000-8000-0000000001a0', '7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-0000000000ba', 'Renamed by employee',
+       null, null, null, null, null, null
      ) $$,
   '42501', null, 'employee cannot edit items'
 );
@@ -146,13 +152,15 @@ select throws_ok(
 select tests.act_as('7e570000-0000-4000-8000-0000000000a1');
 
 select lives_ok(
-  $$ select public.create_category('7e570000-0000-4000-8000-00000000f003', null, 'Owner category') $$,
+  $$ select public.create_category(
+       '7e570000-0000-4000-8000-00000000f003', null, 'Owner category', 'OWN', array['7e570000-0000-4000-8000-0000000000ba']::uuid[]
+     ) $$,
   'owner creates a category'
 );
 select lives_ok(
   $$ select public.create_item(
-       '7e570000-0000-4000-8000-00000000f004', null, '7e570000-0000-4000-8000-00000000f003',
-       'OWN-1', 'Owner item', null, null, null, null, null, null, null, 5
+       '7e570000-0000-4000-8000-00000000f004', null, '7e570000-0000-4000-8000-00000000f003', '7e570000-0000-4000-8000-0000000000ba',
+       'Owner item', null, null, null, null, null, null, 5
      ) $$,
   'owner creates an item with opening stock'
 );
@@ -194,7 +202,7 @@ select throws_ok(
 
 -- Direct table writes are refused: every write is an RPC.
 select throws_ok(
-  $$ insert into public.inventory_items (shop_id, sku, name, reorder_level)
+  $$ insert into public.inventory_items (shop_id, item_code, name, reorder_level)
      values ('7e570000-0000-4000-8000-00000000000a', 'DIRECT-1', 'Direct item', 1) $$,
   '42501', null, 'owner cannot insert items directly'
 );

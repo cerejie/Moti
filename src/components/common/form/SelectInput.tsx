@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/utils/cn.utils";
-import type { IFieldOption } from "../../../models/common/field.model";
+import type { IFieldOption, ISelectAction } from "../../../models/common/field.model";
 import { fieldSelect } from "../../../styles/form/field.styles";
 
 type IProps = {
@@ -33,10 +33,13 @@ type IProps = {
   searchable?: boolean;
   // Adds the placeholder as a first option, so a picked value can be cleared again.
   allowClear?: boolean;
+  // A last entry that runs an action and leaves the value as it was.
+  action?: ISelectAction;
 };
 
 // aria keys can't be empty strings, so the clear option carries its own key.
 const clearKey = "__clear__";
+const actionKey = "__action__";
 
 const SelectInput = ({
   id,
@@ -50,6 +53,7 @@ const SelectInput = ({
   className,
   searchable = false,
   allowClear = false,
+  action,
 }: IProps) => {
   if (searchable) {
     return (
@@ -89,9 +93,10 @@ const SelectInput = ({
     <Select
       // An empty string means "nothing picked", which aria models as null.
       value={value === "" ? null : value}
-      onChange={(key) =>
-        onValueChange(key === null || key === clearKey ? "" : String(key))
-      }
+      onChange={(key) => {
+        if (key === actionKey) return action?.onSelect();
+        onValueChange(key === null || key === clearKey ? "" : String(key));
+      }}
       placeholder={placeholder}
       isDisabled={disabled}
       isInvalid={invalid}
@@ -113,6 +118,7 @@ const SelectInput = ({
               {option.label}
             </SelectItem>
           ))}
+          {action && <SelectItem id={actionKey}>{action.label}</SelectItem>}
         </SelectGroup>
       </SelectContent>
     </Select>

@@ -31,7 +31,7 @@ type IProps = {
 const column = dataTableColumns<IVolumeRank>();
 
 const metaLine = (row: IVolumeRank) =>
-  [row.sku, row.category_name].filter(Boolean).join(" · ");
+  [row.item_code, row.category_name].filter(Boolean).join(" · ");
 
 const countLabel = (count: number, metric: AnalyzerMetric) => {
   const noun = metric === "sold" ? "sale" : "stock-in";

@@ -52,16 +52,16 @@ insert into public.profiles (id, shop_id, role, full_name) values
   ('7e570000-0000-4000-8000-0000000000b1', '7e570000-0000-4000-8000-00000000000b', 'owner', 'Owner B'),
   ('7e570000-0000-4000-8000-0000000000b2', '7e570000-0000-4000-8000-00000000000b', 'employee', 'Employee B');
 
-insert into public.categories (id, shop_id, name) values
-  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-00000000000a', 'Test Category'),
-  ('7e570000-0000-4000-8000-0000000000cb', '7e570000-0000-4000-8000-00000000000b', 'Test Category');
+insert into public.categories (id, shop_id, name, code) values
+  ('7e570000-0000-4000-8000-0000000000ca', '7e570000-0000-4000-8000-00000000000a', 'Test Category', 'TST'),
+  ('7e570000-0000-4000-8000-0000000000cb', '7e570000-0000-4000-8000-00000000000b', 'Test Category', 'TST');
 
 -- Item B sits at its reorder level, so shop B has an alert to leak.
-insert into public.inventory_items (id, shop_id, category_id, sku, name, on_hand, reorder_level) values
+insert into public.inventory_items (id, shop_id, category_id, item_code, name, unit_id, on_hand, reorder_level) values
   ('7e570000-0000-4000-8000-0000000001a0', '7e570000-0000-4000-8000-00000000000a',
-   '7e570000-0000-4000-8000-0000000000ca', 'TEST-A', 'Test item A', 10, 2),
+   '7e570000-0000-4000-8000-0000000000ca', 'TEST-A', 'Test item A', (select id from public.units where shop_id = '7e570000-0000-4000-8000-00000000000a' and name = 'pc'), 10, 2),
   ('7e570000-0000-4000-8000-0000000001b0', '7e570000-0000-4000-8000-00000000000b',
-   '7e570000-0000-4000-8000-0000000000cb', 'TEST-B', 'Test item B', 1, 2);
+   '7e570000-0000-4000-8000-0000000000cb', 'TEST-B', 'Test item B', (select id from public.units where shop_id = '7e570000-0000-4000-8000-00000000000b' and name = 'pc'), 1, 2);
 
 insert into public.stock_movements (shop_id, item_id, movement_type, reason, quantity, balance_after, client_id) values
   ('7e570000-0000-4000-8000-00000000000a', '7e570000-0000-4000-8000-0000000001a0',
@@ -132,15 +132,15 @@ select throws_ok(
 );
 select throws_ok(
   $$ select public.create_item(
-       '7e570000-0000-4000-8000-00000000f002', '7e570000-0000-4000-8000-00000000000b', null,
-       'INTRUDER-1', 'Intruder item', null, null, null, null, null, null, null, 0
+       '7e570000-0000-4000-8000-00000000f002', '7e570000-0000-4000-8000-00000000000b', '7e570000-0000-4000-8000-0000000000cb', null,
+       'Intruder item', null, null, null, null, null, null, 0
      ) $$,
   '42501', null, 'owner cannot create an item in another shop'
 );
 select throws_ok(
   $$ select public.create_item(
-       '7e570000-0000-4000-8000-0000000001b0', null, null,
-       'REUSED-1', 'Reused id', null, null, null, null, null, null, null, 0
+       '7e570000-0000-4000-8000-0000000001b0', null, '7e570000-0000-4000-8000-0000000000ca', null,
+       'Reused id', null, null, null, null, null, null, 0
      ) $$,
   '42501', null, 'owner cannot reuse another shop''s item id as a replay'
 );
@@ -150,8 +150,8 @@ select throws_ok(
 );
 select throws_ok(
   $$ select public.update_item(
-       '7e570000-0000-4000-8000-0000000001b0', null, 'TEST-B', 'Renamed by intruder',
-       null, null, null, null, null, null, null
+       '7e570000-0000-4000-8000-0000000001b0', '7e570000-0000-4000-8000-0000000000cb', null, 'Renamed by intruder',
+       null, null, null, null, null, null
      ) $$,
   '42501', null, 'owner cannot edit another shop''s item'
 );
@@ -196,9 +196,9 @@ select is_empty(
 reset role;
 
 select throws_ok(
-  $$ insert into public.inventory_items (shop_id, category_id, sku, name, reorder_level)
+  $$ insert into public.inventory_items (shop_id, category_id, item_code, name, unit_id, reorder_level)
      values ('7e570000-0000-4000-8000-00000000000a', '7e570000-0000-4000-8000-0000000000cb',
-             'CROSS-1', 'Cross-shop item', 1) $$,
+             'CROSS-1', 'Cross-shop item', (select id from public.units where shop_id = '7e570000-0000-4000-8000-00000000000a' and name = 'pc'), 1) $$,
   '23503', null, 'composite key refuses a category from another shop'
 );
 

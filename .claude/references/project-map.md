@@ -5,30 +5,31 @@ verify before assuming a file exists.
 
 **Status:** Inventory (Phase 2) is the reference module. Every later screen copies its shape.
 
-## Reference module: `inventory` (+ its `category` sub-domain)
+## Reference module: `inventory`
 
 ```
-Screen      src/pages/Inventory/InventoryView.tsx              ContentView + panel + modals only
+Screen      src/pages/Inventory/InventoryView.tsx              ContentView + sections + modals only
             src/pages/Inventory/InventoryItemView.tsx          detail page, `back` link, no title
-UI          src/components/inventory/panels/InventoryPanel.tsx     TablePanel: toolbar, table, pagination, no-shop state
+UI          src/components/inventory/panels/InventorySections.tsx  ViewTabs Items | Movements (managers), else Items only
+            src/components/inventory/panels/InventoryPanel.tsx     TablePanel: toolbar, table, pagination, no-shop state
             src/components/inventory/panels/InventoryToolbar.tsx   SegmentTabs (status) + FilterToolbar + sort SelectInput
             src/components/inventory/panels/InventoryActions.tsx   header buttons, manager-only
             src/components/inventory/tables/InventoryTable.tsx     DataTable columns; compact column set on phones
-            src/components/inventory/modal/ItemFormModal.tsx       EntityFormModal + IFieldSection[]
-            src/components/inventory/modal/CategoryManagerModal.tsx  AppModal list with RowActionMenu
+            src/components/inventory/modal/ItemFormModal.tsx       EntityFormModal + IFieldSection[]; selects with "+ Add …" (selectAction)
             src/components/inventory/cards/ItemSummaryCard.tsx     SectionCard + StatCards
-Data        src/hook/data/inventory/inventory.list.hook.ts     useInventoryList (query + tab/sort/filter/page), useInventoryItem
-Form        src/hook/data/inventory/inventory.form.hook.ts     useItemForm (useForm + useAppMutation), useItemArchive (useConfirm)
+Data        src/hook/data/inventory/inventory.list.hook.ts     useInventoryList, useInventoryItem, useInventorySection, useOpenMovements
+Form        src/hook/data/inventory/inventory.form.hook.ts     useItemForm (pick lists, code hint, add category/brand on top), useItemArchive
 Calls       src/services/data/inventory.services.ts            getList (paged view read), getById, create/update/setArchived via runWrite rpc
-Input       src/models/data/inventory/inventory.request.ts     itemSchema (text inputs; service converts numbers), IInventoryFilters
-Rows        src/models/data/inventory/inventory.response.ts    IInventoryItem (one view row)
-States      src/enums/inventory.enum.ts                        StockStatus labels + tones, tabs, sort, movement reasons
-Keys        src/keys/query.keys.ts      inventoryListKey, inventoryItemKey, categoryOptionsKey
-            src/keys/modal.keys.ts      itemFormModalKey, categoryManagerModalKey, categoryFormModalKey
-            src/keys/table.keys.ts      inventoryTableKey, inventoryStatusKey
+Input       src/models/data/inventory/inventory.request.ts     itemSchema (ids + text inputs; item_code display only), IInventoryFilters
+Rows        src/models/data/inventory/inventory.response.ts    IInventoryItem (one view row; brand/unit/location names + ids)
+States      src/enums/inventory.enum.ts                        StockStatus labels + tones, tabs, sections, sort
+Keys        src/keys/query.keys.ts      inventoryListKey, inventoryItemKey
+            src/keys/modal.keys.ts      itemFormModalKey
+            src/keys/table.keys.ts      inventoryTableKey, inventoryStatusKey, inventorySectionKey
 Look        src/styles/inventory/inventory.styles.ts
 Route       src/routes/route.paths.ts (inventory, inventoryItem) + src/routes/protected.view.routes.ts
 Schema      supabase/migrations/20260924000002_create_inventory_catalog.sql   tables, status view, RLS, write RPCs
+            supabase/migrations/20260925000003_create_masterfile_and_item_codes.sql   item_code, masterfile, current item RPCs
 ```
 
 Patterns to copy:
@@ -42,7 +43,7 @@ Patterns to copy:
 ## Second slice: `movement` (Phase 3)
 
 ```
-Screen      src/pages/Movements/MovementsView.tsx               shop-wide ledger, owners only
+Screen      Inventory → Movements tab (InventorySections)       shop-wide ledger, owners only
 UI          src/components/movement/modal/StockMovementModal.tsx  one form for sale / add / deduct
             src/components/movement/cards/BalancePreview.tsx      before → after
             src/components/movement/panels/StockActions.tsx       Sell / Add stock / Deduct on the item page
@@ -58,6 +59,31 @@ Schema      supabase/migrations/20260924000003_create_stock_movement_history.sql
 ```
 
 - **Idempotency key per form open:** `client_id` is part of the form values, generated when the modal opens.
+
+## Masterfile: `category`, `brand`, `masterfile` (units + locations) (Phase 9)
+
+```
+Screen      src/pages/Masterfile/MasterfileView.tsx             /settings/masterfile, managers; `back` to Settings
+UI          src/components/masterfile/panels/MasterfilePanel.tsx   no-shop state + ViewTabs Categories | Brands | Units | Locations
+            src/components/masterfile/panels/MasterfileList.tsx    shared list: count + Add, four states, RowActionMenu rows
+            src/components/masterfile/panels/CategoryListPanel.tsx, BrandListPanel.tsx, MasterfileEntryPanel.tsx (kind prop)
+            src/components/category/modal/CategoryFormModal.tsx    name, code (toCodeInput mask), brands multiselect
+            src/components/brand/modal/BrandFormModal.tsx          name, code, "Sold in" categories multiselect
+            src/components/masterfile/modal/MasterfileFormModal.tsx  unit or location name, one instance per kind
+Data        src/hook/data/{category,brand,masterfile}/*.list.hook.ts   useCategoryOptions, useBrandOptions, useMasterfileOptions(kind), useMasterfileTab
+Form        src/hook/data/{category,brand,masterfile}/*.form.hook.ts   modal data may carry onCreated(id) → caller auto-selects
+Calls       src/services/data/{category,brand,masterfile}.services.ts   unpaged getOptions with item counts; runWrite rpc writes
+Models      src/models/data/{category,brand,masterfile}/*.ts; src/utils/code.utils.ts (codePattern, toCodeInput)
+States      src/enums/masterfile.enum.ts                        tabs, kinds
+Look        src/styles/masterfile/masterfile.styles.ts
+Schema      supabase/migrations/20260925000003_create_masterfile_and_item_codes.sql
+Tests       supabase/tests/masterfile.test.sql
+```
+
+- **Item codes are the server's:** `app.next_item_code` locks the category row; the form only previews `CAT-BRD-###`.
+- **Stacked forms:** the item page mounts `CategoryFormModal` and `BrandFormModal` after `ItemFormModal`, so
+  "+ Add category / brand" opens on top and returns the new id through `onCreated`.
+- **Settings hub:** `SettingsLinksCard` lists the `/settings/*` sub-pages the role can open.
 
 ## Third slice: `dashboard` (Phase 4)
 

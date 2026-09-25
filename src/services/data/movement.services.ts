@@ -15,7 +15,7 @@ import { supabase, toError } from "../../utils/supabase.utils";
 
 const view = "stock_movement_history";
 const columns =
-  "id, shop_id, item_id, item_name, item_sku, item_unit, movement_type, reason, quantity, balance_after, note, occurred_at, created_by, created_by_name";
+  "id, shop_id, item_id, item_name, item_code, item_unit, movement_type, reason, quantity, balance_after, note, occurred_at, created_by, created_by_name";
 
 // LIKE wildcards typed by the user are matched literally.
 const likePattern = (search: string) =>

@@ -15,7 +15,7 @@ import { newWriteId } from "../../utils/write.utils";
 
 const view = "inventory_item_status";
 const columns =
-  "id, shop_id, category_id, category_name, sku, name, brand, part_number, fitment, unit, on_hand, reorder_level, selling_price, location, archived_at, created_at, updated_at, stock_status";
+  "id, shop_id, category_id, category_name, item_code, name, brand_id, brand, part_number, fitment, unit_id, unit, on_hand, reorder_level, selling_price, location_id, location, archived_at, created_at, updated_at, stock_status";
 
 const sortColumns: Record<InventorySort, { column: string; ascending: boolean }> = {
   name: { column: "name", ascending: true },
@@ -33,19 +33,19 @@ const orNull = (value: string) => (value.trim() === "" ? null : value.trim());
 const numberOrNull = (value: string) =>
   value.trim() === "" ? null : Number(value);
 
-// The fields create_item and update_item share.
+// The fields create_item and update_item share. The item code is never sent:
+// the server sets it from the category and brand.
 const itemArgs = (values: IItemRequest) => ({
-  p_category_id: orNull(values.category_id),
-  p_sku: values.sku,
+  p_category_id: values.category_id,
+  p_brand_id: values.brand_id,
   p_name: values.name,
-  p_brand: orNull(values.brand),
   p_part_number: orNull(values.part_number),
   p_fitment: orNull(values.fitment),
-  p_unit: values.unit,
+  p_unit_id: values.unit_id,
   // Blank uses the shop's default reorder level.
   p_reorder_level: numberOrNull(values.reorder_level),
   p_selling_price: numberOrNull(values.selling_price),
-  p_location: orNull(values.location),
+  p_location_id: orNull(values.location_id),
 });
 
 const inventoryServices = {

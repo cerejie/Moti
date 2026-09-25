@@ -15,11 +15,11 @@ import type {
 import { supabase, toError } from "../../utils/supabase.utils";
 
 const rankingColumns =
-  "rank, item_id, name, sku, unit, category_id, category_name, quantity, transaction_count, on_hand, reorder_level, stock_status";
+  "rank, item_id, name, item_code, unit, category_id, category_name, quantity, transaction_count, on_hand, reorder_level, stock_status";
 const summaryColumns =
   "total_units, item_count, top_item_id, top_item_name, top_item_unit, top_item_quantity, unsold_stocked_count";
 const reorderColumns =
-  "id, category_name, sku, name, unit, on_hand, reorder_level, stock_status, severity, sold_30d";
+  "id, category_name, item_code, name, unit, on_hand, reorder_level, stock_status, severity, sold_30d";
 
 const pageRange = (pagination: IPaginationRequest) => {
   const from = (pagination.pageNumber - 1) * pagination.pageSize;

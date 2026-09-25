@@ -17,7 +17,7 @@ plus the kickoff line for the next phase.
 - [x] Phase 7: PWA hardening
 - [x] Phase 8: Tests and release
 - [x] Step 1: Save the V1.1 flow change (Transaction, Masterfile, item codes, navigation)
-- [ ] Phase 9: Masterfile, item codes and Settings hub
+- [x] Phase 9: Masterfile, item codes and Settings hub
 - [ ] Phase 10: Transaction ordering and final navigation
 
 Kickoff line for a new conversation:
@@ -158,6 +158,12 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   Page/Card/Table/List/Stats skeletons, and the Analyzer no longer blocks on the shop timezone. First
   load 1.25 MB / 370 KB gzip, from 1.44 MB / 420 KB; the rest is vendor code the shell needs.
   Data prefetch on tap is left out: list keys depend on filter and pagination stores.
+- 2026-09-25 (Phase 9): item codes became `CAT-BRD-001` with brands as a Masterfile list assigned
+  to categories (see "V1.1 flow change"). Settings is a nav tab now; Masterfile, Users and Shops
+  are its sub-pages (`/settings/*`), and Movements is a tab inside Inventory. Home, the password
+  reminder move and retiring "More" stay in Phase 10. `create_item` / `update_item` changed
+  signature, so an item write queued offline before the update fails into sync issues;
+  `create_category` / `update_category` keep their old arguments as defaults and still replay.
 
 ## V1.1 flow change (agreed 2026-09-25)
 
@@ -180,16 +186,25 @@ removed; every sale belongs to an order.
   subtracts voided lines.
 - **SKU is renamed to Item code** everywhere: UI, models, services, the `inventory_items.sku`
   column, views, RPCs, seed and tests. Existing codes are kept as they are.
-- **Categories carry the item code.** The owner sets a prefix per category (e.g. `BRK`); a new
-  item gets `BRK-0001`, `BRK-0002`… from the server, which locks the category row for the next
-  number. Nobody types an item code. An item created offline shows "Code assigned on sync".
-  Existing categories get a prefix backfilled from their name, editable by the owner.
+- **Item code = category code, brand code, number** (changed in Phase 9): a new item gets
+  `BRK-UMI-001` from the server. Category and brand codes are 2–6 capitals or digits; the number
+  is 3 digits, widening past 999, and counts **per category** across all its brands
+  (`BRK-UMI-001`, `BRK-NGK-002`). The server locks the category row for the next number.
+  Changing an item's category or brand gives it a new code. Nobody types an item code. An item
+  created offline says the code is assigned on sync. Existing categories and brands get a code
+  backfilled from their name, editable by the owner; existing items keep their old SKU until
+  their category or brand changes.
+- **Brand is a Masterfile list assigned to categories** (changed in Phase 9): one shared list,
+  each category ticks the brands it carries (many-to-many). Brand is required on new items and
+  the item form only offers the chosen category's brands, ending with "+ Add brand". Unbranded
+  parts use a brand like "Generic" (`GEN`).
 - **Category is required** on new items. The item form's category dropdown ends with
   "+ Add category", which opens the Masterfile category form on top of the item form, keeps what
   was typed, and auto-selects the new category when saved.
-- **Masterfile** (owner and superadmin) holds **Categories** (with item-code prefix), **Units** and
-  **Storage locations**. Units and locations become per-shop tables that items pick from; the
-  existing free-text values are converted into entries. Brand and fitment stay free text.
+- **Masterfile** (owner and superadmin) holds **Categories** (with item-code prefix), **Brands**,
+  **Units** and **Storage locations**. Brands, units and locations become per-shop tables that
+  items pick from; the existing free-text values are converted into entries. Fitment stays free
+  text. Every shop starts with a `pc` unit, which new items preselect.
 - **Navigation.** Home is removed.
 
 | Role | Tabs (in order) | Opens on |
@@ -211,7 +226,7 @@ removed; every sale belongs to an order.
 | Take an order (Transaction) | ✓ | ✓ | ✓ |
 | See orders | all shops | own shop | own orders |
 | Void an order | ✓ | ✓ | ✗ |
-| Masterfile: categories, units, locations | ✓ | ✓ | ✗ |
+| Masterfile: categories, brands, units, locations | ✓ | ✓ | ✗ |
 | Record a one-item sale | removed | removed | removed |
 
 **V1.1 data model additions:**
@@ -219,7 +234,8 @@ removed; every sale belongs to an order.
 | Table / change | Purpose |
 |---|---|
 | `inventory_items.sku` → `item_code` | Rename; unique per shop as before |
-| `categories.code`, `categories.next_number` | Item-code prefix and its counter |
+| `categories.code`, `categories.next_number` | Item-code prefix and its per-category counter |
+| `brands` (name, code), `category_brands` | Per-shop brand list and which brands each category carries; items point at the pair |
 | `units`, `storage_locations` | Per-shop masterfile lists; items reference them by id |
 | `orders` | Per shop: order_no, status `confirmed` / `voided`, total_amount (as displayed), created_by, occurred_at, client_id, voided_by / voided_at / void_reason |
 | `order_lines` | order_id, item_id, quantity, unit_price snapshot, line_amount, movement_id |

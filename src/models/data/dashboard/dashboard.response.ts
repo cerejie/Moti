@@ -16,7 +16,7 @@ export interface IStockAlert {
   id: string;
   shop_id: string;
   category_name: string | null;
-  sku: string;
+  item_code: string;
   name: string;
   unit: string;
   on_hand: number;

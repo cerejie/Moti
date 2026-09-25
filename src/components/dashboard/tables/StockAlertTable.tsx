@@ -27,7 +27,7 @@ type IProps = {
 const column = dataTableColumns<IStockAlert>();
 
 const metaLine = (alert: IStockAlert) =>
-  [alert.sku, alert.category_name].filter(Boolean).join(" · ");
+  [alert.item_code, alert.category_name].filter(Boolean).join(" · ");
 
 // Items at or near their reorder level, most urgent first. Shared by the
 // dashboard card and the alerts sheet.

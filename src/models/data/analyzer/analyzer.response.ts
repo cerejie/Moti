@@ -5,7 +5,7 @@ export interface IVolumeRank {
   rank: number;
   item_id: string;
   name: string;
-  sku: string;
+  item_code: string;
   unit: string;
   category_id: string | null;
   category_name: string | null;
@@ -31,7 +31,7 @@ export interface IPeriodSummary {
 export interface IReorderItem {
   id: string;
   category_name: string | null;
-  sku: string;
+  item_code: string;
   name: string;
   unit: string;
   on_hand: number;

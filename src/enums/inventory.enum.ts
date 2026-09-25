@@ -37,3 +37,11 @@ export const inventorySortLabels: Record<InventorySort, string> = {
   stock_desc: "Stock: high to low",
   updated: "Recently updated",
 };
+
+// The Inventory screen's top tabs; Movements is for managers only.
+export type InventorySection = "items" | "movements";
+
+export const inventorySectionLabels: Record<InventorySection, string> = {
+  items: "Items",
+  movements: "Movements",
+};

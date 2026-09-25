@@ -1,21 +1,22 @@
+import BrandFormModal from "../../components/brand/modal/BrandFormModal";
+import CategoryFormModal from "../../components/category/modal/CategoryFormModal";
 import ContentView from "../../components/common/view/ContentView";
-import CategoryFormModal from "../../components/inventory/modal/CategoryFormModal";
-import CategoryManagerModal from "../../components/inventory/modal/CategoryManagerModal";
 import ItemFormModal from "../../components/inventory/modal/ItemFormModal";
 import InventoryActions from "../../components/inventory/panels/InventoryActions";
-import InventoryPanel from "../../components/inventory/panels/InventoryPanel";
+import InventorySections from "../../components/inventory/panels/InventorySections";
 import StockMovementModal from "../../components/movement/modal/StockMovementModal";
 
+// The category and brand forms follow the item form, so they open on top of it.
 const InventoryView = () => (
   <ContentView
     title="Inventory"
-    subtitle="Parts on hand, stock status and prices"
+    subtitle="Parts on hand, stock status, prices and every movement"
     actions={<InventoryActions />}
   >
-    <InventoryPanel />
+    <InventorySections />
     <ItemFormModal />
-    <CategoryManagerModal />
     <CategoryFormModal />
+    <BrandFormModal />
     <StockMovementModal />
   </ContentView>
 );

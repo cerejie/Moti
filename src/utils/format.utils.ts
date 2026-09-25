@@ -85,6 +85,11 @@ export function formatCount(value: number): string {
   return countFormatter.format(value);
 }
 
+// How many items use a masterfile entry: "1 item", "12 items".
+export function formatItemCount(value: number): string {
+  return value === 1 ? "1 item" : `${formatCount(value)} items`;
+}
+
 // A nav or bell badge: the count, capped at 99+.
 export function formatBadgeCount(value: number): string {
   return value > 99 ? "99+" : String(value);

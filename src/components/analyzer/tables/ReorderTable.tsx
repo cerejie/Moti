@@ -28,7 +28,7 @@ type IProps = {
 const column = dataTableColumns<IReorderItem>();
 
 const metaLine = (row: IReorderItem) =>
-  [row.sku, row.category_name].filter(Boolean).join(" · ");
+  [row.item_code, row.category_name].filter(Boolean).join(" · ");
 
 const statusBadge = (row: IReorderItem) => (
   <StatusBadge tone={stockStatusTones[row.stock_status]} dot>
