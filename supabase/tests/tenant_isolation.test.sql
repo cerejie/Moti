@@ -10,7 +10,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(35);
+select plan(38);
 
 create schema if not exists tests;
 grant usage on schema tests to anon, authenticated;
@@ -138,6 +138,17 @@ select throws_ok(
   '42501', null, 'owner cannot create an item in another shop'
 );
 select throws_ok(
+  $$ select public.create_item(
+       '7e570000-0000-4000-8000-0000000001b0', null, null,
+       'REUSED-1', 'Reused id', null, null, null, null, null, null, null, 0
+     ) $$,
+  '42501', null, 'owner cannot reuse another shop''s item id as a replay'
+);
+select throws_ok(
+  $$ select public.create_category('7e570000-0000-4000-8000-0000000000cb', null, 'Reused id') $$,
+  '42501', null, 'owner cannot reuse another shop''s category id as a replay'
+);
+select throws_ok(
   $$ select public.update_item(
        '7e570000-0000-4000-8000-0000000001b0', null, 'TEST-B', 'Renamed by intruder',
        null, null, null, null, null, null, null
@@ -254,9 +265,9 @@ select throws_ok(
 -- A signed-out visitor gets nothing.
 select tests.act_as(null);
 
-select is_empty(
+select throws_ok(
   $$ select id from public.inventory_items $$,
-  'anon sees no items'
+  '42501', null, 'anon cannot read items'
 );
 select throws_ok(
   $$ select id from public.inventory_item_status $$,
@@ -268,6 +279,10 @@ select throws_ok(
        'stock_out', 'sale', 1
      ) $$,
   '42501', null, 'anon cannot record stock'
+);
+select throws_ok(
+  $$ select public.update_staff_profile('7e570000-0000-4000-8000-0000000000a2', 'Renamed by anon', false) $$,
+  '42501', null, 'anon cannot call update_staff_profile'
 );
 
 reset role;

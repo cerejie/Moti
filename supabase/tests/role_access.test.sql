@@ -213,10 +213,10 @@ select throws_ok(
      values ('7e570000-0000-4000-8000-00000000f005', '7e570000-0000-4000-8000-00000000000a', 'employee', 'Direct') $$,
   '42501', null, 'owner cannot insert profiles directly'
 );
-select is_empty(
+select throws_ok(
   $$ update public.profiles set full_name = 'Direct rename'
-     where id = '7e570000-0000-4000-8000-0000000000a2' returning id $$,
-  'owner cannot update profiles directly'
+     where id = '7e570000-0000-4000-8000-0000000000a2' $$,
+  '42501', null, 'owner cannot update profiles directly'
 );
 
 -- Superadmin: names a shop for every write, creates shops, edits anyone.

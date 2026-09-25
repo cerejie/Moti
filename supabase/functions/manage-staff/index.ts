@@ -50,9 +50,26 @@ const admin = createClient(
 // No look-alike characters (0/O, 1/l/I), so it can be read out over the counter.
 const passwordAlphabet = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 
+// Bytes at or above the last full multiple of the alphabet are skipped, so every
+// character is equally likely.
+const unbiasedLimit = 256 - (256 % passwordAlphabet.length);
+
 const temporaryPassword = (length = 12) => {
-  const bytes = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(bytes, (byte) => passwordAlphabet[byte % passwordAlphabet.length]).join("");
+  let password = "";
+  while (password.length < length) {
+    for (const byte of crypto.getRandomValues(new Uint8Array(length))) {
+      if (byte < unbiasedLimit && password.length < length) {
+        password += passwordAlphabet[byte % passwordAlphabet.length];
+      }
+    }
+  }
+  return password;
+};
+
+// Internal errors are logged for the function's logs and never sent to the client.
+const internalError = (context: string, cause: unknown) => {
+  console.error(context, cause);
+  return new RequestError(500, "Something went wrong. Try again.");
 };
 
 const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
@@ -67,7 +84,7 @@ const loadCaller = async (request: Request): Promise<ICaller> => {
     .select("id, role, shop_id, is_active, shop:shops(is_active)")
     .eq("id", auth.user.id)
     .maybeSingle();
-  if (error) throw new RequestError(500, error.message);
+  if (error) throw internalError("load caller", error);
 
   const caller = data as ICaller | null;
   const active =
@@ -110,7 +127,7 @@ const createStaff = async (caller: ICaller, body: Record<string, unknown>) => {
     .select("id")
     .eq("id", shopId)
     .maybeSingle();
-  if (shopError) throw new RequestError(500, shopError.message);
+  if (shopError) throw internalError("load shop", shopError);
   if (!shop) throw new RequestError(400, "That shop no longer exists.");
 
   const password = temporaryPassword();
@@ -122,10 +139,8 @@ const createStaff = async (caller: ICaller, body: Record<string, unknown>) => {
   });
   if (createError || !created.user) {
     const taken = /already|exists|registered/i.test(createError?.message ?? "");
-    throw new RequestError(
-      taken ? 409 : 500,
-      taken ? "A user with this email already exists." : createError?.message ?? "Couldn't create the account.",
-    );
+    if (taken) throw new RequestError(409, "A user with this email already exists.");
+    throw internalError("create auth user", createError);
   }
 
   const { error: profileError } = await admin
@@ -134,7 +149,7 @@ const createStaff = async (caller: ICaller, body: Record<string, unknown>) => {
   if (profileError) {
     // No half-made accounts: an auth user without a profile could never be managed.
     await admin.auth.admin.deleteUser(created.user.id);
-    throw new RequestError(500, profileError.message);
+    throw internalError("insert profile", profileError);
   }
 
   return { user_id: created.user.id, full_name: fullName, email, temporary_password: password };
@@ -146,7 +161,7 @@ const resetPassword = async (caller: ICaller, body: Record<string, unknown>) => 
     .select("id, role, shop_id, full_name, email")
     .eq("id", text(body.user_id))
     .maybeSingle();
-  if (error) throw new RequestError(500, error.message);
+  if (error) throw internalError("load target", error);
   if (!data) throw new RequestError(404, "This user no longer exists.");
 
   const target = data as ITarget & { full_name: string; email: string | null };
@@ -157,7 +172,7 @@ const resetPassword = async (caller: ICaller, body: Record<string, unknown>) => 
     password,
     user_metadata: { must_change_password: true },
   });
-  if (updateError) throw new RequestError(500, updateError.message);
+  if (updateError) throw internalError("reset password", updateError);
 
   return {
     user_id: target.id,
@@ -185,6 +200,7 @@ Deno.serve(async (request) => {
     }
   } catch (error) {
     if (error instanceof RequestError) return reply(error.status, { error: error.message });
-    return reply(500, { error: error instanceof Error ? error.message : "Unexpected error." });
+    const unexpected = internalError("unhandled", error);
+    return reply(unexpected.status, { error: unexpected.message });
   }
 });

@@ -137,6 +137,12 @@ Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first,
   `.claude/references/release.md`; public sign-ups are turned off in the Supabase dashboard.
 - 2026-09-25 (Phase 8): the Inventory list now uses the shared page size (8), which closes the pager bug
   carried from Phase 3. Topbar icon buttons, pager steps and the Rows picker are 44 px on phones.
+- 2026-09-25 (Phase 8 security pass, `20260925000002_harden_grants_and_ledger.sql`): anon has no table
+  access; authenticated has no TRUNCATE/TRIGGER/REFERENCES and no direct writes on categories, items,
+  movements or profiles (only shops and shop_settings keep direct writes). A device time is clamped to
+  the last 7 days. A replayed client id must match its item, and a replayed item or category id must be
+  in the caller's shop. Measured at 20k items / 300k movements per shop: every query under 300 ms, no
+  index change needed. Carried: route-level code splitting (one 1.44 MB bundle, 420 KB gzip).
 
 ## What changed from the discovery plan
 

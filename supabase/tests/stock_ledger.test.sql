@@ -4,12 +4,12 @@
 --
 -- Fixture ids (prefix 7e570000-0000-4000-8000-):
 --   shop A ...00000000000a  owner ...a1  employee ...a2
---   item ...1a0 (created in the test)  movement client ids ...c001 to ...c006
+--   item ...1a0 (created in the test), item ...1a1  movement client ids ...c001 to ...c007
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(27);
+select plan(31);
 
 create schema if not exists tests;
 grant usage on schema tests to anon, authenticated;
@@ -43,6 +43,14 @@ insert into public.shops (id, name) values
 insert into public.profiles (id, shop_id, role, full_name) values
   ('7e570000-0000-4000-8000-0000000000a1', '7e570000-0000-4000-8000-00000000000a', 'owner', 'Owner A'),
   ('7e570000-0000-4000-8000-0000000000a2', '7e570000-0000-4000-8000-00000000000a', 'employee', 'Employee A');
+
+-- A second item, for keys and dates that must not touch the first one's balance.
+insert into public.inventory_items (id, shop_id, sku, name, on_hand, reorder_level) values
+  ('7e570000-0000-4000-8000-0000000001a1', '7e570000-0000-4000-8000-00000000000a', 'LEDGER-2', 'Second item', 5, 1);
+
+insert into public.stock_movements (shop_id, item_id, movement_type, reason, quantity, balance_after, client_id) values
+  ('7e570000-0000-4000-8000-00000000000a', '7e570000-0000-4000-8000-0000000001a1',
+   'stock_in', 'opening_balance', 5, 5, '7e570000-0000-4000-8000-0000000001a1');
 
 -- Opening balance: 10.
 select tests.act_as('7e570000-0000-4000-8000-0000000000a1');
@@ -118,6 +126,14 @@ select is(
   (select count(*) from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c002'),
   1::bigint, 'a replay is not logged twice'
 );
+select throws_ok(
+  $$ select public.record_stock_movement(
+       '7e570000-0000-4000-8000-00000000c002', '7e570000-0000-4000-8000-0000000001a1',
+       'stock_out', 'sale', 1
+     ) $$,
+  'P0001', 'This change was already recorded for a different item.',
+  'a key already used for another item is refused, not silently skipped'
+);
 
 -- Refused movements.
 select throws_ok(
@@ -172,6 +188,17 @@ select is(
   (select occurred_at from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c005'),
   now() - interval '2 days', 'a past device time is kept'
 );
+select lives_ok(
+  $$ select public.record_stock_movement(
+       '7e570000-0000-4000-8000-00000000c007', '7e570000-0000-4000-8000-0000000001a1',
+       'stock_out', 'damaged', 1, null, now() - interval '30 days'
+     ) $$,
+  'owner records a movement dated a month ago'
+);
+select is(
+  (select occurred_at from public.stock_movements where client_id = '7e570000-0000-4000-8000-00000000c007'),
+  now() - interval '7 days', 'a device time older than 7 days is clamped to 7 days ago'
+);
 
 -- on_hand has no other way in.
 select lives_ok(
@@ -185,22 +212,26 @@ select is(
   (select on_hand from public.inventory_items where id = '7e570000-0000-4000-8000-0000000001a0'),
   12, 'editing an item never changes on-hand'
 );
-select is_empty(
+select throws_ok(
   $$ update public.inventory_items set on_hand = 999
-     where id = '7e570000-0000-4000-8000-0000000001a0' returning id $$,
-  'on-hand cannot be written directly'
+     where id = '7e570000-0000-4000-8000-0000000001a0' $$,
+  '42501', null, 'on-hand cannot be written directly'
 );
 
 -- The ledger is append-only.
-select is_empty(
+select throws_ok(
   $$ update public.stock_movements set quantity = 99
-     where item_id = '7e570000-0000-4000-8000-0000000001a0' returning id $$,
-  'ledger rows cannot be edited'
+     where item_id = '7e570000-0000-4000-8000-0000000001a0' $$,
+  '42501', null, 'ledger rows cannot be edited'
 );
-select is_empty(
+select throws_ok(
   $$ delete from public.stock_movements
-     where item_id = '7e570000-0000-4000-8000-0000000001a0' returning id $$,
-  'ledger rows cannot be deleted'
+     where item_id = '7e570000-0000-4000-8000-0000000001a0' $$,
+  '42501', null, 'ledger rows cannot be deleted'
+);
+select throws_ok(
+  $$ truncate public.stock_movements cascade $$,
+  '42501', null, 'the ledger cannot be truncated, which would skip RLS'
 );
 
 -- An archived item takes no movements.

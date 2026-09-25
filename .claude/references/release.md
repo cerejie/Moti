@@ -41,9 +41,14 @@ Never point `supabase test db` at the production project.
      superadmin or an owner through the Users screen (`manage-staff`).
    - "Confirm email" can stay as it is: `manage-staff` creates accounts already confirmed, with
      a temporary password, not an invite.
-5. Authentication → URL Configuration: Site URL = the production app URL; add it (and any
+   - Minimum password length **8** (the app asks for 8; the server default is 6), and
+     "Secure password change" on, so a password change needs a recent sign-in.
+   - Leaked-password protection on, if the plan offers it.
+5. API → GraphQL: turn it off. Moti only uses the REST API, and GraphQL lets anyone
+   browse the schema.
+6. Authentication → URL Configuration: Site URL = the production app URL; add it (and any
    preview URL you use) to Redirect URLs.
-6. Create the superadmin once:
+7. Create the superadmin once:
    - Authentication → Users → Add user (email + password, "Auto confirm" on).
    - SQL editor:
 
@@ -53,7 +58,7 @@ Never point `supabase test db` at the production project.
      ```
 
    Every shop, owner and employee after that is created from the app.
-7. Project Settings → API: copy the project URL and the **anon** key for step 3. The
+8. Project Settings → API: copy the project URL and the **anon** key for step 3. The
    `service_role` key stays in Supabase (the Edge Function reads it there) and never goes
    into Vercel or the repo.
 
@@ -67,8 +72,9 @@ Never point `supabase test db` at the production project.
    - sends every path to `index.html`, so deep links like `/inventory/<id>` load;
    - serves `sw.js`, `index.html` and the manifest uncached, so the update prompt sees a new
      version; hashed files under `/assets/` are cached for a year;
-   - adds nosniff, referrer and no-framing headers.
-4. Add the Vercel URL (or the custom domain) to Supabase's Site URL / Redirect URLs (step 2.5).
+   - adds nosniff, referrer, no-framing and a Content-Security-Policy that allows only this
+     site, `*.supabase.co` and Google Fonts. A new external service must be added there.
+4. Add the Vercel URL (or the custom domain) to Supabase's Site URL / Redirect URLs (step 2.6).
 
 ## 4. Smoke test on production
 
