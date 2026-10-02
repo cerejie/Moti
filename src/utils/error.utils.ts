@@ -6,10 +6,35 @@ export interface IErrorDescription {
   message: string;
 }
 
-// fetch rejects with a TypeError when the request never reaches the server.
-const isNetworkError = (error: unknown) =>
+const networkMessage = "Moti can't reach the server. Check your connection and try again.";
+
+// The request never reached the server; the write can be queued and replayed.
+export class NetworkError extends Error {
+  constructor() {
+    super(networkMessage);
+    this.name = "NetworkError";
+  }
+}
+
+const fetchFailurePattern = /failed to fetch|networkerror|load failed|network request failed/i;
+
+// supabase-js reports a failed fetch as a plain object: no code, message "TypeError: …".
+const isFetchFailureObject = (error: unknown): boolean => {
+  if (!error || typeof error !== "object" || !("message" in error)) return false;
+  const code = "code" in error ? String((error as { code: unknown }).code) : "";
+  const message = String((error as { message: unknown }).message);
+  return code === "" && (message.startsWith("TypeError:") || fetchFailurePattern.test(message));
+};
+
+// The shape of a failed request itself, whatever the device reports about its connection.
+export const isFetchFailure = (error: unknown): boolean =>
+  (error instanceof TypeError && fetchFailurePattern.test(error.message)) ||
+  isFetchFailureObject(error);
+
+export const isNetworkError = (error: unknown): boolean =>
+  error instanceof NetworkError ||
   (typeof navigator !== "undefined" && !navigator.onLine) ||
-  (error instanceof TypeError && /fetch|network/i.test(error.message));
+  isFetchFailure(error);
 
 export const describeError = (
   error: unknown,
@@ -19,7 +44,7 @@ export const describeError = (
     return {
       kind: "network",
       title: "You're offline",
-      message: "Moti can't reach the server. Check your connection and try again.",
+      message: networkMessage,
     };
   }
 

@@ -1,11 +1,18 @@
 import { CloudOff, RefreshCw, TriangleAlert } from "lucide-react";
+import { useModal } from "../../../hook/common/modal.hook";
 import { useSyncStatus } from "../../../hook/common/network.hook";
-import { syncIndicatorIcon } from "../../../styles/status/badge.styles";
+import { syncQueueModalKey } from "../../../keys/modal.keys";
+import {
+  syncIndicatorIcon,
+  syncIndicatorTrigger,
+} from "../../../styles/status/badge.styles";
+import AppButton from "../button/AppButton";
 import StatusBadge from "./StatusBadge";
+import SyncQueueModal from "./SyncQueueModal";
 
-// Silent while online and fully synced; otherwise says why writes are waiting.
-const SyncIndicator = () => {
-  const { online, pending, flushing, lastError } = useSyncStatus();
+const SyncBadge = () => {
+  const { online, waiting, failed, flushing } = useSyncStatus();
+  const pending = waiting + failed;
 
   if (!online) {
     return (
@@ -16,11 +23,18 @@ const SyncIndicator = () => {
     );
   }
 
-  if (pending === 0) return null;
-
-  if (lastError && !flushing) {
+  if (flushing) {
     return (
-      <StatusBadge tone="danger" title={lastError}>
+      <StatusBadge tone="info">
+        <RefreshCw className={syncIndicatorIcon} aria-hidden />
+        Syncing {pending}
+      </StatusBadge>
+    );
+  }
+
+  if (failed > 0) {
+    return (
+      <StatusBadge tone="danger">
         <TriangleAlert className={syncIndicatorIcon} aria-hidden />
         {pending} not synced
       </StatusBadge>
@@ -28,10 +42,36 @@ const SyncIndicator = () => {
   }
 
   return (
-    <StatusBadge tone="info">
-      <RefreshCw className={syncIndicatorIcon} aria-hidden />
-      Syncing {pending}
+    <StatusBadge tone="warning">
+      <CloudOff className={syncIndicatorIcon} aria-hidden />
+      {waiting} waiting
     </StatusBadge>
+  );
+};
+
+// Silent while online and fully synced; otherwise says why writes are waiting,
+// and opens the list of them when anything is queued.
+const SyncIndicator = () => {
+  const { online, waiting, failed } = useSyncStatus();
+  const { openModal } = useModal(syncQueueModalKey);
+  const pending = waiting + failed;
+
+  return (
+    <>
+      {pending > 0 ? (
+        <AppButton
+          variant="ghost"
+          size="sm"
+          className={syncIndicatorTrigger}
+          onPress={() => openModal()}
+        >
+          <SyncBadge />
+        </AppButton>
+      ) : (
+        !online && <SyncBadge />
+      )}
+      <SyncQueueModal />
+    </>
   );
 };
 

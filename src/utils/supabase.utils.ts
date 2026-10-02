@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { env } from "./env.utils";
+import { isFetchFailure, NetworkError } from "./error.utils";
 
 // Owners and employees sign in through the login_email RPC, which returns a JWT
 // signed by the database. It rides on every request in place of the anon key.
@@ -66,6 +67,7 @@ const constraintMessages: Record<string, string> = {
 const raisedCode = "P0001";
 
 export const toError = (error: unknown): Error => {
+  if (isFetchFailure(error)) return new NetworkError();
   if (error instanceof Error) return error;
 
   if (error && typeof error === "object" && "message" in error) {

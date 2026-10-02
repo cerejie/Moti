@@ -5,21 +5,24 @@ import type {
   IMutationResult,
   IQueuedWrite,
   IQueuedWriteInput,
+  IQueueEntry,
 } from "../../models/common/write.model";
+import { isNetworkError } from "../../utils/error.utils";
+import { queryClient } from "../../utils/query.utils";
 import { executeWrite, newWriteId } from "../../utils/write.utils";
 import { selectSessionOwner, useAccountStore } from "../data/account/account.store";
 
 type States = {
-  queue: IQueuedWrite[];
+  queue: IQueueEntry[];
   // The account that queued the writes; they never flush under anyone else.
   ownerId: string | null;
   flushing: boolean;
-  lastError: string | null;
 };
 
 type Actions = {
   enqueue: (write: IQueuedWriteInput) => string;
   flush: () => Promise<void>;
+  retryFailed: () => Promise<void>;
   discard: (id: string) => void;
   // Called on sign-in: another account's leftovers are dropped, never replayed.
   adoptOwner: (ownerId: string) => void;
@@ -29,10 +32,12 @@ const initialValues: States = {
   queue: [],
   ownerId: null,
   flushing: false,
-  lastError: null,
 };
 
 const currentOwner = () => selectSessionOwner(useAccountStore.getState());
+
+const errorText = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
 
 // Plain zustand create and persisted: queued writes must survive a reload and a
 // sign-out reset, and replay only for the account that made them.
@@ -43,35 +48,51 @@ export const useSyncStore = create<States & Actions>()(
 
       enqueue: (write) => {
         const id = newWriteId();
-        set((state) => ({
-          queue: [...state.queue, { ...write, id } as IQueuedWrite],
-          ownerId: currentOwner(),
-        }));
+        const entry = { ...write, id, queuedAt: new Date().toISOString() } as IQueueEntry;
+        set((state) => ({ queue: [...state.queue, entry], ownerId: currentOwner() }));
         return id;
       },
 
       flush: async () => {
         const owner = currentOwner();
         if (get().flushing || !owner || get().ownerId !== owner) return;
-        set({ flushing: true, lastError: null });
+        set({ flushing: true });
+        let sent = 0;
 
         try {
-          while (get().queue.length > 0) {
-            const [next, ...rest] = get().queue;
+          // A refused write is set aside so the ones behind it still go out;
+          // a network error stops the run and keeps everything for next time.
+          let next = get().queue.find((entry) => !entry.failure);
+          while (next) {
+            const { id } = next;
 
             try {
               await executeWrite(next);
-              set({ queue: rest });
+              sent += 1;
+              set((state) => ({ queue: state.queue.filter((entry) => entry.id !== id) }));
             } catch (error) {
-              set({
-                lastError: error instanceof Error ? error.message : String(error),
-              });
-              break;
+              if (isNetworkError(error)) break;
+              set((state) => ({
+                queue: state.queue.map((entry) =>
+                  entry.id === id ? { ...entry, failure: errorText(error) } : entry,
+                ),
+              }));
             }
+
+            next = get().queue.find((entry) => !entry.failure);
           }
         } finally {
           set({ flushing: false });
         }
+
+        if (sent > 0) void queryClient.invalidateQueries();
+      },
+
+      retryFailed: async () => {
+        set((state) => ({
+          queue: state.queue.map((entry) => ({ ...entry, failure: undefined })),
+        }));
+        await get().flush();
       },
 
       discard: (id) =>
@@ -80,7 +101,7 @@ export const useSyncStore = create<States & Actions>()(
         })),
 
       adoptOwner: (ownerId) => {
-        if (get().ownerId !== ownerId) set({ queue: [], ownerId, lastError: null });
+        if (get().ownerId !== ownerId) set({ queue: [], ownerId });
       },
     }),
     {
@@ -94,12 +115,22 @@ export const runWrite = async (
   write: IQueuedWriteInput,
 ): Promise<IMutationResult> => {
   const online = typeof navigator === "undefined" ? true : navigator.onLine;
-
-  if (!online) {
+  const queue = () => {
     useSyncStore.getState().enqueue(write);
     return { queued: true };
+  };
+
+  if (!online) return queue();
+
+  try {
+    await executeWrite({ ...write, id: newWriteId() } as IQueuedWrite);
+  } catch (error) {
+    // Connected Wi-Fi without internet reports online; the write waits instead of failing.
+    if (isNetworkError(error)) return queue();
+    throw error;
   }
 
-  await executeWrite({ ...write, id: newWriteId() } as IQueuedWrite);
+  // The connection works, so anything left waiting can go out now.
+  void useSyncStore.getState().flush();
   return { queued: false };
 };

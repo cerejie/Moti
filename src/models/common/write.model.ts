@@ -31,6 +31,13 @@ type DistributiveOmit<T, K extends keyof never> = T extends unknown
 
 export type IQueuedWriteInput = DistributiveOmit<IQueuedWrite, "id">;
 
+// Optional because queues saved before these fields existed are still replayed.
+export type IQueueEntry = IQueuedWrite & {
+  queuedAt?: string;
+  // Set when the server refused the write; it waits for Retry or Discard.
+  failure?: string;
+};
+
 export interface IMutationResult {
   queued: boolean;
 }

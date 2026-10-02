@@ -17,7 +17,7 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Phase 5 fixes, Batch 2 (Batch 1 coded; owner-screen check pending)
+      next up: Phase 5 fixes, Batch 3 (Batches 1–2 coded; owner-screen and preview checks pending)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -152,9 +152,22 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
         dark: every button and link ≥ 44 px, zero console errors. The text input inside an input
         group stays 36 px tall in its 44 px frame (tapping the frame's edge does not focus it).
   - [ ] History, Masterfile, cart and bell at 360 px: needs an owner sign-in (no password kept)
-- [ ] **Batch 2: reliability** (H5 M1 M2 H6): not-synced sheet with Retry and Discard, skipping
-      permanent failures; network-error detection in `toError`/`describeError` and `runWrite`;
-      update prompt (decision 4A).
+- [x] **Batch 2: reliability** (H5 M1 M2 H6). Coded 2026-10-03, `yarn build` + `yarn lint` clean.
+  1. `utils/error.utils.ts`: `NetworkError`, `isFetchFailure` (supabase-js reports a failed fetch
+     as `{ message: "TypeError: …", code: "" }`) and `isNetworkError`; `toError` returns a
+     `NetworkError`. React Query no longer retries network errors (supabase-js already retries
+     GETs 3× with 1/2/4 s backoff), so the offline message shows after ~7 s, not 16 s.
+  2. `sync.store.ts`: flush sets a refused write aside (`failure` on the entry) and sends the
+     rest; a network error stops the run. Entries are removed by id (a write enqueued mid-flush
+     was lost before). Any sent write invalidates all queries. `runWrite` also queues on a
+     network error and flushes after a successful send; `useNetwork` flushes on foreground.
+  3. The sync badge opens `SyncQueueModal` (label, queued time, reason, Discard with confirm,
+     Retry). Replays of category/brand add or delete after a lost response show there as
+     failures (duplicate / changed nothing) to discard.
+  4. `hook/common/update.hook.ts` (`useAppUpdate`, in App): `useRegisterSW`, hourly update check,
+     toast "New version ready · Reload", hidden while the queue flushes. `registerSW.js` is no
+     longer injected.
+  - [ ] Check with `yarn preview`: offline sale → badge → sheet; update toast after a rebuild
 - [ ] **Batch 3: native feel on phones** (M4 M5 M6 L3 L5 L6): five tabs (decision 2A), title
       shown once, list on the background, filter sheet, one date format, dark `theme-color`,
       stat cards.

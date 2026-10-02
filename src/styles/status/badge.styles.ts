@@ -5,6 +5,9 @@ export const statusBadgeDot = "size-1.5 rounded-pill bg-current";
 
 export const syncIndicatorIcon = "size-3.5";
 
+// The badge brings its own padding; the ghost button only makes it pressable.
+export const syncIndicatorTrigger = "px-1";
+
 // A count pinned to an icon button, e.g. the alerts bell.
 export const countBadge =
   "pointer-events-none absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-pill bg-danger px-1 text-xs font-bold text-white tabular-nums";
