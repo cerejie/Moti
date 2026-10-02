@@ -3,17 +3,17 @@ import { useForm } from "react-hook-form";
 import {
   loginSchema,
   type ILoginInput,
-} from "../../models/data/account/account.request";
-import type { ILoginResult } from "../../models/data/account/account.response";
-import { ROUTES } from "../../routes/route.paths";
-import accountServices from "../../services/data/account.services";
-import { useSyncStore } from "../../store/common/sync.store";
+} from "../../../models/data/account/account.request";
+import type { ILoginResult } from "../../../models/data/account/account.response";
+import { ROUTES } from "../../../routes/route.paths";
+import accountServices from "../../../services/data/account.services";
+import { useSyncStore } from "../../../store/common/sync.store";
 import {
   selectSessionOwner,
   useAccountStore,
-} from "../../store/data/account/account.store";
-import { resetLocation } from "../../utils/route.utils";
-import { useAppMutation } from "../common/mutation.hook";
+} from "../../../store/data/account/account.store";
+import { resetLocation } from "../../../utils/route.utils";
+import { useAppMutation } from "../../common/mutation.hook";
 
 export const useAccountLoginHook = () => {
   const setCustomSession = useAccountStore((state) => state.setCustomSession);

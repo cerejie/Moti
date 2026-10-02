@@ -1,4 +1,4 @@
-import { useChangePasswordForm } from "../../../hook/account/account.settings.hook";
+import { useChangePasswordForm } from "../../../hook/data/account/account.settings.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
 import type { IChangePasswordInput } from "../../../models/data/account/account.request";
 import { accountForm, accountFormActions } from "../../../styles/account/account.styles";

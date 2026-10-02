@@ -73,7 +73,7 @@ Modals              src/store/common/modal.store.ts + src/hook/common/modal.hook
 Confirm             src/store/common/confirm.store.ts + src/hook/common/confirmation.hook.ts
 Pagination          src/store/common/pagination.store.ts + src/hook/common/pagination.hook.ts
 Auth                src/services/data/account.services.ts + src/store/data/account/account.store.ts
-                    src/hook/account/*.hook.ts (login, logout/endSession, expiry, permission, me)
+                    src/hook/data/account/*.hook.ts (login, logout/endSession, expiry, permission, me)
                     src/models/common/permission.model.ts · src/routes/route.loader.ts
 Push                src/hook/common/push.hook.ts · src/services/data/push.services.ts
                     public/push-sw.js (workbox.importScripts) · supabase/functions/send-push

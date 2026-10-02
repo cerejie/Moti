@@ -1,5 +1,5 @@
 import { Users } from "lucide-react";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { ROUTES } from "../../../routes/route.paths";
 import { accountCardBody, accountHint } from "../../../styles/account/account.styles";
 import AppButton from "../../common/button/AppButton";

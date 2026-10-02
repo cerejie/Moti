@@ -1,8 +1,8 @@
 import { RouterProvider } from "react-router-dom";
 import ConfirmationModal from "./components/common/modal/ConfirmationModal";
 import AppToaster from "./components/common/status/AppToaster";
-import { useAccountExpiryHook } from "./hook/account/account.expiry.hook";
-import { useAppRouter } from "./hook/account/account.me.hook";
+import { useAccountExpiryHook } from "./hook/data/account/account.expiry.hook";
+import { useAppRouter } from "./hook/data/account/account.me.hook";
 import { useInstallListener } from "./hook/common/install.hook";
 import { useAppUpdate } from "./hook/common/update.hook";
 import { useApplyTheme } from "./hook/layout/theme.hook";

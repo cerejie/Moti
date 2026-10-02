@@ -1,5 +1,5 @@
 import { Plus, Tags } from "lucide-react";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { itemFormModalKey } from "../../../keys/modal.keys";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";

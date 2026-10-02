@@ -1,5 +1,5 @@
 import { Lock, LockKeyhole, Mail, MailCheck } from "lucide-react";
-import { useAccountForgotHook } from "../../../hook/account/account.forgot.hook";
+import { useAccountForgotHook } from "../../../hook/data/account/account.forgot.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
 import type { IForgotPasswordInput } from "../../../models/data/account/account.request";
 import { ROUTES } from "../../../routes/route.paths";

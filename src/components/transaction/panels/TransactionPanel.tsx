@@ -1,5 +1,5 @@
 import type { TransactionTab } from "../../../enums/transaction.enum";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useFilters } from "../../../hook/common/filter.hook";
 import { transactionTabKey } from "../../../keys/table.keys";
 import { pickerStack } from "../../../styles/transaction/transaction.styles";

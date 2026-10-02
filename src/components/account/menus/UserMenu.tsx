@@ -1,7 +1,7 @@
 import { LogOut, Moon, Sun, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { effectiveRoleLabels } from "../../../enums/role.enum";
-import { useAccountLogoutHook } from "../../../hook/account/account.logout.hook";
+import { useAccountLogoutHook } from "../../../hook/data/account/account.logout.hook";
 import type { IRowAction } from "../../../models/common/action.model";
 import { ROUTES } from "../../../routes/route.paths";
 import { selectTheme, useThemeStore } from "../../../store/common/theme.store";

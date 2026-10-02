@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import {
   forgotPasswordSchema,
   type IForgotPasswordInput,
-} from "../../models/data/account/account.request";
-import { ROUTES } from "../../routes/route.paths";
-import accountServices from "../../services/data/account.services";
+} from "../../../models/data/account/account.request";
+import { ROUTES } from "../../../routes/route.paths";
+import accountServices from "../../../services/data/account.services";
 import {
   selectResetRequested,
   useAuthFlowStore,
-} from "../../store/data/account/auth.flow.store";
-import { useAppMutation } from "../common/mutation.hook";
+} from "../../../store/data/account/auth.flow.store";
+import { useAppMutation } from "../../common/mutation.hook";
 
 export const useAccountForgotHook = () => {
   const requested = useAuthFlowStore(selectResetRequested);

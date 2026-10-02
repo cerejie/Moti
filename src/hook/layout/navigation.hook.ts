@@ -8,7 +8,7 @@ import {
   protectedViewRoutes,
 } from "../../routes/protected.view.routes";
 import { isRouteActive } from "../../utils/route.utils";
-import { usePermissions } from "../account/account.permission.hook";
+import { usePermissions } from "../data/account/account.permission.hook";
 
 export type INavRoute = IRoute & {
   path: string;

@@ -1,5 +1,5 @@
 import { Bell, BellRing } from "lucide-react";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useInboxList } from "../../../hook/data/inbox/inbox.list.hook";
 import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook";

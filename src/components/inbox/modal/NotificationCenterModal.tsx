@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook";
 import { notificationCenterModalKey } from "../../../keys/modal.keys";

@@ -1,5 +1,5 @@
 import { Hourglass, Lock, LockKeyhole, Mail, UserRound } from "lucide-react";
-import { useAccountRegisterHook } from "../../../hook/account/account.register.hook";
+import { useAccountRegisterHook } from "../../../hook/data/account/account.register.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
 import type { IRegisterInput } from "../../../models/data/account/account.request";
 import { ROUTES } from "../../../routes/route.paths";

@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import {
   changePasswordSchema,
   type IChangePasswordInput,
-} from "../../models/data/account/account.request";
-import accountServices from "../../services/data/account.services";
-import { useAccountStore } from "../../store/data/account/account.store";
-import { useAppMutation } from "../common/mutation.hook";
+} from "../../../models/data/account/account.request";
+import accountServices from "../../../services/data/account.services";
+import { useAccountStore } from "../../../store/data/account/account.store";
+import { useAppMutation } from "../../common/mutation.hook";
 
 const emptyValues: IChangePasswordInput = {
   current_password: "",

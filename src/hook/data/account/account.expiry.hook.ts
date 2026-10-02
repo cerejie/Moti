@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import accountServices from "../../services/data/account.services";
+import accountServices from "../../../services/data/account.services";
 import {
   selectIsAuthenticated,
   useAccountStore,
-} from "../../store/data/account/account.store";
+} from "../../../store/data/account/account.store";
 import { endSession } from "./account.logout.hook";
 
 const sessionExpiredMessage = "Your session expired. Sign in again.";

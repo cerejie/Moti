@@ -6,7 +6,7 @@ import {
   PackagePlus,
   Pencil,
 } from "lucide-react";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useItemArchive } from "../../../hook/data/inventory/inventory.form.hook";
 import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";

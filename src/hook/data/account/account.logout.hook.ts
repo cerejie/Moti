@@ -1,13 +1,13 @@
-import { ROUTES } from "../../routes/route.paths";
-import accountServices from "../../services/data/account.services";
-import { resetAllStores } from "../../store/common/reset.store";
-import { useSyncStore } from "../../store/common/sync.store";
-import { useAccountStore } from "../../store/data/account/account.store";
-import { queryClient } from "../../utils/query.utils";
-import { resetLocation } from "../../utils/route.utils";
-import { useConfirm } from "../common/confirmation.hook";
-import { useAppMutation } from "../common/mutation.hook";
-import { releasePushSubscription } from "../common/push.hook";
+import { ROUTES } from "../../../routes/route.paths";
+import accountServices from "../../../services/data/account.services";
+import { resetAllStores } from "../../../store/common/reset.store";
+import { useSyncStore } from "../../../store/common/sync.store";
+import { useAccountStore } from "../../../store/data/account/account.store";
+import { queryClient } from "../../../utils/query.utils";
+import { resetLocation } from "../../../utils/route.utils";
+import { useConfirm } from "../../common/confirmation.hook";
+import { useAppMutation } from "../../common/mutation.hook";
+import { releasePushSubscription } from "../../common/push.hook";
 
 // Shared by the sign-out button and the session-expiry handler. The offline
 // queue is kept: it belongs to this account and replays when it signs back in.

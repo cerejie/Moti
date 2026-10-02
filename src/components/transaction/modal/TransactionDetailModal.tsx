@@ -1,5 +1,5 @@
 import { Ban, Receipt, ShoppingCart } from "lucide-react";
-import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useTransactionLines } from "../../../hook/data/transaction/transaction.list.hook";
 import { transactionDetailModalKey, transactionVoidModalKey } from "../../../keys/modal.keys";

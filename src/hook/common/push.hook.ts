@@ -15,7 +15,7 @@ import {
   isStandalone,
   subscriptionInputOf,
 } from "../../utils/push.utils";
-import { usePermissions } from "../account/account.permission.hook";
+import { usePermissions } from "../data/account/account.permission.hook";
 import { useAppMutation } from "./mutation.hook";
 
 const blockedMessage =

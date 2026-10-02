@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { InventoryView } from "../../../enums/stock.enum";
 import {
@@ -8,7 +7,6 @@ import {
 } from "../../../keys/query.keys";
 import { inventoryTableKey } from "../../../keys/table.keys";
 import inventoryServices from "../../../services/data/inventory.services";
-import { usePaginationStore } from "../../../store/common/pagination.store";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
 import { useDebouncedSearch } from "../../common/search.hook";
@@ -26,16 +24,10 @@ export const useInventoryList = () => {
   const { filters, setFilters } = useFilters<IInventoryFilterValues>(inventoryTableKey);
   const search = useDebouncedSearch(inventoryTableKey, inventoryTableKey);
   const { pagination } = usePagination(inventoryTableKey);
-  const setPaginationAt = usePaginationStore((state) => state.setPagination);
 
   const view = filters.view ?? "all";
   const categoryId = filters.categoryId;
   const brandId = filters.brandId;
-
-  // A new filter is a new result set; the old page offset no longer applies.
-  useEffect(() => {
-    setPaginationAt(inventoryTableKey, { pageNumber: 1 });
-  }, [view, categoryId, brandId, setPaginationAt]);
 
   const query = useQuery({
     queryKey: [

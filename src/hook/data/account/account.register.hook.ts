@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import {
   registerSchema,
   type IRegisterInput,
-} from "../../models/data/account/account.request";
-import { ROUTES } from "../../routes/route.paths";
-import accountServices from "../../services/data/account.services";
+} from "../../../models/data/account/account.request";
+import { ROUTES } from "../../../routes/route.paths";
+import accountServices from "../../../services/data/account.services";
 import {
   selectRegistered,
   useAuthFlowStore,
-} from "../../store/data/account/auth.flow.store";
-import { useAppMutation } from "../common/mutation.hook";
+} from "../../../store/data/account/auth.flow.store";
+import { useAppMutation } from "../../common/mutation.hook";
 
 export const useAccountRegisterHook = () => {
   const registered = useAuthFlowStore(selectRegistered);
