@@ -1,10 +1,18 @@
-import { ArrowLeftRight, LayoutDashboard, Package, UserRound, Users } from "lucide-react";
+import {
+  ArrowLeftRight,
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  UserRound,
+  Users,
+} from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
 import AccountView from "../pages/Account/AccountView";
-import CategoriesView from "../pages/Categories/CategoriesView";
 import DashboardView from "../pages/Dashboard/DashboardView";
 import InventoryView from "../pages/Inventory/InventoryView";
+import MasterfileView from "../pages/Masterfile/MasterfileView";
 import MovementsView from "../pages/Movements/MovementsView";
+import TransactionView from "../pages/Transaction/TransactionView";
 import UsersView from "../pages/Users/UsersView";
 import { permissionLoader } from "./route.loader";
 import { ROUTES } from "./route.paths";
@@ -15,6 +23,7 @@ export const menuGroup = "Menu";
 // The sidebar, the bottom tab bar and the topbar title all map over this array;
 // order here is the order they render in. `can` hides a route from roles without
 // that permission, and its loader turns a typed URL away the same way.
+// Every role can transact, so Transaction is where a refused URL lands.
 export const protectedViewRoutes: IRoute[] = [
   {
     key: "dashboard",
@@ -23,9 +32,18 @@ export const protectedViewRoutes: IRoute[] = [
     icon: LayoutDashboard,
     path: ROUTES.home,
     can: "viewDashboard",
-    // Employees land on inventory instead.
-    loader: permissionLoader("viewDashboard", ROUTES.inventory),
+    // Employees land on Transaction instead.
+    loader: permissionLoader("viewDashboard", ROUTES.transaction),
     Component: DashboardView,
+  },
+  {
+    key: "transaction",
+    label: "Transaction",
+    shortLabel: "Sell",
+    icon: ShoppingCart,
+    path: ROUTES.transaction,
+    can: "transact",
+    Component: TransactionView,
   },
   {
     key: "inventory",
@@ -33,16 +51,17 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Package,
     path: ROUTES.inventory,
     can: "browseInventory",
+    loader: permissionLoader("browseInventory", ROUTES.transaction),
     Component: InventoryView,
   },
   {
-    key: "categories",
-    label: "Categories",
-    path: ROUTES.categories,
+    key: "masterfile",
+    label: "Masterfile",
+    path: ROUTES.masterfile,
     isNotNav: true,
     can: "manageInventory",
-    loader: permissionLoader("manageInventory", ROUTES.inventory),
-    Component: CategoriesView,
+    loader: permissionLoader("manageInventory", ROUTES.transaction),
+    Component: MasterfileView,
   },
   {
     key: "movements",
@@ -51,7 +70,7 @@ export const protectedViewRoutes: IRoute[] = [
     icon: ArrowLeftRight,
     path: ROUTES.movements,
     can: "viewMovements",
-    loader: permissionLoader("viewMovements", ROUTES.inventory),
+    loader: permissionLoader("viewMovements", ROUTES.transaction),
     Component: MovementsView,
   },
   {
@@ -60,7 +79,7 @@ export const protectedViewRoutes: IRoute[] = [
     icon: Users,
     path: ROUTES.users,
     can: "manageUsers",
-    loader: permissionLoader("manageUsers", ROUTES.inventory),
+    loader: permissionLoader("manageUsers", ROUTES.transaction),
     Component: UsersView,
   },
   {

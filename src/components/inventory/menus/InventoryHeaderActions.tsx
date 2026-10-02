@@ -14,9 +14,9 @@ const InventoryHeaderActions = () => {
 
   return (
     <>
-      <AppButton href={ROUTES.categories} variant="outline">
+      <AppButton href={ROUTES.masterfile} variant="outline">
         <Tags />
-        Categories
+        Masterfile
       </AppButton>
       <AppButton onPress={() => formModal.openModal()}>
         <Plus />

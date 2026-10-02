@@ -7,10 +7,11 @@ const wholeNumber = (label: string) =>
 const optionalText = (max: number) => z.string().trim().max(max);
 
 // Numbers stay strings in the form (inputs hand back text); the service converts them.
+// Category and brand are typed names; the form hook turns them into ids on save.
 export const itemFormSchema = z.object({
   sku: z.string().trim().min(1, "Enter the SKU").max(40),
   name: z.string().trim().min(1, "Enter the item name").max(120),
-  category_id: z.string(),
+  category: optionalText(60),
   brand: optionalText(60),
   part_number: optionalText(60),
   unit: z.string().trim().min(1, "Enter the unit, e.g. pc").max(12),
@@ -24,8 +25,15 @@ export const itemFormSchema = z.object({
 });
 export type IItemFormInput = z.infer<typeof itemFormSchema>;
 
+// What the service saves once the typed category and brand are resolved.
+export type IItemSaveValues = Omit<IItemFormInput, "category" | "brand"> & {
+  category_id: string | null;
+  brand_id: string | null;
+};
+
 export interface IInventoryFilters {
   view: InventoryView;
   categoryId?: string;
+  brandId?: string;
   search: string;
 }

@@ -1,7 +1,8 @@
 # CLAUDE.md — Moti
 
 Guidance for Claude Code in this repo. Where this file and the global `~/.claude/CLAUDE.md`
-disagree, the global plan-before-edit and commit-message rules still win.
+disagree, the global plan-before-edit rule still wins; commit messages follow the TARTAR format
+below (the user's explicit rule for this repo).
 
 Moti is a mobile-first **PWA**: React 19 + TypeScript + Vite, Tailwind v4 + **shadcn/ui
 (`aria-vega`, React Aria)**, TanStack Query 5, zustand 5, react-hook-form + zod, and
@@ -161,4 +162,5 @@ with an `IFieldConfig[]`. Read values with `useWatch`, never `form.watch()`.
 
 1. `yarn build` and `yarn lint` — both clean (`codebase-engineering` § G has the ladder).
 2. Report: files added, files changed, how to test, remaining notes.
-3. Commit suggestion (`codebase-engineering` § H) — suggest only, never commit unless asked.
+3. Commit suggestion in the TARTAR format (`Development vX.YY` + one `Type: Title Case` line per
+   change, `codebase-engineering` § H) — suggest only, never commit unless asked.

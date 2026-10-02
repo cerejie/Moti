@@ -22,5 +22,5 @@ export const useCategoryOptions = () => {
     label: category.name,
   }));
 
-  return { options, isLoading: query.isLoading };
+  return { options, categories: query.data ?? [], isLoading: query.isLoading };
 };

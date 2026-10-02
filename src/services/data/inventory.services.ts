@@ -1,6 +1,6 @@
 import type {
   IInventoryFilters,
-  IItemFormInput,
+  IItemSaveValues,
 } from "../../models/data/inventory/inventory.request";
 import type {
   IInventoryItem,
@@ -17,19 +17,20 @@ import { runWrite } from "../../store/common/sync.store";
 import { toIlikePattern } from "../../utils/search.utils";
 import { supabase, toError } from "../../utils/supabase.utils";
 import { newWriteId } from "../../utils/write.utils";
+import brandServices from "./brand.services";
 
 const table = "inventory_items";
 const columns =
-  "id, sku, name, category_id, category:categories(name), brand, part_number, unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
+  "id, sku, name, category_id, category:categories(name), brand_id, brand:brands(name), part_number, unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
 const alertLimit = 50;
 
 const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
 
-const editableValues = (values: IItemFormInput) => ({
+const editableValues = (values: IItemSaveValues) => ({
   sku: values.sku.trim(),
   name: values.name.trim(),
-  category_id: values.category_id || null,
-  brand: textOrNull(values.brand),
+  category_id: values.category_id,
+  brand_id: values.brand_id,
   part_number: textOrNull(values.part_number),
   unit: values.unit.trim(),
   reorder_level: Number(values.reorder_level),
@@ -52,11 +53,15 @@ const inventoryServices = {
       query = query.eq("stock_status", filters.view);
     }
     if (filters.categoryId) query = query.eq("category_id", filters.categoryId);
+    if (filters.brandId) query = query.eq("brand_id", filters.brandId);
 
     const pattern = toIlikePattern(filters.search);
     if (pattern) {
+      // The brand name lives on brands, so matching brands are looked up first.
+      const brandIds = await brandServices.getIdsMatching(filters.search, signal);
+      const byBrand = brandIds.length > 0 ? `,brand_id.in.(${brandIds.join(",")})` : "";
       query = query.or(
-        `name.ilike.${pattern},sku.ilike.${pattern},brand.ilike.${pattern},part_number.ilike.${pattern}`,
+        `name.ilike.${pattern},sku.ilike.${pattern},part_number.ilike.${pattern}${byBrand}`,
       );
     }
 
@@ -97,7 +102,7 @@ const inventoryServices = {
     return (data ?? []) as unknown as IInventoryItem[];
   },
 
-  create: (values: IItemFormInput): Promise<IMutationResult> => {
+  create: (values: IItemSaveValues): Promise<IMutationResult> => {
     const editable = editableValues(values);
     return runWrite({
       kind: "rpc",
@@ -107,7 +112,7 @@ const inventoryServices = {
         p_sku: editable.sku,
         p_name: editable.name,
         p_category_id: editable.category_id,
-        p_brand: editable.brand,
+        p_brand_id: editable.brand_id,
         p_part_number: editable.part_number,
         p_unit: editable.unit,
         p_reorder_level: editable.reorder_level,
@@ -119,7 +124,7 @@ const inventoryServices = {
     });
   },
 
-  update: (id: string, values: IItemFormInput): Promise<IMutationResult> =>
+  update: (id: string, values: IItemSaveValues): Promise<IMutationResult> =>
     runWrite({
       kind: "update",
       table,

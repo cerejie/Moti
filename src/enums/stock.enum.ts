@@ -39,6 +39,7 @@ export const movementTypeLabels: Record<MovementType, string> = {
 
 export const movementReasonValues = [
   "sale",
+  "void",
   "restock",
   "opening_balance",
   "damaged",
@@ -49,6 +50,7 @@ export type MovementReason = z.infer<typeof movementReasonSchema>;
 
 export const movementReasonLabels: Record<MovementReason, string> = {
   sale: "Sale",
+  void: "Voided sale",
   restock: "Restock",
   opening_balance: "Opening stock",
   damaged: "Damaged",
@@ -57,23 +59,24 @@ export const movementReasonLabels: Record<MovementReason, string> = {
 
 export const movementReasonTones: Record<MovementReason, Tone> = {
   sale: "brand",
+  void: "warning",
   restock: "success",
   opening_balance: "info",
   damaged: "danger",
   correction: "neutral",
 };
 
-// Mirrors stock_movements_reason_check; opening stock is only set by create_item.
+// The owner's manual adjustments. Sales and voids come only from transactions,
+// opening stock only from create_item (record_movement refuses them).
 export const reasonsByType: Record<MovementType, readonly MovementReason[]> = {
   stock_in: ["restock", "correction"],
-  stock_out: ["sale", "damaged", "correction"],
+  stock_out: ["damaged", "correction"],
 };
 
-// What the stock dialog was opened for. Employees only ever get "sale".
-export type StockAction = "sale" | "stock_in" | "stock_out";
+// What the stock dialog was opened for.
+export type StockAction = "stock_in" | "stock_out";
 
 export const stockActionTitles: Record<StockAction, string> = {
-  sale: "Record sale",
   stock_in: "Add stock",
   stock_out: "Deduct stock",
 };

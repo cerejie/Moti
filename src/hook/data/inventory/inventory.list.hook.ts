@@ -16,6 +16,7 @@ import { useDebouncedSearch } from "../../common/search.hook";
 type IInventoryFilterValues = {
   view?: InventoryView;
   categoryId?: string;
+  brandId?: string;
 };
 
 // Alerts are the owner's monitor, so they refresh on their own while the app is open.
@@ -29,23 +30,25 @@ export const useInventoryList = () => {
 
   const view = filters.view ?? "all";
   const categoryId = filters.categoryId;
+  const brandId = filters.brandId;
 
   // A new filter is a new result set; the old page offset no longer applies.
   useEffect(() => {
     setPaginationAt(inventoryTableKey, { pageNumber: 1 });
-  }, [view, categoryId, setPaginationAt]);
+  }, [view, categoryId, brandId, setPaginationAt]);
 
   const query = useQuery({
     queryKey: [
       inventoryListKey,
       view,
       categoryId,
+      brandId,
       search,
       pagination.pageNumber,
       pagination.pageSize,
     ],
     queryFn: ({ signal }) =>
-      inventoryServices.getList({ view, categoryId, search }, pagination, signal),
+      inventoryServices.getList({ view, categoryId, brandId, search }, pagination, signal),
     placeholderData: keepPreviousData,
   });
 

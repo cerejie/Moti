@@ -6,7 +6,8 @@ export interface IInventoryItem {
   name: string;
   category_id: string | null;
   category: { name: string } | null;
-  brand: string | null;
+  brand_id: string | null;
+  brand: { name: string } | null;
   part_number: string | null;
   unit: string;
   on_hand: number;

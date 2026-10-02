@@ -34,29 +34,15 @@ const StockMovementModal = () => {
 
   if (!item) return null;
 
-  const isSale = action === "sale";
-  const type = action === "stock_in" ? "stock_in" : "stock_out";
-  const reasonOptions = reasonsByType[type]
-    .filter((reason) => reason !== "sale" || isSale)
-    .map((reason) => ({ value: reason, label: movementReasonLabels[reason] }));
+  const reasonOptions = reasonsByType[action].map((reason) => ({
+    value: reason,
+    label: movementReasonLabels[reason],
+  }));
 
   const fields: IFieldConfig<IMovementFormInput>[] = [
-    {
-      name: "reason",
-      label: "Reason",
-      type: "select",
-      options: reasonOptions,
-      span: "full",
-      hidden: () => isSale,
-    },
+    { name: "reason", label: "Reason", type: "select", options: reasonOptions, span: "full" },
     { name: "quantity", label: "Quantity", type: "number", span: "full", required: true },
-    {
-      name: "note",
-      label: "Note",
-      type: "textarea",
-      span: "full",
-      placeholder: isSale ? "Optional, e.g. customer or receipt no." : "Optional",
-    },
+    { name: "note", label: "Note", type: "textarea", span: "full", placeholder: "Optional" },
   ];
 
   const previewTone = preview.insufficient

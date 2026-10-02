@@ -9,6 +9,7 @@ import {
   ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxInput,
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
@@ -45,6 +46,7 @@ import {
   formatPhMobileInput,
   toPhMobileValue,
 } from "../../../utils/format.utils";
+import { fuzzyOptions } from "../../../utils/search.utils";
 import PasswordInput from "./PasswordInput";
 import SelectInput from "./SelectInput";
 
@@ -256,6 +258,55 @@ const FormField = <TValues extends FieldValues>({
             invalid={invalid}
             label={label}
           />
+        );
+      }
+
+      // The value is the typed name; the form hook links it to an existing
+      // record or creates one on save.
+      case "creatable": {
+        const typed = asText(bound.value);
+
+        return (
+          <Combobox
+            allowsCustomValue
+            inputValue={typed}
+            onInputChange={bound.onChange}
+            onChange={(key) => {
+              const picked = options.find((option) => option.value === key);
+              if (picked) bound.onChange(picked.label);
+            }}
+            onBlur={bound.onBlur}
+            isDisabled={disabled}
+            isInvalid={invalid}
+            aria-label={label}
+            menuTrigger="focus"
+            defaultFilter={() => true}
+            allowsEmptyCollection
+            className={fieldSelect}
+          >
+            <ComboboxInput
+              id={fieldId}
+              className={cn(fieldSelect, fieldInput)}
+              placeholder={placeholder ?? `Select or type a ${label.toLowerCase()}`}
+            />
+            <ComboboxContent>
+              <ComboboxList
+                renderEmptyState={() => (
+                  <ComboboxEmpty>
+                    {typed.trim()
+                      ? `No match. "${typed.trim()}" is added as new.`
+                      : "Nothing added yet. Type a name."}
+                  </ComboboxEmpty>
+                )}
+              >
+                {fuzzyOptions(options, typed).map((option) => (
+                  <ComboboxItem key={option.value} id={option.value}>
+                    {option.label}
+                  </ComboboxItem>
+                ))}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
         );
       }
 

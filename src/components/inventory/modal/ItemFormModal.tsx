@@ -1,12 +1,19 @@
-import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useItemForm } from "../../../hook/data/inventory/inventory.form.hook";
 import type { IFieldSection } from "../../../models/common/field.model";
 import type { IItemFormInput } from "../../../models/data/inventory/inventory.request";
 import EntityFormModal from "../../common/form/EntityFormModal";
 
 const ItemFormModal = () => {
-  const { open, isEdit, form, mutation, onSubmit, onOpenChange } = useItemForm();
-  const { options: categoryOptions } = useCategoryOptions();
+  const {
+    open,
+    isEdit,
+    form,
+    mutation,
+    categoryOptions,
+    brandOptions,
+    onSubmit,
+    onOpenChange,
+  } = useItemForm();
 
   const sections: IFieldSection<IItemFormInput>[] = [
     {
@@ -16,13 +23,19 @@ const ItemFormModal = () => {
         { name: "name", label: "Item name", type: "text", span: "full", required: true, placeholder: "e.g. Brake pad set, front" },
         { name: "sku", label: "SKU", type: "text", required: true, placeholder: "e.g. BP-1023" },
         {
-          name: "category_id",
+          name: "category",
           label: "Category",
-          type: "select",
+          type: "creatable",
           options: categoryOptions,
-          placeholder: "No category",
+          placeholder: "Pick or type a new category",
         },
-        { name: "brand", label: "Brand", type: "text", placeholder: "e.g. Yamaha" },
+        {
+          name: "brand",
+          label: "Brand",
+          type: "creatable",
+          options: brandOptions,
+          placeholder: "Pick or type a new brand",
+        },
         { name: "part_number", label: "Part number", type: "text" },
         { name: "unit", label: "Unit", type: "text", required: true, placeholder: "pc, set, L" },
         { name: "location", label: "Shelf / location", type: "text", placeholder: "e.g. Rack B-3" },

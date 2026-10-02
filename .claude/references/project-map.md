@@ -30,7 +30,34 @@ Route       src/routes/route.paths.ts + src/routes/protected.view.routes.ts (can
 Schema      supabase/migrations/20261002000002_create_inventory.sql
 ```
 
-Other modules: `category`, `movement`, `dashboard`, `user` (Team), `account`, `auth`.
+Other modules: `category`, `brand`, `masterfile`, `movement`, `transaction`, `dashboard`,
+`user` (Team), `account`, `auth`.
+
+## Transaction (multi-item checkout)
+
+```
+Screen      src/pages/Transaction/TransactionView.tsx            panel + cart, success, detail, void modals
+UI          src/components/transaction/panels/TransactionPanel.tsx  New / History tabs (History owner-only)
+            src/components/transaction/tables/TransactionItemTable.tsx  picker: search, category, brand, stock left
+            src/components/transaction/menus/CartQuantityControl.tsx    Add, then − qty +
+            src/components/transaction/panels/CartBar.tsx         sticky total → cart review
+            src/components/transaction/modal/CartModal.tsx         lines, total, note, checkout
+            src/components/transaction/tables/TransactionHistoryTable.tsx + modal/TransactionDetailModal.tsx
+Hooks       src/hook/data/transaction/transaction.list.hook.ts   picker list, history, lines
+            src/hook/data/transaction/transaction.form.hook.ts   useCart, checkout, void
+Cart        src/store/data/transaction/transaction.store.ts      in-memory, reset on sign-out
+Calls       src/services/data/transaction.services.ts            rpc record_transaction / void_transaction
+Schema      supabase/migrations/20261002000004_create_brands_transactions.sql
+```
+
+## Creatable lookups (TARTAR supplier pattern)
+
+```
+Field       IFieldType "creatable" → FormField branch (fuzzyOptions from utils/search.utils.ts)
+Resolve     src/utils/lookup.utils.ts resolveByName: match by nameKey, else create with a client id
+Used by     src/hook/data/inventory/inventory.form.hook.ts (category + brand)
+Masterfile  src/pages/Masterfile/MasterfileView.tsx (/inventory/masterfile) + components/masterfile/
+```
 
 ## Infrastructure
 

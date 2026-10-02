@@ -133,20 +133,24 @@ Every change ends with these, in this order. A report that stops early is not fi
 3. If the schema changed: the migration commands for the user to run (`supabase-backend` § F).
 4. If code changed: `Graph refresh: run graphify update . when convenient.` (skip for doc-only
    or `.claude/`-only edits; never claim the graph was updated).
-5. **Commit suggestion**, in a copyable block, always last:
+5. **Commit suggestion**, in a copyable block, always last — the TARTAR format (user rule,
+   2026-10-02; it replaces the global bullet format in this repo):
 
 ```
-Feature: Task List With Status Filter
+Development v1.01
 
-- Added task list screen with status filter and pagination
-- Added tasks table, RLS policies and list RPC migration
+Database: Add Migration 4 For Brands, Transactions And Void
+Feature: Add Multi-Item Transaction With Cart And Checkout
+Fix: Show Remaining Stock On Every Transaction Row
+Docs: Record V1.1 Progress In Roadmap
 ```
 
-**Title** — `Type: Short Title Case Summary`, one line, no trailing period. Types, and only these:
-`Feature` · `Fix` · `BugFix` · `Migration` · `Update`.
+**Title** — `Development vX.YY`: read `git log -1` and bump the last version by 0.01 (the first
+one after the V1 commits is `v1.01`).
 
-**Body** — `-` bullets only, one line each, important changes only. No prose paragraphs, no
-file-by-file restatement of the diff.
+**Body** — one `Type: Short Title Case Summary` line per change, no `-` bullets, no prose, no
+file-by-file restatement. Types: `Feature` · `Fix` · `Update` · `Style` · `Refactor` ·
+`Database` · `Docs`.
 
 Suggest only — never commit, push or branch unless asked. If several requests were handled in
 one turn, give one commit covering what is actually uncommitted.

@@ -3,6 +3,7 @@ import {
   inventoryViewValues,
   type InventoryView,
 } from "../../../enums/stock.enum";
+import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useInventoryList } from "../../../hook/data/inventory/inventory.list.hook";
 import { inventoryTableKey } from "../../../keys/table.keys";
@@ -39,7 +40,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
       <span className={itemIdentity}>
         <span className={itemName}>{row.original.name}</span>
         <span className={itemMeta}>
-          {[row.original.sku, row.original.brand, row.original.part_number]
+          {[row.original.sku, row.original.brand?.name, row.original.part_number]
             .filter(Boolean)
             .join(" · ")}
         </span>
@@ -117,6 +118,7 @@ const emptyTextByView: Record<InventoryView, string> = {
 const InventoryTable = () => {
   const { query, view, setView } = useInventoryList();
   const { options: categoryOptions } = useCategoryOptions();
+  const { options: brandOptions } = useBrandOptions();
   const page = query.data;
 
   return (
@@ -132,6 +134,12 @@ const InventoryTable = () => {
               label: "Category",
               placeholder: "All categories",
               options: categoryOptions,
+            },
+            {
+              key: "brandId",
+              label: "Brand",
+              placeholder: "All brands",
+              options: brandOptions,
             },
           ]}
         >

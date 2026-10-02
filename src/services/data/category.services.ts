@@ -29,12 +29,13 @@ const categoryServices = {
     return (data ?? []) as ICategoryOption[];
   },
 
-  create: (values: ICategoryFormInput): Promise<IMutationResult> =>
+  // The item form passes its own id so a queued item can reference the new category.
+  create: (values: ICategoryFormInput, id?: string): Promise<IMutationResult> =>
     runWrite({
       kind: "insert",
       table,
       label: `Add ${values.name}`,
-      values: { name: values.name },
+      values: id ? { id, name: values.name } : { name: values.name },
     }),
 
   update: (id: string, values: ICategoryFormInput): Promise<IMutationResult> =>

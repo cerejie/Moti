@@ -11,6 +11,8 @@ export type IFieldType =
   | "phone"
   | "mobile"
   | "select"
+  // Pick an existing option or type a new name; the value is the typed name.
+  | "creatable"
   | "multiselect"
   | "checkbox"
   | "readonly";

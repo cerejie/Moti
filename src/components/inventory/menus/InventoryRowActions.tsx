@@ -5,7 +5,6 @@ import {
   PackageMinus,
   PackagePlus,
   Pencil,
-  ShoppingCart,
 } from "lucide-react";
 import { usePermissions } from "../../../hook/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
@@ -20,9 +19,9 @@ type IProps = {
   item: IInventoryItem;
 };
 
-// Employees see only "Record sale" and "View details"; the database enforces the same.
+// Sales go through Transaction; here the owner adjusts stock and manages the item.
 const InventoryRowActions = ({ item }: IProps) => {
-  const { isOwner, recordSale } = usePermissions();
+  const { isOwner } = usePermissions();
   const stockModal = useStockMovementModal();
   const formModal = useModal<IInventoryItem>(itemFormModalKey);
   const detailModal = useModal<IInventoryItem>(itemDetailModalKey);
@@ -31,15 +30,6 @@ const InventoryRowActions = ({ item }: IProps) => {
 
   const actions: IRowAction[] = [];
 
-  if (!archived && recordSale) {
-    actions.push({
-      key: "sale",
-      label: "Record sale",
-      icon: <ShoppingCart />,
-      disabled: item.on_hand === 0,
-      onSelect: () => stockModal.openModal({ item, action: "sale" }),
-    });
-  }
   if (!archived && isOwner) {
     actions.push(
       {

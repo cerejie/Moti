@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { PackagePlus } from "lucide-react";
 import { usePermissions } from "../../../hook/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
@@ -27,13 +27,13 @@ type IProps = {
   item: IInventoryItem;
 };
 
-// The phone row: the on-hand figure is big and "Sell" is one thumb-tap away.
+// The phone row: the on-hand figure is big and "Add stock" is one thumb-tap away.
 const InventoryItemCard = ({ item }: IProps) => {
-  const { recordSale } = usePermissions();
+  const { isOwner } = usePermissions();
   const stockModal = useStockMovementModal();
   const detailModal = useModal<IInventoryItem>(itemDetailModalKey);
   const archived = item.archived_at !== null;
-  const meta = [item.sku, item.brand, item.category?.name].filter(Boolean).join(" · ");
+  const meta = [item.sku, item.brand?.name, item.category?.name].filter(Boolean).join(" · ");
 
   return (
     <article className={itemCard}>
@@ -67,14 +67,14 @@ const InventoryItemCard = ({ item }: IProps) => {
           {item.selling_price === null ? "No price set" : formatPeso(item.selling_price)}
         </span>
         <div className={itemCardActions}>
-          {recordSale && !archived && (
+          {isOwner && !archived && (
             <AppButton
               size="lg"
-              disabled={item.on_hand === 0}
-              onPress={() => stockModal.openModal({ item, action: "sale" })}
+              variant="outline"
+              onPress={() => stockModal.openModal({ item, action: "stock_in" })}
             >
-              <ShoppingCart />
-              Sell
+              <PackagePlus />
+              Add stock
             </AppButton>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { History, Info, PackageMinus, PackagePlus, ShoppingCart, Warehouse } from "lucide-react";
+import { History, Info, PackageMinus, PackagePlus, Warehouse } from "lucide-react";
 import { movementReasonLabels } from "../../../enums/stock.enum";
 import { usePermissions } from "../../../hook/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
@@ -69,7 +69,7 @@ const sections: IDetailSection<IInventoryItem>[] = [
     items: [
       { key: "sku", label: "SKU", render: (item) => item.sku },
       { key: "category", label: "Category", render: (item) => item.category?.name ?? "—" },
-      { key: "brand", label: "Brand", render: (item) => item.brand ?? "—" },
+      { key: "brand", label: "Brand", render: (item) => item.brand?.name ?? "—" },
       { key: "part", label: "Part number", render: (item) => item.part_number ?? "—" },
       {
         key: "price",
@@ -84,7 +84,7 @@ const sections: IDetailSection<IInventoryItem>[] = [
 const ItemDetailModal = () => {
   const { modal, closeModal } = useModal<IInventoryItem>(itemDetailModalKey);
   const stockModal = useStockMovementModal();
-  const { isOwner, recordSale, viewMovements } = usePermissions();
+  const { isOwner, viewMovements } = usePermissions();
   const item = modal.data;
   const history = useItemMovements(item?.id, modal.visible && viewMovements);
   const active = item ? item.archived_at === null : false;
@@ -135,14 +135,8 @@ const ItemDetailModal = () => {
       header={
         active && (
           <div className={detailActions}>
-            {recordSale && (
-              <AppButton disabled={item?.on_hand === 0} onPress={() => startStock("sale")}>
-                <ShoppingCart />
-                Record sale
-              </AppButton>
-            )}
             {isOwner && (
-              <AppButton variant="outline" onPress={() => startStock("stock_in")}>
+              <AppButton onPress={() => startStock("stock_in")}>
                 <PackagePlus />
                 Add stock
               </AppButton>

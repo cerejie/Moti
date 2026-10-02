@@ -18,18 +18,12 @@ export interface IStockMovementRequest {
   action: StockAction;
 }
 
-const defaultsFor = (action: StockAction | undefined): IMovementFormInput => {
-  if (action === "stock_in") {
-    return { type: "stock_in", reason: "restock", quantity: "1", note: "" };
-  }
-  if (action === "stock_out") {
-    return { type: "stock_out", reason: "damaged", quantity: "1", note: "" };
-  }
-  return { type: "stock_out", reason: "sale", quantity: "1", note: "" };
-};
+const defaultsFor = (action: StockAction | undefined): IMovementFormInput =>
+  action === "stock_out"
+    ? { type: "stock_out", reason: "damaged", quantity: "1", note: "" }
+    : { type: "stock_in", reason: "restock", quantity: "1", note: "" };
 
 const actionMessages: Record<StockAction, string> = {
-  sale: "Sale recorded",
   stock_in: "Stock added",
   stock_out: "Stock deducted",
 };
@@ -40,7 +34,7 @@ export const useStockMovementForm = () => {
   const { modal, closeModal } = useStockMovementModal();
   const request = modal.data;
   const item = request?.item;
-  const action = request?.action ?? "sale";
+  const action = request?.action ?? "stock_in";
 
   const form = useForm<IMovementFormInput>({
     resolver: zodResolver(movementFormSchema),
