@@ -3,30 +3,34 @@
 Worked examples of the fan-out described in `architecture-navigation`. Use them as templates;
 verify before assuming a file exists.
 
-**Status:** Moti has no modules yet. When the first real module ships, replace the template below
-with its actual paths and mark it as the reference module — every later screen copies it.
+**Status:** Inventory is the reference module (2026-10-02). Every later screen copies it.
 
-## Reference module — `<domain>` (template until the first module exists)
+## Reference module — `inventory`
 
 ```
-Screen      src/pages/<Domain>/<Domain>View.tsx                 ContentView + feature components only
-UI          src/components/<domain>/tables/<Domain>Table.tsx    DataTable, columns, row actions
-            src/components/<domain>/modal/<Domain>FormModal.tsx EntityFormModal + IFieldConfig[]
-            src/components/<domain>/cards/<Domain>SummaryCards.tsx  StatCard in BentoGrid
-Data        src/hook/data/<domain>/<domain>.list.hook.ts        useQuery, filters, pagination, modal handles
-Form        src/hook/data/<domain>/<domain>.form.hook.ts        useForm + zodResolver + useMutation + error text
-Calls       src/services/data/<domain>.services.ts              getList (paged), getAll, create/update/remove via runWrite
-Input       src/models/data/<domain>/<domain>.request.ts        zod schemas + z.infer types
-Rows        src/models/data/<domain>/<domain>.response.ts       I<Domain> interfaces (snake_case columns)
-States      src/enums/<domain>.enum.ts                          status union + labels + tones
-UI state    src/store/data/<domain>/<domain>.store.ts           only if beyond the common registries
-Keys        src/keys/query.keys.ts      <domain>ListKey
-            src/keys/modal.keys.ts      <domain>FormModalKey
-            src/keys/table.keys.ts      <domain>TableKey
-Look        src/styles/<domain>/<domain>.styles.ts              domain-only styles; shared ones in styles/<kind>/
-Route       src/routes/route.paths.ts + src/routes/protected.view.routes.ts
-Schema      supabase/migrations/<timestamp>_create_<domain_plural>.sql   table, FKs, indexes, RLS, policies
+Screen      src/pages/Inventory/InventoryView.tsx                ContentView + table + its modals
+UI          src/components/inventory/tables/InventoryTable.tsx   TablePanel, FilterToolbar, DataTable (renderCard on phones)
+            src/components/inventory/cards/InventoryItemCard.tsx phone row
+            src/components/inventory/menus/InventoryRowActions.tsx  role-aware RowActionMenu
+            src/components/inventory/modal/ItemFormModal.tsx     EntityFormModal + IFieldSection[]
+            src/components/inventory/modal/StockMovementModal.tsx sale / add / deduct with preview
+            src/components/inventory/modal/ItemDetailModal.tsx   DetailModal + movement history
+            src/components/inventory/menus/StockAlertsBell.tsx   owner bell in the topbar
+Data        src/hook/data/inventory/inventory.list.hook.ts       list, summary, alerts queries
+Form        src/hook/data/inventory/inventory.form.hook.ts       item form + archive
+            src/hook/data/movement/movement.form.hook.ts         stock movement form
+Calls       src/services/data/inventory.services.ts              paged list, rpc create_item, runWrite updates
+            src/services/data/movement.services.ts               rpc record_movement (p_client_id)
+Input       src/models/data/inventory/inventory.request.ts       zod; numbers kept as strings
+Rows        src/models/data/inventory/inventory.response.ts      IInventoryItem, IInventorySummary
+States      src/enums/stock.enum.ts                              status, reasons, tones
+Keys        src/keys/query.keys.ts (stockQueryKeys) · modal.keys.ts · table.keys.ts
+Look        src/styles/inventory/inventory.styles.ts
+Route       src/routes/route.paths.ts + src/routes/protected.view.routes.ts (can + permissionLoader)
+Schema      supabase/migrations/20261002000002_create_inventory.sql
 ```
+
+Other modules: `category`, `movement`, `dashboard`, `user` (Team), `account`, `auth`.
 
 ## Infrastructure
 
@@ -41,8 +45,11 @@ Store reset         src/store/common/reset.store.ts      create, resetAllStores
 Modals              src/store/common/modal.store.ts + src/hook/common/modal.hook.ts
 Confirm             src/store/common/confirm.store.ts + src/hook/common/confirmation.hook.ts
 Pagination          src/store/common/pagination.store.ts + src/hook/common/pagination.hook.ts
-Auth                src/services/data/auth.services.ts + src/store/data/auth/auth.store.ts
-                    src/routes/route.guard.tsx
+Auth                src/services/data/account.services.ts + src/store/data/account/account.store.ts
+                    src/hook/account/*.hook.ts (login, logout/endSession, expiry, permission, me)
+                    src/models/common/permission.model.ts · src/routes/route.loader.ts
+Push                src/hook/common/push.hook.ts · src/services/data/push.services.ts
+                    public/push-sw.js (workbox.importScripts) · supabase/functions/send-push
 Shell               src/layouts/AppLayout.tsx + src/components/common/layout/
 Tokens              src/styles/common/theme.css
 PWA                 vite.config.ts (VitePWA), index.html, public/

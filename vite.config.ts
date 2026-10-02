@@ -16,7 +16,7 @@ export default defineConfig({
       manifest: {
         name: 'Moti',
         short_name: 'Moti',
-        description: 'Inventory for motorcycle parts shops: stock on hand, sales and reorder alerts.',
+        description: 'Inventory for motorcycle parts shops: stock on hand, sales and low-stock alerts.',
         id: '/',
         start_url: '/',
         scope: '/',
@@ -24,7 +24,7 @@ export default defineConfig({
         // Tablets at the counter use landscape.
         orientation: 'any',
         // Matches --primary and --background in src/styles/common/theme.css (light).
-        theme_color: '#171717',
+        theme_color: '#ea580c',
         background_color: '#ffffff',
         categories: ['business', 'productivity'],
         icons: [
@@ -39,6 +39,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Push and notification-click handlers (public/push-sw.js); the rest is generated.
+        importScripts: ['push-sw.js'],
         // SPA deep links resolve to the shell rather than a 404 from the static host.
         navigateFallback: 'index.html',
         globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],

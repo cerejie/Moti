@@ -15,7 +15,7 @@ export const contentViewHeading = "flex flex-col gap-1";
 // column's gutter toward the rail so it reads as navigation, not as part of
 // the table below it, and drops a little under the topbar.
 export const contentViewBack =
-  "-ml-3 mt-4 self-start text-base font-medium md:-ml-5 lg:-ml-12 [&_svg:not([class*='size-'])]:size-6";
+  "-ml-3 self-start text-base font-medium [&_svg:not([class*='size-'])]:size-5";
 
 export const contentViewActions = "flex flex-wrap items-center gap-2";
 
@@ -28,7 +28,7 @@ export const contentViewActionsMobile = "w-full [&>*]:flex-1";
 // header and body keep the plain shell's 24px rhythm (CardContent ships gap-3).
 export const contentViewCardFrame = cn(
   appShellGutterBleed,
-  "flex flex-1 flex-col p-8",
+  "flex flex-1 flex-col p-4 md:p-6",
 );
 
 // No ring and no shadow so the frame reads as a plain white surface.

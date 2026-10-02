@@ -33,6 +33,7 @@ export const useSyncStatus = () => {
   const online = useNetworkStore(selectOnline);
   const pending = useSyncStore((state) => state.queue.length);
   const flushing = useSyncStore((state) => state.flushing);
+  const lastError = useSyncStore((state) => state.lastError);
 
-  return { online, pending, flushing };
+  return { online, pending, flushing, lastError };
 };

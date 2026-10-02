@@ -84,3 +84,15 @@ export function toPhMobileValue(input: string): string {
   const digits = phMobileDigits(input);
   return digits === "" ? "" : `0${digits}`;
 }
+
+const numberFormatter = new Intl.NumberFormat("en-PH");
+
+// Counts and quantities with thousands separators, e.g. 1,250.
+export function formatNumber(value: number): string {
+  return numberFormatter.format(value);
+}
+
+// A signed ledger quantity, e.g. +12 or −3.
+export function formatSignedQuantity(value: number): string {
+  return value > 0 ? `+${formatNumber(value)}` : `−${formatNumber(Math.abs(value))}`;
+}

@@ -16,4 +16,6 @@ export const env = {
     "VITE_SUPABASE_ANON_KEY",
     import.meta.env.VITE_SUPABASE_ANON_KEY,
   ),
+  // Optional: push notifications stay off until the VAPID public key is set.
+  vapidPublicKey: import.meta.env.VITE_VAPID_PUBLIC_KEY ?? "",
 };

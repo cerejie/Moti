@@ -1,62 +1,52 @@
-import { ArrowLeft, Moon, Sun } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import type { ReactNode } from "react";
+import { ArrowLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { useBreadcrumbTrail } from "../../../hook/layout/navigation.hook";
+import { selectHeaderBack, useLayoutStore } from "../../../store/common/layout.store";
 import {
-  selectHeaderBack,
-  useLayoutStore,
-} from "../../../store/common/layout.store";
-import { selectTheme, useThemeStore } from "../../../store/common/theme.store";
-import {
-  topbarAction,
+  topbarActions,
   topbarBack,
   topbarBackLabel,
+  topbarBrandDesktop,
+  topbarBrandPhone,
+  topbarDivider,
   topbarRoot,
-  topbarSpacer,
   topbarTitle,
-  topbarTrigger,
 } from "../../../styles/layout/topbar.styles";
 import AppButton from "../button/AppButton";
+import SyncIndicator from "../status/SyncIndicator";
+import BrandMark from "../view/BrandMark";
 
-const Topbar = () => {
+type IProps = {
+  actions?: ReactNode;
+};
+
+const Topbar = ({ actions }: IProps) => {
   const { current } = useBreadcrumbTrail();
   // A screen's own back action (a wizard step); a sub-page's route back link
   // lives in its ContentView instead.
   const headerBack = useLayoutStore(selectHeaderBack);
-  const theme = useThemeStore(selectTheme);
-  const toggleTheme = useThemeStore((state) => state.toggleTheme);
-  const isDark = theme === "dark";
 
   return (
     <header className={topbarRoot}>
-      <SidebarTrigger size="icon-lg" className={topbarTrigger} />
+      <BrandMark className={topbarBrandDesktop} />
+      <BrandMark compact className={topbarBrandPhone} />
+      <Separator orientation="vertical" className={topbarDivider} />
 
-      {/* ContentView owns the page's h1, so the bar's copy of the title is a span. */}
-      <span className={topbarTitle}>{current}</span>
-
-      {headerBack && (
-        <AppButton
-          onClick={headerBack.onPress}
-          variant="ghost"
-          size="lg"
-          className={topbarBack}
-        >
+      {headerBack ? (
+        <AppButton onPress={headerBack.onPress} variant="ghost" className={topbarBack}>
           <ArrowLeft />
           <span className={topbarBackLabel}>Back to {headerBack.label}</span>
         </AppButton>
+      ) : (
+        // ContentView owns the page's h1, so the bar's copy of the title is a span.
+        <span className={topbarTitle}>{current}</span>
       )}
 
-      <div className={topbarSpacer} />
-
-      <AppButton
-        type="button"
-        variant="ghost"
-        size="icon-lg"
-        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        onPress={toggleTheme}
-        className={topbarAction}
-      >
-        {isDark ? <Sun /> : <Moon />}
-      </AppButton>
+      <div className={topbarActions}>
+        <SyncIndicator />
+        {actions}
+      </div>
     </header>
   );
 };

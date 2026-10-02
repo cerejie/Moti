@@ -7,9 +7,12 @@ import type {
   IQueuedWriteInput,
 } from "../../models/common/write.model";
 import { executeWrite, newWriteId } from "../../utils/write.utils";
+import { selectSessionOwner, useAccountStore } from "../data/account/account.store";
 
 type States = {
   queue: IQueuedWrite[];
+  // The account that queued the writes; they never flush under anyone else.
+  ownerId: string | null;
   flushing: boolean;
   lastError: string | null;
 };
@@ -18,16 +21,21 @@ type Actions = {
   enqueue: (write: IQueuedWriteInput) => string;
   flush: () => Promise<void>;
   discard: (id: string) => void;
+  // Called on sign-in: another account's leftovers are dropped, never replayed.
+  adoptOwner: (ownerId: string) => void;
 };
 
 const initialValues: States = {
   queue: [],
+  ownerId: null,
   flushing: false,
   lastError: null,
 };
 
+const currentOwner = () => selectSessionOwner(useAccountStore.getState());
+
 // Plain zustand create and persisted: queued writes must survive a reload and a
-// sign-out reset. Binding the queue to the signed-in user arrives with auth (Phase 1).
+// sign-out reset, and replay only for the account that made them.
 export const useSyncStore = create<States & Actions>()(
   persist(
     (set, get) => ({
@@ -37,12 +45,14 @@ export const useSyncStore = create<States & Actions>()(
         const id = newWriteId();
         set((state) => ({
           queue: [...state.queue, { ...write, id } as IQueuedWrite],
+          ownerId: currentOwner(),
         }));
         return id;
       },
 
       flush: async () => {
-        if (get().flushing) return;
+        const owner = currentOwner();
+        if (get().flushing || !owner || get().ownerId !== owner) return;
         set({ flushing: true, lastError: null });
 
         try {
@@ -68,8 +78,15 @@ export const useSyncStore = create<States & Actions>()(
         set((state) => ({
           queue: state.queue.filter((write) => write.id !== id),
         })),
+
+      adoptOwner: (ownerId) => {
+        if (get().ownerId !== ownerId) set({ queue: [], ownerId, lastError: null });
+      },
     }),
-    { name: syncStorageKey, partialize: (state) => ({ queue: state.queue }) },
+    {
+      name: syncStorageKey,
+      partialize: (state) => ({ queue: state.queue, ownerId: state.ownerId }),
+    },
   ),
 );
 

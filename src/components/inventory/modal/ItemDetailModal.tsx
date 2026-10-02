@@ -1,0 +1,177 @@
+import { History, Info, PackageMinus, PackagePlus, ShoppingCart, Warehouse } from "lucide-react";
+import { movementReasonLabels } from "../../../enums/stock.enum";
+import { usePermissions } from "../../../hook/account/account.permission.hook";
+import { useModal } from "../../../hook/common/modal.hook";
+import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
+import { useItemMovements } from "../../../hook/data/movement/movement.list.hook";
+import { itemDetailModalKey } from "../../../keys/modal.keys";
+import type { IDetailSection } from "../../../models/common/detail.model";
+import type { StockAction } from "../../../enums/stock.enum";
+import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
+import { sectionTitle } from "../../../styles/common/typography.styles";
+import { detailSection, detailSectionHeader } from "../../../styles/modal/detail.styles";
+import {
+  detailActions,
+  historyList,
+  historyQuantity,
+  historyRow,
+  historyText,
+  itemMeta,
+  itemName,
+  onHandUnit,
+  onHandValue,
+} from "../../../styles/inventory/inventory.styles";
+import {
+  formatDateTime,
+  formatNumber,
+  formatPeso,
+  formatSignedQuantity,
+} from "../../../utils/format.utils";
+import AppButton from "../../common/button/AppButton";
+import DetailModal from "../../common/modal/DetailModal";
+import ErrorState from "../../common/status/ErrorState";
+import StateBox from "../../common/status/StateBox";
+import StockStatusBadge from "../status/StockStatusBadge";
+
+const sections: IDetailSection<IInventoryItem>[] = [
+  {
+    key: "stock",
+    title: "Stock",
+    icon: <Warehouse />,
+    items: [
+      {
+        key: "on_hand",
+        label: "On hand",
+        render: (item) => (
+          <span>
+            <span className={onHandValue({ status: item.stock_status, size: "lg" })}>
+              {formatNumber(item.on_hand)}
+            </span>
+            <span className={onHandUnit}>{item.unit}</span>
+          </span>
+        ),
+      },
+      {
+        key: "status",
+        label: "Status",
+        render: (item) => (
+          <StockStatusBadge status={item.stock_status} archived={item.archived_at !== null} />
+        ),
+      },
+      { key: "reorder", label: "Reorder level", render: (item) => formatNumber(item.reorder_level) },
+      { key: "location", label: "Shelf / location", render: (item) => item.location ?? "—" },
+    ],
+  },
+  {
+    key: "item",
+    title: "Item",
+    icon: <Info />,
+    items: [
+      { key: "sku", label: "SKU", render: (item) => item.sku },
+      { key: "category", label: "Category", render: (item) => item.category?.name ?? "—" },
+      { key: "brand", label: "Brand", render: (item) => item.brand ?? "—" },
+      { key: "part", label: "Part number", render: (item) => item.part_number ?? "—" },
+      {
+        key: "price",
+        label: "Selling price",
+        render: (item) => (item.selling_price === null ? "—" : formatPeso(item.selling_price)),
+      },
+      { key: "updated", label: "Last updated", render: (item) => formatDateTime(item.updated_at) },
+    ],
+  },
+];
+
+const ItemDetailModal = () => {
+  const { modal, closeModal } = useModal<IInventoryItem>(itemDetailModalKey);
+  const stockModal = useStockMovementModal();
+  const { isOwner, recordSale, viewMovements } = usePermissions();
+  const item = modal.data;
+  const history = useItemMovements(item?.id, modal.visible && viewMovements);
+  const active = item ? item.archived_at === null : false;
+
+  // One dialog at a time: the detail closes and the stock dialog takes its place.
+  const startStock = (action: StockAction) => {
+    if (!item) return;
+    closeModal();
+    stockModal.openModal({ item, action });
+  };
+
+  const renderHistory = () => {
+    if (history.isLoading) return <StateBox loading>Loading history…</StateBox>;
+    if (history.isError) {
+      return <ErrorState error={history.error} onRetry={() => void history.refetch()} />;
+    }
+    if (!history.data?.length) return <StateBox>No stock movements yet.</StateBox>;
+
+    return (
+      <ul className={historyList}>
+        {history.data.map((movement) => (
+          <li key={movement.id} className={historyRow}>
+            <span className={historyText}>
+              <span className={itemName}>{movementReasonLabels[movement.reason]}</span>
+              <span className={itemMeta}>
+                {formatDateTime(movement.created_at)} · {movement.created_by_name}
+                {movement.note ? ` · ${movement.note}` : ""}
+              </span>
+            </span>
+            <span className={historyQuantity({ direction: movement.quantity > 0 ? "in" : "out" })}>
+              {formatSignedQuantity(movement.quantity)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  return (
+    <DetailModal
+      open={modal.visible}
+      onOpenChange={(open) => !open && closeModal()}
+      title={item?.name ?? "Item"}
+      description={item?.sku}
+      size="lg"
+      record={item}
+      sections={sections}
+      header={
+        active && (
+          <div className={detailActions}>
+            {recordSale && (
+              <AppButton disabled={item?.on_hand === 0} onPress={() => startStock("sale")}>
+                <ShoppingCart />
+                Record sale
+              </AppButton>
+            )}
+            {isOwner && (
+              <AppButton variant="outline" onPress={() => startStock("stock_in")}>
+                <PackagePlus />
+                Add stock
+              </AppButton>
+            )}
+            {isOwner && (
+              <AppButton
+                variant="outline"
+                disabled={item?.on_hand === 0}
+                onPress={() => startStock("stock_out")}
+              >
+                <PackageMinus />
+                Deduct
+              </AppButton>
+            )}
+          </div>
+        )
+      }
+    >
+      {viewMovements && (
+        <section className={detailSection}>
+          <div className={detailSectionHeader}>
+            <History aria-hidden />
+            <h3 className={sectionTitle}>Recent movements</h3>
+          </div>
+          {renderHistory()}
+        </section>
+      )}
+    </DetailModal>
+  );
+};
+
+export default ItemDetailModal;

@@ -36,3 +36,21 @@ export const emptyPage = <T>(
 
 export const totalPages = (totalCount: number, pageSize: number) =>
   pageSize > 0 ? Math.ceil(totalCount / pageSize) : 0;
+
+// Supabase .range() bounds for a 1-based page, inclusive at both ends.
+export const pageRange = (pagination: IPaginationRequest): [number, number] => {
+  const from = (pagination.pageNumber - 1) * pagination.pageSize;
+  return [from, from + pagination.pageSize - 1];
+};
+
+export const toPage = <T>(
+  data: T[],
+  totalCount: number,
+  pagination: IPaginationRequest,
+): IPaginationResponse<T> => ({
+  data,
+  currentPage: pagination.pageNumber,
+  pageSize: pagination.pageSize,
+  totalPages: totalPages(totalCount, pagination.pageSize),
+  totalCount,
+});

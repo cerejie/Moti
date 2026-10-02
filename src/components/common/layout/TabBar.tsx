@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@/utils/cn.utils";
 import { useNavigationMenu } from "../../../hook/layout/navigation.hook";
 import {
+  tabbarIndicator,
   tabbarItem,
   tabbarItemActive,
   tabbarLabel,
@@ -22,6 +23,7 @@ const TabBar = () => {
             className={cn(tabbarItem, active && tabbarItemActive)}
             aria-current={active ? "page" : undefined}
           >
+            {active && <span className={tabbarIndicator} aria-hidden="true" />}
             <route.icon size={20} aria-hidden="true" />
             <span className={tabbarLabel}>{route.shortLabel ?? route.label}</span>
           </Link>

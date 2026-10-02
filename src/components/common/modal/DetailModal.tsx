@@ -28,6 +28,8 @@ type IProps<TRecord> = {
   footer?: ReactNode;
   // Rendered above the sections - a stepper, a status banner, a timeline.
   header?: ReactNode;
+  // Rendered below the sections - a history list, related records.
+  children?: ReactNode;
 };
 
 const DetailModal = <TRecord,>({
@@ -40,6 +42,7 @@ const DetailModal = <TRecord,>({
   sections,
   footer,
   header,
+  children,
 }: IProps<TRecord>) => {
   return (
     <AppModal
@@ -77,6 +80,8 @@ const DetailModal = <TRecord,>({
               </dl>
             </section>
           ))}
+
+          {children}
         </div>
       )}
     </AppModal>

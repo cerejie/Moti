@@ -8,6 +8,7 @@ import {
   protectedViewRoutes,
 } from "../../routes/protected.view.routes";
 import { isRouteActive } from "../../utils/route.utils";
+import { usePermissions } from "../account/account.permission.hook";
 
 export type INavRoute = IRoute & {
   path: string;
@@ -20,13 +21,17 @@ const navigationRoutes = protectedViewRoutes.filter(
     !route.isNotNav && Boolean(route.path && route.label && route.icon),
 );
 
+// Only the routes the signed-in role may open appear in the sidebar and tab bar.
 export const useNavigationMenu = () => {
   const { pathname } = useLocation();
+  const permissions = usePermissions();
 
-  return navigationRoutes.map((route) => ({
-    route,
-    active: isRouteActive(route.path, pathname),
-  }));
+  return navigationRoutes
+    .filter((route) => !route.can || permissions[route.can])
+    .map((route) => ({
+      route,
+      active: isRouteActive(route.path, pathname),
+    }));
 };
 
 export const useActiveNavRoute = () => {

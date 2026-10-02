@@ -1,10 +1,16 @@
 import { RouterProvider } from "react-router-dom";
 import ConfirmationModal from "./components/common/modal/ConfirmationModal";
+import AppToaster from "./components/common/status/AppToaster";
+import { useAccountExpiryHook } from "./hook/account/account.expiry.hook";
+import { useAppRouter } from "./hook/account/account.me.hook";
+import { useInstallListener } from "./hook/common/install.hook";
 import { useApplyTheme } from "./hook/layout/theme.hook";
-import { router } from "./routes";
 
 function App() {
   useApplyTheme();
+  useAccountExpiryHook();
+  useInstallListener();
+  const router = useAppRouter();
 
   return (
     <>
@@ -12,6 +18,7 @@ function App() {
 
       {/* The app's only confirmation dialog. Callers open it with useConfirm. */}
       <ConfirmationModal />
+      <AppToaster />
     </>
   );
 }

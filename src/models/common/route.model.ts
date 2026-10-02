@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { RouteObject } from "react-router-dom";
+import type { IPermissions } from "./permission.model";
 
 export type IRoute = {
   key?: string;
@@ -10,6 +11,8 @@ export type IRoute = {
   icon?: LucideIcon;
   group?: string;
   isNotNav?: boolean;
+  // Hides the route from navigation unless the signed-in role has this permission.
+  can?: keyof IPermissions;
   children?: IRoute[];
 } & RouteObject;
 

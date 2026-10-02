@@ -1,265 +1,79 @@
-# Moti V1 roadmap: multi-tenant, inventory only
+# Moti V1 roadmap: one shop, inventory and low-stock monitoring
 
-Agreed with the user on 2026-09-24. Each phase runs in its **own fresh conversation**: read this
-file first, do only the next unticked phase, then tick it here and hand over the commit message
-plus the kickoff line for the next phase.
+Re-scoped with the user on 2026-10-02: the multi-tenant plan of 2026-09-24 is replaced by a
+simple single-shop V1. Multi-tenancy (shops, shop_id, superadmin, shop switcher) moves to the
+SaaS build, which comes later.
 
 ## Progress
 
-- [x] Step 0: Save roadmap and convention additions
-- [x] Phase 0: Foundation
-- [ ] Phase 1: Multi-tenant auth and roles
-- [ ] Phase 2: Inventory catalog
-- [ ] Phase 3: Stock transactions
-- [ ] Phase 4: Dashboard and alerts
-- [ ] Phase 5: Smart Analyzer
-- [ ] Phase 6: Shops, users and settings
-- [ ] Phase 7: PWA hardening
-- [ ] Phase 8: Tests and release
-
-Kickoff line for a new conversation:
-
-```
-Start Phase <N> of the Moti roadmap (.claude/references/roadmap.md). Plan first, wait for my approval.
-```
+- [x] Phase 0: Foundation (shell, PWA, common layer)
+- [x] V1 build (2026-10-02): auth and roles, inventory, stock movements, dashboard, alerts,
+      team management, account, web push
+- [ ] Release: run migrations, set secrets, deploy `send-push`, test on a phone (see "Go-live")
+- [ ] LATER: SaaS build (multi-shop), update prompt, analyzer, pgTAP tests
 
 ## Decisions log
 
 - 2026-09-24: optional selling price on items is kept (display-only).
-- 2026-09-24: brand colour is shadcn's neutral (black/white) palette; no custom accent.
-- 2026-09-24: Phase 0 built before a Supabase project exists; the user creates one and fills
-  `.env.local` before running the app (the env guard throws without it).
-- 2026-09-24 (Phase 0): theme is its own persisted `store/common/theme.store.ts`, outside the
-  sign-out reset. Placeholder "M" icons in `public/`; final icons in Phase 7.
-- Carried to Phase 1: `SidebarUserMenu` (needs auth), user-scoping the sync queue, route guards,
-  replacing the `pages/Home` placeholder.
-- Carried to the first write (Phase 1/2): `hook/common/mutation.hook.ts` with the "saved offline"
-  message. It needs a toast; shadcn's React Aria choice is `sonner` (`npx shadcn@latest add sonner`),
-  a new dependency to confirm then.
-- Carried to Phase 5: the `date` field type in `FormField` (aria `calendar`) for the custom range.
-
-## What changed from the discovery plan
-
-| Area | Before | Now |
-|---|---|---|
-| Tenancy | One shop | **Multi-tenant from day one**: a `shops` table, and `shop_id` on every table and every RLS policy |
-| Scope | Suppliers, cost, stock value | **Inventory only**: add stock, deduct stock. No suppliers, cost price, stock value or revenue. |
-| Employee | Browse + sell + own history | **Browse inventory + record a sale.** Nothing else. |
-| Owner | Everything in the shop | Everything in **their own shop** |
-| Superadmin | Everything | **Everything in every shop**, plus shop and user management |
-| Analyzer | Many insights | **Volume ranking** by week, month or custom range, plus the reorder list. Fast/slow classes and trends move to LATER. |
-
-**Selling price (decided 2026-09-24: keep):** each item has one optional **selling price** so the counter can quote customers. It is display-only: no revenue math.
+- 2026-10-02: **one shop**, no tenancy columns. SaaS (multi-shop) is a later, separate build.
+- 2026-10-02: **auth copies TARTAR exactly**: `public.users` with bcrypt hashes, a `login_email`
+  RPC that signs an HS256 JWT with the project's legacy JWT secret, and one Supabase Auth
+  account for the developer listed in `app.authorities`. Employees self-register (pending) and
+  the owner approves; password resets are requested by the user and approved by the owner.
+- 2026-10-02: roles are **developer > owner > employee**. Employees browse inventory and record
+  sales only.
+- 2026-10-02: stock status is **Out (0) / Low (≤ reorder level) / In stock**; the separate
+  "Reorder" band was dropped.
+- 2026-10-02: brand is **racing orange** (`#EA580C` light, `#F97316` on carbon dark) on TARTAR's
+  floating-panel layout; sign-in has a carbon hero with racing stripes.
+- 2026-10-02: push uses TARTAR's `send-push` Edge Function and pg_net, but the service worker
+  stays `generateSW` and pulls `public/push-sw.js` in through `workbox.importScripts`, so no new
+  workbox packages and the runtime caching is unchanged.
+- 2026-10-02: alerts are **computed from current stock** (bell + dashboard), not a persisted
+  feed; push fires when an item **crosses into** Low or Out, plus an 08:00 Manila digest.
+- 2026-10-02: the offline queue is scoped to the account that queued it (`sync.store`
+  `ownerId`); sign-out with pending writes asks first and keeps them for that account.
 
 ## Who sees what
 
-| Capability | Superadmin | Owner | Employee |
+| Capability | Developer | Owner | Employee |
 |---|:-:|:-:|:-:|
-| Browse and search inventory, on-hand, status, price | all shops | own shop | own shop |
-| Record a sale (deduct) | ✓ | ✓ | ✓ |
-| Add stock, deduct as damaged or correction | ✓ | ✓ | ✗ |
-| Create, edit and archive items and categories; set reorder level | ✓ | ✓ | ✗ |
-| Movement history, dashboard, alerts, analyzer, reorder list | all shops | own shop | ✗ |
-| Manage employees | all shops | own shop | ✗ |
-| Manage shops and owners | ✓ | ✗ | ✗ |
-| Shop settings | all shops | own shop | ✗ |
+| Browse and search inventory | ✓ | ✓ | ✓ |
+| Record a sale | ✓ | ✓ | ✓ |
+| Add stock, deduct damaged/correction | ✓ | ✓ | ✗ |
+| Create, edit, archive items; manage categories | ✓ | ✓ | ✗ |
+| Dashboard, stock history, alerts bell, push | ✓ | ✓ | ✗ |
+| Manage accounts | owners + employees | employees | ✗ |
 
-**How the superadmin (you) sees everything:**
-- `profiles.shop_id` is empty for superadmin.
-- Every RLS policy has the form `app.is_superadmin() or (shop_id = app.current_shop_id() and <role rule>)`.
-- In the UI, a **shop switcher** in the top bar is visible only to superadmin. Choosing a shop opens every owner screen for that shop. The Shops and All-users screens work across shops.
+## Data model
 
-**Tenant safety:**
-- `shop_id` is always set on the server, never taken from the client.
-- Composite foreign keys (`item_id, shop_id`) make it impossible to link a record to another shop's item.
-- A suspended shop (`shops.is_active = false`) locks out its owner and employees.
-
-## Data model (V1)
-
-| Table | Purpose |
+| Object | Purpose |
 |---|---|
-| `shops` | Tenant: name, is_active. Only superadmin writes it. |
-| `shop_settings` | 1 row per shop: default reorder level, low-stock margin %, timezone |
-| `profiles` | User: shop_id (empty for superadmin), role, full_name, is_active |
-| `categories` | Per-shop grouping |
-| `inventory_items` | Per shop: sku, name, category, brand, part number, fitment, unit, on_hand, reorder_level, selling price (optional), location, archived_at |
-| `stock_movements` | Append-only ledger: type `stock_in` / `stock_out`, reason, signed quantity, balance_after, occurred_at, created_by, client_id (idempotency key) |
+| `app.settings` | jwt_secret, push_function_url, push_secret (private schema) |
+| `app.authorities` | the developer's Supabase Auth user |
+| `public.users` | owners and employees: email, bcrypt hash, role, approval status, pending reset |
+| `categories` | item grouping |
+| `inventory_items` | sku, name, category, brand, part no., unit, on_hand, reorder_level, selling price, location, generated `stock_status`, archived_at |
+| `stock_movements` | append-only ledger: type, reason, signed quantity, balance_after, client_id |
+| `push_subscriptions` | one row per device endpoint |
 
-**Reasons and permissions:**
-- `stock_in` reasons: `restock`, `opening_balance`, `correction`.
-- `stock_out` reasons: `sale`, `damaged`, `correction`.
-- Employees can only record `stock_out / sale`.
+RPCs: `login_email`, `register_email`, `request_password_reset`, `decide_password_reset`,
+`change_own_password`, `admin_create_user_email`, `admin_set_password`, `my_authority_role`,
+`create_item`, `record_movement`, `inventory_summary`, `save_push_subscription`,
+`delete_push_subscription`.
 
-**Stock status** (unchanged from the discovery plan):
+## Go-live checklist (the user runs these)
 
-| Status | Rule |
-|---|---|
-| Out of stock | on_hand = 0 |
-| Reorder | on_hand ≤ reorder_level |
-| Low | within the low-stock margin above the reorder level |
-| In stock | otherwise |
+1. `supabase db push` (three migrations under `supabase/migrations/2026100200000*`).
+2. `update app.settings set jwt_secret = '<legacy JWT secret>';`
+3. Create the developer in Supabase Auth, then insert it into `app.authorities`.
+4. `npx web-push generate-vapid-keys`; put the public key in `VITE_VAPID_PUBLIC_KEY`.
+5. `supabase secrets set VAPID_SUBJECT=mailto:… VAPID_PUBLIC_KEY=… VAPID_PRIVATE_KEY=… PUSH_SECRET=…`
+   and `supabase functions deploy send-push --no-verify-jwt`.
+6. `update app.settings set push_function_url = 'https://<ref>.supabase.co/functions/v1/send-push', push_secret = '<PUSH_SECRET>';`
+7. Sign in as the developer, create the owner under Team.
 
-## Smart Analyzer V1
+## LATER (out of V1 on purpose)
 
-- **Periods:**
-  - **Week** is the calendar week, Monday to Sunday.
-  - **Month** is the calendar month.
-  - Both have ← → buttons to step back to earlier periods.
-  - **Custom** takes the owner's own date range.
-  - All dates use the shop's timezone.
-- **Metric:**
-  - **Quantity sold** (default) is the sum of `stock_out / sale` in the period.
-  - A toggle switches to **Quantity added** (the sum of `stock_in`).
-- **Table columns:** rank, item, category, quantity, number of transactions, current on-hand, status.
-- **Sorting and filters:** highest → lowest by default, with a reverse toggle; filters for category and status.
-- **Summary cards:** total units sold, items sold, top item, and stocked items with zero sales in the period.
-- **Needs reorder tab:** items at or below their threshold, ordered Out → Reorder → Low, then by quantity sold in the last 30 days.
-- Every number is a SQL aggregate over the ledger, and each has a tooltip with its formula.
-
-## Roadmap
-
-Each phase ends with `yarn build` + `yarn lint` clean and the commit message below. Commit messages are drafts: adjust the bullets to what was actually built. Claude suggests commits and never runs them. Every migration is written by Claude and **run by the user**.
-
-### Step 0: Save roadmap and convention updates
-Saves this roadmap in the repo and adds the missing conventions: `supabase/functions/`, `supabase/tests/`, manifest `orientation: "any"`, and the rule that the offline queue is idempotent and scoped to one user.
-```
-Update: Moti V1 Roadmap And Convention Additions
-
-- Added V1 roadmap with phases, scope and role matrix
-- Added Edge Function and SQL test folders to the folder law
-- Added idempotent, user-scoped rule for the offline write queue
-```
-
-### Phase 0: Foundation
-**Delivers:**
-- Vite + React 19 + TS with yarn; `.gitignore`, `.env.example`.
-- Tailwind v4 theme (light and dark, safe areas); shadcn aria-vega init.
-- ESLint rules copied from crm-customer2.
-- Utils (env, supabase, cn, format).
-- Common stores and hooks (modal, confirm, pagination, filter, network, sync queue).
-- The common components V1 needs.
-- Responsive shell (sidebar, bottom tabs, top bar), routing, QueryClient.
-- Installable PWA manifest and service worker.
-
-**Done when:** the empty shell renders at 360 px and on desktop, in light and dark, and the app installs from `yarn preview`.
-```
-Feature: Moti App Foundation And PWA Shell
-
-- Added Vite React TypeScript setup with Tailwind v4 and shadcn aria-vega
-- Added Supabase client, env guard and error mapping
-- Added common stores for modals, confirm, pagination, network and offline queue
-- Added responsive app shell with sidebar, bottom tab bar and top bar
-- Added installable PWA manifest and service worker precache
-```
-
-### Phase 1: Multi-tenant auth and roles
-**Delivers:**
-- Migration: `shops`, `shop_settings`, `profiles`, role enum, helpers (`is_superadmin`, `current_shop_id`, `current_role`), tenant RLS.
-- Seed SQL for a superadmin, a demo shop, an owner and an employee.
-- Login page, session store, permission model, route guards, role-filtered nav.
-- Superadmin shop switcher.
-
-**Done when:** each role sees only its nav; direct URLs are blocked; an owner of shop A gets zero rows from shop B (checked in SQL).
-```
-Feature: Multi-Tenant Auth And Role-Based Access
-
-- Added shops, shop settings and profiles with tenant-scoped RLS
-- Added email and password sign-in with session store
-- Added role permissions, route guards and role-filtered navigation
-- Added superadmin shop switcher with access to every shop
-```
-
-### Phase 2: Inventory catalog
-**Delivers:**
-- Migration: `categories`, `inventory_items`, `stock_movements`, status view.
-- RPCs: create item (with its opening-stock movement), update item, record movement. The movement RPC locks the row, rejects negative stock, ignores repeats and applies the role rules.
-- Inventory list: search by name, SKU, brand or fitment; status tabs; category filter; sort; paging; card rows on mobile.
-- Item detail; item form; archive; categories management.
-
-**Done when:** owners manage items, employees only browse, and nothing crosses shops. This slice gets recorded as the reference module in `project-map.md`.
-```
-Feature: Inventory Catalog With Stock Status
-
-- Added categories, inventory items and stock ledger tables with RLS
-- Added item create and update functions with opening stock
-- Added inventory list with search, status tabs, filters and paging
-- Added item detail, item form and category management
-```
-
-### Phase 3: Stock transactions
-**Delivers:**
-- **Record sale** (employee and owner), 3 taps on a phone.
-- **Add stock** and **Deduct damaged/correction** (owner).
-- Before→after stock preview.
-- Offline queueing with a Sync issues sheet.
-- Movement history per item and a global Stock movements page (owner).
-
-**Done when:** on-hand always equals the ledger total, and an offline sale syncs exactly once.
-```
-Feature: Stock In And Sale Transactions With History
-
-- Added record sale for employees and add or deduct stock for owners
-- Added idempotent offline queueing for stock transactions
-- Added per-item and shop-wide movement history
-```
-
-### Phase 4: Dashboard and alerts
-**Delivers:**
-- Owner dashboard: item count, units on hand, low / reorder / out counts, attention list, recent movements.
-- Alerts bell and nav badges, computed from current stock and clearing themselves when restocked.
-
-**Done when:** dashboard counts match the inventory filters exactly.
-```
-Feature: Owner Dashboard And Low Stock Alerts
-
-- Added dashboard summary with stock status counts and recent movements
-- Added alerts bell and badges for low, reorder and out-of-stock items
-```
-
-### Phase 5: Smart Analyzer
-**Delivers:** analyzer SQL functions; Analyzer page with Week / Month / Custom, the Sold/Added toggle, sort direction and filters; summary cards; the Needs reorder tab.
-
-**Done when:** results match a hand-calculated seed scenario.
-```
-Feature: Smart Inventory Analyzer With Volume Ranking
-
-- Added movement volume ranking by week, month and custom date range
-- Added highest-to-lowest sorting with category and status filters
-- Added needs-reorder list ordered by severity and recent sales
-```
-
-### Phase 6: Shops, users and settings
-**Delivers:**
-- Edge Function that creates staff accounts with a temporary password (and resets passwords).
-- Owner manages employees; superadmin manages shops, owners and all users, and can suspend a shop.
-- Shop settings: default reorder level, low margin, timezone. Account settings: change password.
-
-**Done when:** an owner can't create owners or reach another shop, and a deactivated user loses access immediately.
-```
-Feature: Shop, User And Settings Management
-
-- Added staff account creation with temporary passwords via Edge Function
-- Added employee management for owners and shop management for superadmin
-- Added shop settings for reorder defaults, low-stock margin and timezone
-```
-
-### Phase 7: PWA hardening
-**Delivers:** update prompt, install prompt and iOS hint, offline banner with pending count, sign-out guard while writes are queued, final icons, Lighthouse pass.
-```
-Feature: Offline Sync, Install And Update Prompts
-
-- Added update and install prompts with iOS home-screen hint
-- Added offline banner with pending sync count and sign-out guard
-- Added final app icons and manifest polish
-```
-
-### Phase 8: Tests and release
-**Delivers:** pgTAP tests for tenant isolation, per-role RLS and the movement function; accessibility and 360 px pass; production Supabase and hosting setup.
-```
-Update: Tenant Isolation Tests And Release Hardening
-
-- Added SQL tests for tenant isolation, role access and stock ledger rules
-- Fixed accessibility and mobile layout issues found in the release pass
-```
-
-**LATER (out of V1 on purpose):** suppliers, cost/value/revenue, purchase orders, fast/slow classes, days of cover, suggested quantities, trends, a persisted notification feed with read/unread, CSV import/export, barcode scanning, SaaS billing and subscriptions, push notifications.
+Multi-shop SaaS, suppliers and costs, analyzer and volume ranking, persisted notification feed,
+update prompt, CSV import/export, barcode scanning, pgTAP tests, code-splitting the bundle.

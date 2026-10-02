@@ -1,21 +1,20 @@
-// Bar over the content on the rail's own surface, closed off below by a
-// hairline. It opens with the rail's trigger, names the page, and carries a
-// wizard step's back link and the theme toggle.
+// The app bar on phones (ruled off below, under the status bar) and a floating
+// panel on desktop, carrying the brand, the page title and the account actions.
 export const topbarRoot =
-  "sticky top-0 z-20 flex min-h-topbar items-center gap-2 border-b bg-sidebar px-4 pt-safe md:gap-3 md:px-6 lg:px-8";
+  "flex min-h-14 shrink-0 items-center gap-2 border-b bg-panel px-4 pt-safe md:h-16 md:rounded-panel md:border md:px-5 md:pt-0 md:shadow-panel";
 
-// Set apart from the title by the bar's gap plus this margin.
-export const topbarTrigger = "mr-2 md:mr-3 [&_svg:not([class*='size-'])]:size-6";
+export const topbarBrandDesktop = "max-md:hidden";
 
-export const topbarTitle = "truncate text-xl font-bold text-foreground";
+export const topbarBrandPhone = "md:hidden";
 
-export const topbarAction = "[&_svg:not([class*='size-'])]:size-6";
+export const topbarDivider = "mx-2 h-6 max-md:hidden";
 
-// Sits on the other end of the bar from the actions so a wizard step reads back
-// first. It may shrink so a long step name truncates, not the actions.
+export const topbarTitle = "min-w-0 truncate text-lg font-semibold text-foreground";
+
+// A wizard step's back action, kept from the original shell.
 export const topbarBack =
-  "min-w-0 shrink text-base font-medium [&_svg:not([class*='size-'])]:size-6";
+  "min-w-0 shrink text-base font-medium [&_svg:not([class*='size-'])]:size-5";
 
 export const topbarBackLabel = "truncate";
 
-export const topbarSpacer = "flex-1";
+export const topbarActions = "ml-auto flex shrink-0 items-center gap-1 md:gap-2";
