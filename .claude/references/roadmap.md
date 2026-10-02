@@ -59,16 +59,25 @@ The user runs every command; Claude only hands them over. Skip any already done.
 - [x] Employee: push + inbox when a new inventory item is added (`push_item_event`)
 - [x] Employees can turn notifications on in My account; the bell shows for every role
 - [x] Migration 6 written (`20261002000006_create_notification_inbox.sql`); `yarn build` + `yarn lint` clean
-- [ ] User runs `supabase db push` (migration 6)
+- [x] User runs `supabase db push` (migration 6; confirmed live 2026-10-02)
 
 ### Phase 3: Push end to end
-- [ ] `yarn build`, serve on port 4180 (see Visual testing setup)
-- [ ] Owner turns on notifications; a checkout that takes an item to its warning quantity sends "Low stock"
-- [ ] Employee checks out a transaction; the owner gets the transaction push
-- [ ] Owner adds an item; the employee gets the new-item push
-- [ ] In-app notifications match the pushes (if Phase 2 adds an inbox)
-- [ ] If nothing arrives: check send-push Logs and `net._http_response`
-- [ ] On a real phone: notifications arrive with the app closed; iPhone needs Share → Add to Home Screen first
+Run 2026-10-02 in two visible Edge profiles (real WNS push), events through the app's RPCs with
+each user's own token; every push matched its inbox row and nothing reached the actor.
+- [x] `yarn build`, serve on port 4180 (see Visual testing setup)
+- [x] Owner turns on notifications; a checkout that takes an item to its warning quantity sends
+      "Low stock"; the owner's own checkout to 0 sends "Out of stock" (same tag, replaces Low)
+- [x] Employee checks out a transaction; the owner gets the transaction push
+- [x] Owner adds an item; the employee gets the new-item push (owner gets none)
+- [x] Sign-up sends the owner a pending "New sign-up waiting"; approving deletes it
+- [x] In-app notifications match the pushes; bell count = unread updates + live stock alerts
+- [x] If nothing arrives: not needed, every push arrived
+- [ ] On a real phone (user): notifications arrive with the app closed; iPhone needs Share → Add
+      to Home Screen first
+- Test data left: test owner `moti.test.owner@example.com`, approved employee
+  `moti.push.muqtwncm@example.com`, archived "Push test item muqtwncm" (`BRA-UMA-000002`),
+  transactions #2 and #3 voided. Not covered: the developer's device, the 08:00 digest,
+  tapping a notification.
 
 ### Phase 4: Visual test (Claude drives the app)
 Claude may create owner and employee test accounts (user's permission, 2026-10-02).
@@ -110,6 +119,9 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
   also matches the "Show password" button).
 - Test employee: `moti.test.employee@example.com` (approved). Its password is not kept in this
   committed file; create fresh test accounts instead.
+- Push tests: `launchPersistentContext` (one scratchpad profile per user), `headless: false`,
+  service workers allowed, `grantPermissions(["notifications"])`; delivery is proven by
+  `registration.getNotifications()` in the page. Edge subscribes through WNS.
 - Stopping a background `yarn preview` on Windows can leave the vite process running; ask the user
   to stop it.
 
