@@ -45,9 +45,9 @@ One phase per conversation. Plan first and wait for approval before any code or 
 ### Phase 1: Finish push setup (setup guide Part 5, steps 12–16)
 The user runs every command; Claude only hands them over. Skip any already done.
 - [x] Generate VAPID keys; public key into `.env` as `VITE_VAPID_PUBLIC_KEY`
-- [ ] Deploy the `send-push` Edge Function with JWT verification off
-- [ ] Add the 4 function secrets (`VAPID_SUBJECT`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`)
-- [ ] Set `push_function_url` and `push_secret` in `app.settings`
+- [x] Deploy the `send-push` Edge Function with JWT verification off (unauthenticated GET → 405, 2026-10-02)
+- [x] Add the 4 function secrets (`VAPID_SUBJECT`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`)
+- [x] Set `push_function_url` and `push_secret` in `app.settings` (user, 2026-10-02)
 
 ### Phase 2: Notifications, built to match TARTAR
 - [ ] Study TARTAR end to end (`Ejie_Business/TARTAR`): `supabase/functions/send-push`,
@@ -151,6 +151,9 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
   `create_item` as category(3) + brand(3) + a 6-digit series per prefix (`BRA-BRE-000001`), never
   edited after. Category and brand are required. Part number is dropped. `reorder_level` keeps its
   column name but is shown as **Warning low stock quantity**; shelf location stays optional.
+- 2026-10-02 (V1.3 Phase 1): the app's Supabase project is **`kuesqdurgmlncugdurxq`**; the CLI
+  was relinked to it (the old link to `fskokirvjcxuxiclkpie` was stale). `send-push` has no
+  `config.toml`, so every redeploy needs `--no-verify-jwt`.
 
 ## Who sees what
 
