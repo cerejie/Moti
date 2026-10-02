@@ -17,8 +17,8 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: apply migration 7, then the pending checks (owner 360 px, preview, widths) and
-      Phase 6 (Phase 5 Batches 1–5 coded)
+      next up: plan and approve Batch 6 (fixes found by the 2026-10-03 checks), then Phase 6
+      (Phase 5 Batches 1–5 coded and checked, migration 7 applied)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -152,7 +152,9 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   - [x] Signed out (sign-in, register, forgot password) at 360 px with a touch pointer, light and
         dark: every button and link ≥ 44 px, zero console errors. The text input inside an input
         group stays 36 px tall in its 44 px frame (tapping the frame's edge does not focus it).
-  - [ ] History, Masterfile, cart and bell at 360 px: needs an owner sign-in (no password kept)
+  - [x] History, Masterfile, cart and bell at 360 px, light and dark (2026-10-03): History cards
+        clean ("1 item · 1 pc"), Masterfile cards, cart "No prices set", Restock hidden when all
+        stocked. Left: the checkout receipt still says "1 pcs" (Batch 6)
 - [x] **Batch 2: reliability** (H5 M1 M2 H6). Coded 2026-10-03, `yarn build` + `yarn lint` clean.
   1. `utils/error.utils.ts`: `NetworkError`, `isFetchFailure` (supabase-js reports a failed fetch
      as `{ message: "TypeError: …", code: "" }`) and `isNetworkError`; `toError` returns a
@@ -168,7 +170,10 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   4. `hook/common/update.hook.ts` (`useAppUpdate`, in App): `useRegisterSW`, hourly update check,
      toast "New version ready · Reload", hidden while the queue flushes. `registerSW.js` is no
      longer injected.
-  - [ ] Check with `yarn preview`: offline sale → badge → sheet; update toast after a rebuild
+  - [x] Checked 2026-10-03. Update toast: pass (changed `sw.js` → toast → Reload activates it).
+        Connected without internet: pass (queued in 0.3 s, "1 waiting", sheet, Retry sends).
+        **Device offline: fail** — the sale spins and never queues; it goes through when the
+        connection returns (Batch 6, item 1). Test sales #5 and #6 voided, stock back to 27
 - [x] **Batch 3: native feel on phones** (M4 M5 M6 L3 L5 L6). Coded 2026-10-03, `yarn build` +
       `yarn lint` clean. UI only, no migration.
   1. Tabs: `IRoute.tabParent` keeps a route in the sidebar but off the phone tab bar and lights
@@ -190,8 +195,11 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
      written into `<meta name="theme-color">` by `useApplyTheme`. The manifest has one
      `background_color`, so the launch screen stays white in dark mode.
   7. Stat cards: on phones they stack (icon, value `text-2xl` drawn first, label); hint hidden.
-  - [ ] 360 px check, owner, light and dark: five tabs (Team lights Account), Inventory and Sell
-        filter sheet + badge, flat lists, single title, dashboard cards, dark status bar.
+  - [x] 360 px check, owner, light and dark (2026-10-03): five tabs, Team lights Account, filter
+        sheet + "1 on" badge on Inventory and Sell, single title, stacked stat cards, status bar
+        `#ea580c` / `#18181b`; no sideways scroll, 0 console errors. Left for Batch 6: in light
+        mode `dataTableTray` (`bg-background`, white) paints a panel behind the card lists on
+        the grey `bg-app`; the filter sheet's close X sits lower than its title.
 - [x] **Batch 4: tablet and desktop** (H4 M3 M8). Coded 2026-10-03, `yarn build` + `yarn lint`
       clean. UI only, no migration.
   1. Root size: `theme.css` drops the `0.7vw` desktop scale, the `--root-floor` steps and the
@@ -207,8 +215,13 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
      `format.utils-*.js` + small stores); 124 + 148 kB gzip. The 500 kB warning stays on the
      vendor chunk (supabase, react-aria, react-query, all used by the shell). Workbox still
      precaches every chunk, so offline navigation is unchanged.
-  - [ ] Check at 820, 1024, 1280, 1440: the rail and its tooltips, tables no longer clipped,
-        Ctrl +/- zoom. If 1024–1279 clips with the full sidebar, extend the rail to `xl`.
+  - [x] Checked 2026-10-03 at 820, 1024, 1280, 1440 and 1440 zoomed 125 / 150 %, light and dark:
+        root 16 px at every width, rail at 820 and 960, full sidebar from 1024, no page scroll,
+        0 console errors. Rail tooltips show on keyboard focus; hover could not be proven
+        headless (a known button tooltip fails the same way) — check with a real mouse.
+        **Tables still clip** (Batch 6, item 2): Inventory, Sell, Stock history and Team scroll
+        sideways inside their card at 820 and 1024 (Actions / Add / By out of view); Sell's Add
+        is cut at 1280 and 1440 too. The toolbar search shrinks to an icon-wide box at 820–1024.
 - [x] **Batch 5: database and housekeeping** (M9 L7 L8). Coded 2026-10-03, `yarn build` +
       `yarn lint` clean.
   1. Migration 7 (`20261003000007_restrict_archived_items_to_owners.sql`): `inventory_items_select`
@@ -220,9 +233,18 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   3. `useFilters` sets the table back to page 1 with the filter change (filter key = table key);
      the four `useEffect` page resets in the list hooks are gone, so the old page is not fetched
      first, and opening a page no longer resets its page number.
-  - [ ] User: `supabase db push` (migration 7); check the notices name "Brake pad set"'s new code
+  - [x] User applied migration 7 in the SQL editor (2026-10-03); "Brake pad set" is `BRA-UMA-000003`
   - [ ] User: delete `src/pages/Home/HomeView.tsx`
-  - [ ] Employee API probe: archived items hidden, `inventory_summary` refused
+  - [x] API probe (2026-10-03), 5/5: employee sees 2 items, owner 3 (1 archived); employee
+        `inventory_summary` → 403 `42501`, owner gets its summary; every code has the new shape
+- [ ] **Batch 6: fixes from the checks** (not planned or approved yet)
+  1. Offline sale never queues: TanStack Query's default `networkMode: "online"` pauses every
+     mutation while `navigator.onLine` is false, so `runWrite` never runs; `useAppMutation` also
+     awaits `invalidateQueries`, whose refetches pause offline. Likely fix: mutations
+     `networkMode: "always"` in the QueryClient defaults, and no await on invalidation.
+  2. Tables clip at 820–1440 (see Batch 4); the rail likely needs to reach `xl`, plus column work.
+  3. Phone light lists: `dataTableTray` background; filter sheet close X alignment.
+  4. Checkout receipt "1 pcs": use `formatCount` in `CheckoutSuccessModal`.
 
 ### Phase 6: Check on a phone (user)
 - [ ] Light mode and dark mode at phone width
@@ -246,8 +268,9 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   `serviceWorkers: "block"`.
 - Sign-in form: `getByLabel("Email")`; the password input is `#password` (`getByLabel("Password")`
   also matches the "Show password" button).
-- Test employee: `moti.test.employee@example.com` (approved). Its password is not kept in this
-  committed file; create fresh test accounts instead.
+- Test accounts: owner `moti.test.owner@example.com` and employee `moti.test.employee@example.com`
+  (approved). Their password is in Claude's local memory (`test-accounts`), never in this
+  committed file; pass it to scratchpad scripts as `MOTI_PW`. Claude signs in and tests itself.
 - Push tests: `launchPersistentContext` (one scratchpad profile per user), `headless: false`,
   service workers allowed, `grantPermissions(["notifications"])`; delivery is proven by
   `registration.getNotifications()` in the page. Edge subscribes through WNS.
