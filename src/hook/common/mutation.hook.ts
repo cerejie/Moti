@@ -29,7 +29,8 @@ export const useAppMutation = <TArgs = void, TResult = unknown>(
   return useMutation<TResult, Error, TArgs>({
     mutationFn,
     onSuccess: async (result) => {
-      await Promise.all(
+      // Not awaited: offline the refetches pause and would hold back the queued feedback.
+      void Promise.all(
         (options.invalidate ?? []).map((queryKey) =>
           queryClient.invalidateQueries({ queryKey }),
         ),

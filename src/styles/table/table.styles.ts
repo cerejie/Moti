@@ -39,7 +39,19 @@ export const tableHeadNumeric = "text-right";
 
 export const tableCellNumeric = "text-right tabular-nums";
 
-export const tableCellActions = "w-px whitespace-nowrap text-right";
+// No fixed width here: a width on this wrapper sizes the column to it and the
+// buttons spill past the table's edge.
+export const tableCellActions = "whitespace-nowrap text-right";
+
+// A low-priority column steps out below a breakpoint so the rest keep their room.
+export const tableColumnHidden = cva("", {
+  variants: {
+    below: {
+      lg: "max-lg:hidden",
+      xl: "max-xl:hidden",
+    },
+  },
+});
 
 // The expanded panel spans the full row beneath the record it belongs to, and
 // repeats the card shape so the pair reads as one record.
@@ -79,7 +91,9 @@ export const simpleTableCell = cva("", {
 export const simpleTableSticky =
   "[&>[data-slot=table-container]]:overflow-visible [&_[data-slot=table-head]]:sticky [&_[data-slot=table-head]]:top-0 [&_[data-slot=table-head]]:z-10 [&_[data-slot=table-head]]:bg-background";
 
-// Phone layout: the same rows as a stack of cards.
+// Phone layout: the same rows as a stack of cards, straight on the page background.
+export const dataCardTray = "pt-1 pb-3";
+
 export const dataCardList = "flex flex-col gap-2";
 
 export const dataCardItem = "list-none";

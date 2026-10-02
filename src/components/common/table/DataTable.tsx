@@ -22,6 +22,7 @@ import {
   dataCardItem,
   dataCardList,
   dataCardSkeleton,
+  dataCardTray,
   dataTableCell,
   dataTableCellEnds,
   dataTableCellExpanded,
@@ -30,6 +31,7 @@ import {
   dataTableHeader,
   dataTableRow,
   dataTableTray,
+  tableColumnHidden,
   tableExpansionCell,
   tableExpansionInner,
   tableLoadingAnnounce,
@@ -41,6 +43,11 @@ import ErrorState from "../status/ErrorState";
 import StateBox from "../status/StateBox";
 
 const SKELETON_ROWS = 5;
+
+type IColumnLike = { columnDef: { meta?: { hideBelow?: "lg" | "xl" } } };
+
+const columnHidden = (column: IColumnLike) =>
+  tableColumnHidden({ below: column.columnDef.meta?.hideBelow });
 
 type IProps<TData extends RowData> = {
   // Stable key for the row-expansion store; use the keys in keys/table.keys.ts.
@@ -95,16 +102,17 @@ const DataTable = <TData extends RowData>({
   // them, so only the leaf level is rendered. No Moti table groups columns.
   const headerGroups = table.getHeaderGroups();
   const leafHeaders = headerGroups[headerGroups.length - 1]?.headers ?? [];
-  const columnCount = table.getAllLeafColumns().length;
+  const leafColumns = table.getAllLeafColumns();
+  const columnCount = leafColumns.length;
 
   const renderBody = () => {
     if (isLoading) {
       return Array.from({ length: SKELETON_ROWS }).map((_, rowIndex) => (
         <TableRow key={`skeleton-${rowIndex}`} className={dataTableRow}>
-          {Array.from({ length: columnCount }).map((__, cellIndex) => (
+          {leafColumns.map((column) => (
             <TableCell
-              key={cellIndex}
-              className={cn(dataTableCell, dataTableCellEnds)}
+              key={column.id}
+              className={cn(dataTableCell, dataTableCellEnds, columnHidden(column))}
             >
               <Skeleton className={tableSkeletonBar} />
             </TableCell>
@@ -163,6 +171,7 @@ const DataTable = <TData extends RowData>({
                 className={cn(
                   dataTableCell,
                   expanded ? dataTableCellExpanded : dataTableCellEnds,
+                  columnHidden(cell.column),
                 )}
               >
                 <table.FlexRender cell={cell} />
@@ -216,7 +225,7 @@ const DataTable = <TData extends RowData>({
     };
 
     return (
-      <div className={cn(dataTableTray, className)}>
+      <div className={cn(dataCardTray, className)}>
         <ul aria-label={label} aria-busy={isLoading} className={dataCardList}>
           {renderCards()}
         </ul>
@@ -237,7 +246,7 @@ const DataTable = <TData extends RowData>({
             <TableHead
               key={header.id}
               isRowHeader={index === 0}
-              className={dataTableHead}
+              className={cn(dataTableHead, columnHidden(header.column))}
             >
               {header.isPlaceholder ? null : (
                 <table.FlexRender header={header} />

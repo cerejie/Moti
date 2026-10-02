@@ -15,7 +15,7 @@ import {
   itemName,
   mutedText,
 } from "../../../styles/inventory/inventory.styles";
-import { movementTypeTabs } from "../../../styles/movement/movement.styles";
+import { movementByCell, movementNote, movementTypeTabs } from "../../../styles/movement/movement.styles";
 import { formatDateTime, formatNumber, formatSignedQuantity } from "../../../utils/format.utils";
 import SegmentedControl from "../../common/filter/SegmentedControl";
 import StatusBadge from "../../common/status/StatusBadge";
@@ -64,6 +64,7 @@ const columns: IDataTableColumn<IStockMovement>[] = [
   column.display({
     id: "balance",
     header: "Left",
+    meta: { hideBelow: "xl" },
     cell: ({ row }) => (
       <span className={mutedText}>
         {formatNumber(row.original.balance_after)} {row.original.item?.unit ?? ""}
@@ -74,9 +75,9 @@ const columns: IDataTableColumn<IStockMovement>[] = [
     id: "by",
     header: "By",
     cell: ({ row }) => (
-      <span className={itemIdentity}>
+      <span className={movementByCell}>
         <span>{row.original.created_by_name}</span>
-        {row.original.note && <span className={itemMeta}>{row.original.note}</span>}
+        {row.original.note && <span className={movementNote}>{row.original.note}</span>}
       </span>
     ),
   }),

@@ -31,16 +31,18 @@ export const modalHeaderHidden = "sr-only";
 
 // A visible title header, ruled off from the body. Bleeds to the dialog's
 // edges (p-6) and keeps room on the right for the ✕; the title's line box
-// matches the ✕ button's height so the two centre on one line.
+// matches the ✕ button's height (44 px on touch screens) so the two centre on one line.
 export const modalHeaderRuled =
-  "-mx-6 -mt-6 border-b border-border px-6 py-4 pr-14 [&_[data-slot=dialog-title]]:leading-8";
+  "-mx-6 -mt-6 border-b border-border px-6 py-4 pr-16 [&_[data-slot=dialog-title]]:leading-8 pointer-coarse:[&_[data-slot=dialog-title]]:leading-11";
 
 // A hidden header that still gives the close button a ruled row of its own,
 // so the ✕ never sits over the body.
 export const modalCloseBar = "-mx-6 -mt-6 h-14 border-b border-border";
 
-// The sheet's own header padding (p-4) already frames the title and the ✕.
-export const drawerHeaderRuled = "border-b border-border";
+// The sheet's own header padding (p-4) already frames the title and the ✕; the
+// title's line box matches the ✕ as in the dialog header.
+export const drawerHeaderRuled =
+  "border-b border-border pr-16 [&_[data-slot=sheet-title]]:leading-8 pointer-coarse:[&_[data-slot=sheet-title]]:leading-11";
 
 export const drawerCloseBar = "h-14 border-b border-border";
 

@@ -2,7 +2,7 @@ import { useModal } from "../../../hook/common/modal.hook";
 import type { ICheckoutReceipt } from "../../../hook/data/transaction/transaction.form.hook";
 import { checkoutSuccessModalKey } from "../../../keys/modal.keys";
 import { receiptLine } from "../../../styles/transaction/transaction.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatPeso } from "../../../utils/format.utils";
 import SuccessModal from "../../common/modal/SuccessModal";
 
 // Closing it leaves the seller on the item list, ready for the next transaction.
@@ -24,8 +24,7 @@ const CheckoutSuccessModal = () => {
     >
       {receipt && (
         <p className={receiptLine}>
-          {formatNumber(receipt.itemCount)} item{receipt.itemCount === 1 ? "" : "s"} ·{" "}
-          {formatNumber(receipt.totalQuantity)} pcs
+          {formatCount(receipt.itemCount, "item")} · {formatCount(receipt.totalQuantity, "pc")}
           {receipt.totalAmount === null ? "" : ` · ${formatPeso(receipt.totalAmount)}`}
         </p>
       )}

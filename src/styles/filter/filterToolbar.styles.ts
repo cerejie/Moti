@@ -2,7 +2,8 @@
 export const filterToolbarRoot =
   "flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center";
 
-export const filterSearch = "min-w-0 flex-1 md:max-w-xs";
+// The min width makes the controls wrap below rather than squeeze the search to an icon.
+export const filterSearch = "min-w-0 flex-1 md:max-w-xs md:min-w-56";
 
 export const filterControls = "flex flex-wrap items-center gap-2";
 

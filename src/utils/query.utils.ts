@@ -12,5 +12,10 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: 30_000,
     },
+    mutations: {
+      // The default "online" mode pauses writes while the device is offline, so runWrite
+      // never gets the chance to queue them.
+      networkMode: "always",
+    },
   },
 });

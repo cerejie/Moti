@@ -17,7 +17,8 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: plan and approve Batch 6 (fixes found by the 2026-10-03 checks), then Phase 6
+      next up: Batches 7–8 (native
+      mobile feel, from `.claude/references/design-plan.md`), then Phase 6
       (Phase 5 Batches 1–5 coded and checked, migration 7 applied)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
@@ -237,18 +238,58 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   - [ ] User: delete `src/pages/Home/HomeView.tsx`
   - [x] API probe (2026-10-03), 5/5: employee sees 2 items, owner 3 (1 archived); employee
         `inventory_summary` → 403 `42501`, owner gets its summary; every code has the new shape
-- [ ] **Batch 6: fixes from the checks** (not planned or approved yet)
+- [x] **Batch 6: fixes from the checks** (approved and coded 2026-10-03, `yarn build` + `yarn lint`
+      clean). UI only, no migration.
   1. Offline sale never queues: TanStack Query's default `networkMode: "online"` pauses every
      mutation while `navigator.onLine` is false, so `runWrite` never runs; `useAppMutation` also
-     awaits `invalidateQueries`, whose refetches pause offline. Likely fix: mutations
-     `networkMode: "always"` in the QueryClient defaults, and no await on invalidation.
-  2. Tables clip at 820–1440 (see Batch 4); the rail likely needs to reach `xl`, plus column work.
-  3. Phone light lists: `dataTableTray` background; filter sheet close X alignment.
-  4. Checkout receipt "1 pcs": use `formatCount` in `CheckoutSuccessModal`.
+     awaits `invalidateQueries`, whose refetches pause offline. Fix: mutations
+     `networkMode: "always"` in the QueryClient defaults (reads stay paused), and invalidation
+     is fired, not awaited. Writes outside `runWrite` (sign-in, push) now fail offline with the
+     network error instead of spinning.
+  2. Tables clip at 820–1440. Cause, measured: `tableCellActions` put `w-px` on the div inside
+     the cell, so the column sized to 1 px and its buttons spilled past the table (all of the
+     1280 / 1440 clipping). `w-px` dropped. Below `xl` the panel is ~630 px (the full sidebar at
+     1024 leaves no more room than the rail at 820), so a column option `meta.hideBelow`
+     (`"lg" | "xl"`, `ColumnMeta` augmented in `dataTable.config.ts`, applied by `DataTable` to
+     head, skeleton and cells) hides Category + Warn at (Inventory), Category (Sell) and Left
+     (Stock history) below `xl`; Stock history's By cell wraps its note (`itemMeta`'s `truncate`
+     had kept it on one line). Toolbar search `md:min-w-56`, so the controls wrap instead.
+  3. Phone light lists: the card list's tray is transparent on phones; the filter sheet's
+     title shares the close X's line (as the dialog header does).
+  4. Checkout receipt "1 pcs": `formatCount(receipt.totalQuantity, "pc")` in `CheckoutSuccessModal`.
+  - [x] Re-checked 2026-10-03, all pass, 0 console errors. Device offline: checkout shows
+        "Saved offline · 1 item · 1 pc" in under 2.5 s, "Offline · 1" badge, back online it
+        sends (#7 Completed), voided, stock back to 27. Tables: 0 overflow on all 6 table
+        screens at 820 / 1024 / 1280 / 1440, light and dark; search ≥ 224 px. 360 px: every list
+        sits on the `bg-app` grey (dark `#0e0e10`); filter sheet title and ✕ share one centre line.
+- [ ] **Batch 7: native list rows on phones** (`design-plan.md` §2, §10, §11; plan + approval first)
+  Every phone list is still a stack of bordered, shadowed cards (7 lists), which the design
+  plan rules out: rows sit in one list surface, hairline dividers, 1–2 lines, the value or
+  status trailing, a chevron when the row opens something.
+  1. New `components/common/list/ListGroup.tsx` (one surface, dividers) and `ListRow.tsx`
+     (title, subtitle, trailing slot, chevron, ≥ 56 px, pressable through react-aria `Button`);
+     `DataTable`'s phone branch renders `renderCard` rows inside a `ListGroup`.
+  2. Pilot on Inventory only; the user checks screenshots before the pattern spreads.
+  3. Then Sell picker (trailing Add / stepper stays on the row), History, Stock history, Team,
+     Categories and Brands. A row opens its existing detail sheet; ⋮ menus move into the
+     sheet where one exists.
+  4. Remove `PressableCard`, the six `*Card` row components and their card styles.
+  - Open question for that plan: Inventory's inline "Add stock" (a trailing icon on the row, or
+    only inside the item sheet).
+- [ ] **Batch 8: native shell polish** (`design-plan.md` §8, §22, §23; plan + approval first)
+  1. Sign-in, register, forgot password on phones: flat on the background, no floating card,
+     shadow or zoom-in.
+  2. Installed-app feel in `theme.css`: `-webkit-tap-highlight-color: transparent`, no text
+     selection or touch callout on the tab bar, top bar and buttons, `overscroll-behavior: none`
+     on the document.
+  3. Optional: iOS launch images (`apple-touch-startup-image`), so the iPhone launch is not blank.
 
 ### Phase 6: Check on a phone (user)
+- [ ] Install it: Android Chrome → Install app; iPhone Safari → Share → Add to Home Screen
+- [ ] Opens standalone (no browser bar), status bar and home indicator clear the app bar and tab bar
 - [ ] Light mode and dark mode at phone width
-- [ ] Transaction cards, the Add / − + stepper, the cart bar and cart sheet, the bottom tab bar
+- [ ] Sell list rows, the Add / − + stepper, the cart bar and cart sheet, the bottom tab bar
+- [ ] The keyboard does not hide the field or the Save button inside a form sheet
 - [ ] Report anything that looks off
 
 ### Phase 7: Deploy (when happy)

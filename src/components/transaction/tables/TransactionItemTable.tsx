@@ -43,6 +43,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   column.display({
     id: "category",
     header: "Category",
+    meta: { hideBelow: "xl" },
     cell: ({ row }) => (
       <span className={mutedText}>{row.original.category?.name ?? "—"}</span>
     ),

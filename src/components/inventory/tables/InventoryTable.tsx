@@ -50,6 +50,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   column.display({
     id: "category",
     header: "Category",
+    meta: { hideBelow: "xl" },
     cell: ({ row }) => (
       <span className={mutedText}>{row.original.category?.name ?? "—"}</span>
     ),
@@ -79,6 +80,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   column.display({
     id: "reorder",
     header: "Warn at",
+    meta: { hideBelow: "xl" },
     cell: ({ row }) => (
       <span className={mutedText}>{formatNumber(row.original.reorder_level)}</span>
     ),
