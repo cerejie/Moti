@@ -13,7 +13,10 @@ SaaS build, which comes later.
       developer sign-in confirmed working
 - [x] V1.1 build (2026-10-02): brands + creatable category/brand fields, Masterfile,
       multi-item Transaction with checkout, owner history and void (migration 4)
+- [x] V1.2 build (2026-10-02): item code replaces SKU (generated from category + brand + series),
+      part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
+- [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase
 - [ ] LATER: SaaS build (multi-shop), update prompt, analyzer, pgTAP tests
 
 ## Next steps
@@ -24,34 +27,93 @@ Work top to bottom; tick each one when done.
    - [x] Committed as `572eb5b`
    - [x] `.serena/` stays tracked (only `project.yml`; its own `.gitignore` drops cache and local)
    - [ ] Delete the unused placeholder `src/pages/Home/HomeView.tsx` (user deletes; the tool was blocked)
-2. **Apply migration 4 and test the roles**
+2. **Apply migrations 4–5 and test the roles**
    - [x] Anonymous probe (2026-10-02): every table 401, RPCs 42501, sign-up pending, duplicate
          email refused, pending login refused, anon cannot create an owner
-   - [ ] `supabase db push` (applies `20261002000004_create_brands_transactions.sql`)
-   - [ ] As the owner, approve "Test Employee" (`moti.test.employee@example.com`) under Team
-   - [ ] Run the role probe (Claude has it): employee reads items/brands/categories, cannot see
-         ledger or history, cannot create/adjust/void; owner reads history and can void
-   - [ ] As the employee, confirm only Transaction and My account show
-   - [ ] As the owner: add an item typing a new category and brand, see both in Masterfile
-3. **Finish push setup** (setup guide Part 5, steps 12–16) — skip any already done
-   - [x] Generate VAPID keys; public key into `.env` as `VITE_VAPID_PUBLIC_KEY`
-   - [ ] Deploy the `send-push` Edge Function with JWT verification off
-   - [ ] Add the 4 function secrets (`VAPID_SUBJECT`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`)
-   - [ ] Set `push_function_url` and `push_secret` in `app.settings`
-4. **Test push** (setup guide steps 22–25)
-   - [ ] `yarn build`, then `yarn preview`, and open the printed address
-   - [ ] As the owner: My account → Low-stock notifications → Turn on
-   - [ ] Check out a transaction that takes an item to its warning low stock quantity; a "Low stock" notification appears
-   - [ ] If nothing arrives: check send-push Logs and `net._http_response`
-5. **Check on a phone**
-   - [ ] Light mode and dark mode at phone width
-   - [ ] Transaction cards, the Add / − + stepper, the cart bar and cart sheet, the bottom tab bar
-   - [ ] iPhone only: Share → Add to Home Screen before turning on push
-   - [ ] Report anything that looks off
-6. **Deploy** (when happy)
-   - [ ] Host on Vercel (or similar) from the repo
-   - [ ] Add the three `VITE_...` values from `.env` as environment variables, then redeploy
-   - [ ] Never add the JWT secret, VAPID private key, `PUSH_SECRET` or service-role key there
+   - [x] `supabase db push` (migrations 4 and 5 applied, 2026-10-02)
+   - [x] As the owner, approve "Test Employee" (`moti.test.employee@example.com`) under Team
+   - [ ] Run the role probe: employee half passed 14/14 (2026-10-02); owner half (history,
+         ledger, void) still needs an owner login — done in V1.3 Phase 4
+   - [x] As the employee, confirm only Transaction and My account show (headless check, 2026-10-02)
+   - [x] Add an item typing a new category and brand, see both in Masterfile
+         (`BRA-BRE-000001`, Brake pads / Brembo, by the developer, 2026-10-02)
+
+## V1.3: notifications, visual test and audit
+
+One phase per conversation. Plan first and wait for approval before any code or migration.
+
+### Phase 1: Finish push setup (setup guide Part 5, steps 12–16)
+The user runs every command; Claude only hands them over. Skip any already done.
+- [x] Generate VAPID keys; public key into `.env` as `VITE_VAPID_PUBLIC_KEY`
+- [ ] Deploy the `send-push` Edge Function with JWT verification off
+- [ ] Add the 4 function secrets (`VAPID_SUBJECT`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`)
+- [ ] Set `push_function_url` and `push_secret` in `app.settings`
+
+### Phase 2: Notifications, built to match TARTAR
+- [ ] Study TARTAR end to end (`Ejie_Business/TARTAR`): `supabase/functions/send-push`,
+      `hook/common/push.hook.ts`, `PushPromptNotice`, `NotificationsCard`, the inbox
+      (`inbox/menus/InboxBell`, `inbox/lists/NotificationCenter`, `common/layout/PhoneAlertsSheet`,
+      `hook/data/dashboard/notification.list.hook.ts`) and its notification SQL. Moti's
+      notifications must feel as seamless as TARTAR's.
+- [ ] Ask the user: a stored notification inbox like TARTAR, or keep alerts computed from stock
+      (changes the 2026-10-02 alerts decision)
+- [ ] Owner: push when an item reaches its warning low stock quantity (exists, `push_stock_event`; verify)
+- [ ] Owner: push for every transaction an employee checks out (new)
+- [ ] Employee: push when a new inventory item is added (new)
+- [ ] Employees can turn notifications on in My account (today only owners are targeted)
+- [ ] Migration written, user runs `supabase db push`; `yarn build` + `yarn lint` clean
+
+### Phase 3: Push end to end
+- [ ] `yarn build`, serve on port 4180 (see Visual testing setup)
+- [ ] Owner turns on notifications; a checkout that takes an item to its warning quantity sends "Low stock"
+- [ ] Employee checks out a transaction; the owner gets the transaction push
+- [ ] Owner adds an item; the employee gets the new-item push
+- [ ] In-app notifications match the pushes (if Phase 2 adds an inbox)
+- [ ] If nothing arrives: check send-push Logs and `net._http_response`
+- [ ] On a real phone: notifications arrive with the app closed; iPhone needs Share → Add to Home Screen first
+
+### Phase 4: Visual test (Claude drives the app)
+Claude may create owner and employee test accounts (user's permission, 2026-10-02).
+- [ ] Every screen, every role (owner, employee, developer if possible): sign-in, register, forgot
+      password, dashboard, transaction (cart + checkout), inventory, masterfile, history + void,
+      team approvals, my account, alerts
+- [ ] Phone (390), tablet (820), desktop (1440), light and dark; a screenshot of each
+- [ ] Employee sees the test item on Transaction
+- [ ] API role probe, both roles (closes the open item in step 2)
+
+### Phase 5: Audit
+- [ ] UI and UX: on a phone it must feel like a native mobile app (PWA); on tablet and desktop, a
+      web app. Layout, navigation, touch targets, safe areas, the four data states, typography,
+      consistency
+- [ ] Architecture as it stands now, with suggestions
+- [ ] Report ranked by severity, with screenshots, as a page the user can open; no code changes
+      without a plan and approval
+
+### Phase 6: Check on a phone (user)
+- [ ] Light mode and dark mode at phone width
+- [ ] Transaction cards, the Add / − + stepper, the cart bar and cart sheet, the bottom tab bar
+- [ ] Report anything that looks off
+
+### Phase 7: Deploy (when happy)
+- [ ] Host on Vercel (or similar) from the repo
+- [ ] Add the three `VITE_...` values from `.env` as environment variables, then redeploy
+- [ ] Never add the JWT secret, VAPID private key, `PUSH_SECRET` or service-role key there
+
+## Visual testing setup
+
+- Serve with `yarn build`, then `yarn preview --host --port 4180 --strictPort` in the background.
+  **Never port 4173**: TARTAR's service worker is installed on `localhost:4173`, so a browser shows
+  TARTAR there. The user keeps their own TARTAR preview running; never stop it.
+- No Chrome or Playwright browsers on this machine. Install `playwright-core` in the session
+  scratchpad (never the repo) and launch Edge:
+  `executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"`,
+  `serviceWorkers: "block"`.
+- Sign-in form: `getByLabel("Email")`; the password input is `#password` (`getByLabel("Password")`
+  also matches the "Show password" button).
+- Test employee: `moti.test.employee@example.com` (approved). Its password is not kept in this
+  committed file; create fresh test accounts instead.
+- Stopping a background `yarn preview` on Windows can leave the vite process running; ask the user
+  to stop it.
 
 ## Decisions log
 
