@@ -9,8 +9,44 @@ SaaS build, which comes later.
 - [x] Phase 0: Foundation (shell, PWA, common layer)
 - [x] V1 build (2026-10-02): auth and roles, inventory, stock movements, dashboard, alerts,
       team management, account, web push
-- [ ] Release: run migrations, set secrets, deploy `send-push`, test on a phone (see "Go-live")
+- [x] Supabase setup (2026-10-02): project, migrations, JWT secret, developer account —
+      developer sign-in confirmed working
+- [ ] Next steps (below), in order
 - [ ] LATER: SaaS build (multi-shop), update prompt, analyzer, pgTAP tests
+
+## Next steps
+
+Work top to bottom; tick each one when done.
+
+1. **Commit the V1 build**
+   - [ ] `git add -A -- . ":!.serena"` then commit with the V1 message
+         (`Feature: Moti V1 Inventory With Roles And Low-Stock Push Alerts`)
+   - [ ] Decide: add `.serena/` to `.gitignore`?
+   - [ ] Decide: delete the unused placeholder `src/pages/Home/HomeView.tsx`?
+2. **Test the roles** (setup guide Part 6, steps 19–21)
+   - [ ] As the developer, create an owner under Team
+   - [ ] As the owner, add a category and a few items with reorder levels
+   - [ ] Register an employee from the sign-in page, then approve them as the owner
+   - [ ] As the employee, confirm only Inventory and My account show, and only "Record sale" works
+3. **Finish push setup** (setup guide Part 5, steps 12–16) — skip any already done
+   - [ ] Generate VAPID keys; public key into `.env` as `VITE_VAPID_PUBLIC_KEY`
+   - [ ] Deploy the `send-push` Edge Function with JWT verification off
+   - [ ] Add the 4 function secrets (`VAPID_SUBJECT`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SECRET`)
+   - [ ] Set `push_function_url` and `push_secret` in `app.settings`
+4. **Test push** (setup guide steps 22–25)
+   - [ ] `yarn build`, then `yarn preview`, and open the printed address
+   - [ ] As the owner: My account → Low-stock notifications → Turn on
+   - [ ] Sell an item down to its reorder level; a "Low stock" notification appears
+   - [ ] If nothing arrives: check send-push Logs and `net._http_response`
+5. **Check on a phone**
+   - [ ] Light mode and dark mode at phone width
+   - [ ] Inventory cards, the Sell button, the stock dialog and the bottom tab bar
+   - [ ] iPhone only: Share → Add to Home Screen before turning on push
+   - [ ] Report anything that looks off
+6. **Deploy** (when happy)
+   - [ ] Host on Vercel (or similar) from the repo
+   - [ ] Add the three `VITE_...` values from `.env` as environment variables, then redeploy
+   - [ ] Never add the JWT secret, VAPID private key, `PUSH_SECRET` or service-role key there
 
 ## Decisions log
 
