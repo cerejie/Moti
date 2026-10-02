@@ -1,7 +1,8 @@
 import { cva } from "class-variance-authority";
 
 // Sign-in screens: TARTAR's split layout — a carbon hero panel beside a floating
-// form card on the app backdrop. Below lg only the card shows.
+// form card on the app backdrop. Below lg only the card shows, and on phones the
+// form sits flat on the backdrop like a native screen.
 export const authPage = "flex min-h-dvh flex-1 bg-app px-safe font-sans text-foreground";
 
 export const authHero =
@@ -40,10 +41,10 @@ export const authStripe = cva("h-3 rounded-pill bg-primary", {
   },
 });
 
-export const authMain = "flex flex-1 items-center justify-center px-4 py-6 sm:px-6 sm:py-8";
+export const authMain = "flex flex-1 items-center justify-center px-6 py-6 sm:py-8";
 
 export const authCard =
-  "relative w-full max-w-md gap-0 rounded-panel border border-border bg-panel px-6 py-8 shadow-panel ring-0 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both motion-reduce:animate-none sm:px-10 sm:py-11";
+  "relative w-full max-w-md gap-0 sm:rounded-panel sm:border sm:border-border sm:bg-panel sm:px-10 sm:py-11 sm:shadow-panel sm:animate-in sm:fade-in-0 sm:zoom-in-95 sm:slide-in-from-bottom-4 sm:duration-500 sm:fill-mode-both motion-reduce:animate-none";
 
 export const authCardBrand = "mb-6 lg:hidden";
 

@@ -1,7 +1,7 @@
 // The app bar on phones (ruled off below, under the status bar) and a floating
 // panel on desktop, carrying the brand, the page title and the account actions.
 export const topbarRoot =
-  "flex min-h-14 shrink-0 items-center gap-2 border-b bg-panel px-4 pt-safe md:h-16 md:rounded-panel md:border md:px-5 md:pt-0 md:shadow-panel";
+  "flex min-h-14 shrink-0 items-center gap-2 border-b bg-panel px-4 pt-safe select-none touch-callout-none md:h-16 md:rounded-panel md:border md:px-5 md:pt-0 md:shadow-panel";
 
 export const topbarBrandDesktop = "max-md:hidden";
 

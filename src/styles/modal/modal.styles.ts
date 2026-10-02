@@ -53,9 +53,9 @@ export const modalActionSize =
 // The ruled action row, matching the header. Bleeds to the dialog's edges.
 export const modalFooter = `-mx-6 -mb-6 border-t border-border px-6 py-4 ${modalActionSize}`;
 
-// Clears the home indicator on an installed app; the sheet's own padding
-// (p-4) already frames the buttons.
-export const drawerFooter = `border-t border-border pb-safe ${modalActionSize}`;
+// Keeps the sheet's 1rem bottom and grows it to clear the home indicator on an
+// installed app (a bare pb-safe would zero it on phones without one).
+export const drawerFooter = `border-t border-border pb-safe-4 ${modalActionSize}`;
 
 export const drawerContent = "max-h-[92dvh]";
 

@@ -103,6 +103,7 @@ const TransactionHistoryTable = () => {
         <TablePagination
           paginationKey={transactionHistoryTableKey}
           totalCount={page?.totalCount ?? 0}
+          isLoading={query.isLoading}
           pageSizes={[8, 20, 50]}
         />
       }

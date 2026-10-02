@@ -119,6 +119,7 @@ const TransactionItemTable = () => {
         <TablePagination
           paginationKey={transactionPickTableKey}
           totalCount={page?.totalCount ?? 0}
+          isLoading={query.isLoading}
           pageSizes={[8, 20, 50]}
         />
       }

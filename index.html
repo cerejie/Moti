@@ -22,8 +22,56 @@
       rel="stylesheet"
     />
     <title>Moti</title>
+    <!-- Applies the saved theme before first paint, as useApplyTheme does after mount, so
+         the launch splash and a dark session never flash light. -->
+    <script>
+      try {
+        var saved = JSON.parse(localStorage.getItem("moti.theme") || "null");
+        var theme = saved && saved.state && saved.state.theme;
+        if (theme ? theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.classList.add("dark");
+          // The dark --status-bar token in theme.css.
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#18181b");
+        }
+      } catch (error) {
+        // Storage blocked: start light; useApplyTheme corrects it once the app mounts.
+      }
+    </script>
   </head>
   <body>
+    <!-- Launch splash: plain markup so it paints with the stylesheet, before the bundle
+         runs. useDismissSplash fades it out when the first screen renders. -->
+    <div
+      id="splash"
+      role="status"
+      aria-label="Loading Moti"
+      class="fixed inset-0 z-100 flex flex-col items-center justify-center gap-8 bg-app transition-[opacity,scale] duration-400 ease-out data-[state=done]:pointer-events-none data-[state=done]:scale-110 data-[state=done]:opacity-0"
+    >
+      <div class="flex items-center gap-4" aria-hidden="true">
+        <span
+          class="inline-flex size-16 items-center justify-center rounded-panel bg-primary text-3xl font-black text-primary-foreground italic shadow-panel animate-in fade-in-0 zoom-in-50 spin-in-12 duration-500 ease-out fill-mode-both"
+          >M</span
+        >
+        <span
+          class="text-3xl font-black tracking-widest text-foreground uppercase italic animate-in fade-in-0 slide-in-from-left-4 duration-500 delay-150 ease-out fill-mode-both"
+          >Moti</span
+        >
+      </div>
+      <div
+        class="flex -skew-x-12 flex-col gap-2 animate-in fade-in-0 duration-500 delay-300 fill-mode-both"
+        aria-hidden="true"
+      >
+        <span
+          class="relative block h-1.5 w-32 overflow-hidden rounded-pill bg-primary/15 after:absolute after:inset-y-0 after:left-0 after:w-1/3 after:rounded-pill after:bg-primary after:animate-splash-sweep motion-reduce:bg-primary/60 motion-reduce:after:hidden"
+        ></span>
+        <span
+          class="relative ml-6 block h-1.5 w-24 overflow-hidden rounded-pill bg-primary/15 after:absolute after:inset-y-0 after:left-0 after:w-1/3 after:rounded-pill after:bg-primary after:animate-splash-sweep after:[animation-delay:120ms] motion-reduce:bg-primary/40 motion-reduce:after:hidden"
+        ></span>
+        <span
+          class="relative ml-12 block h-1.5 w-16 overflow-hidden rounded-pill bg-primary/15 after:absolute after:inset-y-0 after:left-0 after:w-1/3 after:rounded-pill after:bg-primary after:animate-splash-sweep after:[animation-delay:240ms] motion-reduce:bg-primary/25 motion-reduce:after:hidden"
+        ></span>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

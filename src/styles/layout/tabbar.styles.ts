@@ -1,7 +1,7 @@
 // Phone-only bottom navigation, the native-app feel of the installed PWA. The
 // active tab is the brand colour with a bar above it, as in TARTAR.
 export const tabbarRoot =
-  "fixed inset-x-0 bottom-0 z-30 border-t bg-panel pb-safe shadow-panel md:hidden";
+  "fixed inset-x-0 bottom-0 z-30 border-t bg-panel pb-safe shadow-panel select-none touch-callout-none md:hidden";
 
 export const tabbarRow = "mx-auto flex h-tabbar max-w-xl items-stretch";
 

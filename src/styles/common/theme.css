@@ -267,6 +267,18 @@
   --spacing-topbar: 4.5rem;
   /* Minimum comfortable touch target on touch breakpoints. */
   --spacing-touch: 2.75rem;
+
+  /* The launch splash's racing stripes (index.html). */
+  --animate-splash-sweep: splash-sweep 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+
+  @keyframes splash-sweep {
+    from {
+      translate: -100% 0;
+    }
+    to {
+      translate: 300% 0;
+    }
+  }
 }
 
 @layer base {
@@ -298,10 +310,27 @@
     [data-slot="sheet-close"] {
       min-width: 2.75rem;
     }
+
+    /* A long press on a control selects its label or opens the link menu; native apps do neither. */
+    button,
+    [role="button"],
+    a {
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+  }
+
+  /* The installed app has no pull-to-refresh or rubber band; a browser tab keeps both. */
+  @media (display-mode: standalone) {
+    html,
+    body {
+      overscroll-behavior: none;
+    }
   }
 
   html {
     color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html.dark {
@@ -339,6 +368,15 @@
 
 @utility pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* A 1rem bottom that grows to clear the home indicator, for actions pinned to the screen edge. */
+@utility pb-safe-4 {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+@utility touch-callout-none {
+  -webkit-touch-callout: none;
 }
 
 @utility px-safe {

@@ -17,9 +17,8 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Batches 7–8 (native
-      mobile feel, from `.claude/references/design-plan.md`), then Phase 6
-      (Phase 5 Batches 1–5 coded and checked, migration 7 applied)
+      next up: Phase 6 (check on a phone)
+      (Phase 5 Batches 1–8 coded and checked, migration 7 applied)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -305,13 +304,29 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
     on phones without a home indicator every sheet's last button touches the screen edge
     (use `max(1rem, env(safe-area-inset-bottom))`); the pager reads "No records" while a list
     loads.
-- [ ] **Batch 8: native shell polish** (`design-plan.md` §8, §22, §23; plan + approval first)
-  1. Sign-in, register, forgot password on phones: flat on the background, no floating card,
-     shadow or zoom-in.
-  2. Installed-app feel in `theme.css`: `-webkit-tap-highlight-color: transparent`, no text
-     selection or touch callout on the tab bar, top bar and buttons, `overscroll-behavior: none`
-     on the document.
-  3. Optional: iOS launch images (`apple-touch-startup-image`), so the iPhone launch is not blank.
+- [x] **Batch 8: native shell polish** (`design-plan.md` §8, §22, §23). Coded 2026-10-03,
+      `yarn build` + `yarn lint` clean. UI only, no migration.
+  1. Sign-in, register, forgot password: below `sm` the form sits flat on `bg-app` (no card
+     border, shadow, radius or zoom-in), 24 px gutters; the card stays from `sm` up.
+  2. `theme.css`: tap highlight transparent; on touch screens no selection or callout on
+     `button`, `[role="button"]`, `a`; `overscroll-behavior: none` only in
+     `display-mode: standalone` (a browser tab keeps pull-to-refresh). Top bar and tab bar
+     `select-none touch-callout-none` (new utility).
+  3. iOS launch images: user's choice C instead, a launch splash. Markup in `index.html`
+     (Tailwind classes, so it paints with the stylesheet before the bundle runs): brand tile +
+     italic wordmark popping in, three skewed racing stripes with an orange sweep
+     (`--animate-splash-sweep` in `@theme`), static under reduced motion. An inline script
+     applies the saved theme (`moti.theme`) and the dark status bar before first paint.
+     `useDismissSplash` (`hook/common/splash.hook.ts`), called by `RouteRoot` (it mounts once
+     the first loader and chunk are ready), fades it out (400 ms) and removes it. iOS still
+     shows its own blank frame before the HTML parses.
+  4. Sheet footer `pb-safe-4` (`max(1rem, env(safe-area-inset-bottom))`): 16 px under the last
+     button, more above a home indicator.
+  5. `TablePagination` `isLoading`: "Loading…" and both arrows disabled while the first page
+     loads (4 tables).
+  - [x] 360 px check, owner, light and dark: splash shows (bundle held) and sweeps, removed after
+        load, dark applied before paint; flat sign-in / register / forgot password (register now
+        fits one screen); sheet footer 16 px; pager "Loading…"; 0 console errors.
 
 ### Phase 6: Check on a phone (user)
 - [ ] Install it: Android Chrome → Install app; iPhone Safari → Share → Add to Home Screen

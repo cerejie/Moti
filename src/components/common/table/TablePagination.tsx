@@ -30,6 +30,8 @@ type IProps = {
   // Stable key for the pagination store; use the keys in keys/table.keys.ts.
   paginationKey: string;
   totalCount: number;
+  // The first page is still loading, so totalCount is not known yet.
+  isLoading?: boolean;
   // Offer a rows-per-page picker; left off, the store's page size is fixed.
   pageSizes?: number[];
   className?: string;
@@ -38,6 +40,7 @@ type IProps = {
 const TablePagination = ({
   paginationKey,
   totalCount,
+  isLoading = false,
   pageSizes = [],
   className,
 }: IProps) => {
@@ -45,8 +48,8 @@ const TablePagination = ({
   const showSizePicker = pageSizes.length > 1;
 
   const pageCount = countPages(totalCount, pagination.pageSize);
-  const hasPrevious = pagination.pageNumber > 1;
-  const hasNext = pagination.pageNumber < pageCount;
+  const hasPrevious = !isLoading && pagination.pageNumber > 1;
+  const hasNext = !isLoading && pagination.pageNumber < pageCount;
 
   const firstRow = totalCount === 0 ? 0 : (pagination.pageNumber - 1) * pagination.pageSize + 1;
   const lastRow = Math.min(pagination.pageNumber * pagination.pageSize, totalCount);
@@ -54,9 +57,11 @@ const TablePagination = ({
   return (
     <div className={cn(paginationRoot, className)}>
       <p className={paginationSizeLabel}>
-        {totalCount === 0
-          ? "No records"
-          : `Showing ${firstRow}–${lastRow} of ${totalCount}`}
+        {isLoading
+          ? "Loading…"
+          : totalCount === 0
+            ? "No records"
+            : `Showing ${firstRow}–${lastRow} of ${totalCount}`}
       </p>
 
       <div className={paginationControls}>
