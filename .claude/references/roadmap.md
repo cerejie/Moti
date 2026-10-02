@@ -16,8 +16,9 @@ SaaS build, which comes later.
 - [x] V1.2 build (2026-10-02): item code replaces SKU (generated from category + brand + series),
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
-- [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase
-- [ ] LATER: SaaS build (multi-shop), update prompt, analyzer, pgTAP tests
+- [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
+      next up: Phase 5 fixes, Batch 1 (plan already approved)
+- [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
 
@@ -118,11 +119,46 @@ plus forced loading / error / empty), measured for sub-44 px targets, clipping a
 - [x] Architecture as it stands now, with suggestions (0 layer-law violations; RLS sound)
 - [x] Report ranked by severity, with screenshots: https://claude.ai/artifact/TkmJx2sUyrQnoiokLPzUe7
       (6 High, 9 Medium, 8 Low; Phase 4 findings 1–7 folded in). Nothing fixed yet.
-- [ ] Fix batches, one plan and approval each: 1 phone fixes (H1 H2 H3 M7 L1 L2 L4),
-      2 reliability (H5 M1 M2 H6), 3 native feel (M4 M5 M6 L3 L5 L6), 4 tablet/desktop
-      (H4 M3 M8), 5 database + housekeeping (M9 L7 L8)
-- [ ] User decides: desktop root size (H4), phone tabs (M4), employee API access (M9),
-      update prompt style (H6)
+- [x] User decided (2026-10-03, all option A; see Decisions log)
+
+### Phase 5 fixes, one batch per conversation
+Each batch gets its own plan and approval, except Batch 1, which is already approved.
+- [ ] **Batch 1: phone fixes** (H1 H2 H3 M7 L1 L2 L4). **Plan approved 2026-10-03; start
+      coding directly.** UI only, no migration.
+  1. `styles/common/theme.css`: inside `@layer base`, a `@media (pointer: coarse)` block giving
+     `min-height: 2.75rem` to `[data-slot]` button, input, input-group, select-trigger,
+     tabs-list, toggle-group-item, combobox-trigger, dialog-close, sheet-close; plus
+     `min-width: 2.75rem` for `[data-slot="button"][data-size^="icon"]`, combobox-trigger,
+     dialog-close, sheet-close. The user approved this one global size rule (option A over
+     per-wrapper classes) because the dialog close buttons live in generated `components/ui`.
+     `DialogClose` overrides `data-slot` to `dialog-close`, so it needs its own selector.
+  2. New `components/common/card/PressableCard.tsx`: a `react-aria-components` `Button` with no
+     button styling (common may import react-aria directly, as `RouteRoot` does). Style
+     `pressableCard` goes in `styles/cards/card.styles.ts`: column flex, card border and padding,
+     `data-[pressed]` and `data-[focus-visible]` states.
+  3. `components/transaction/cards/TransactionHistoryCard.tsx`: use `PressableCard`, not
+     `AppButton`, whose `h-9` + nowrap caused the overlap.
+  4. `styles/view/tabs.styles.ts`: underline `viewTabsContent` `p-6` becomes a top gap only.
+  5. New `components/masterfile/cards/MasterfileCard.tsx` + `styles/masterfile/masterfile.styles.ts`
+     (name, item count, date added, ⋮ menu; copy `UserCard` in `UserTable.tsx`). Pass it as
+     `renderCard` in `CategoryTable.tsx` and `BrandTable.tsx`.
+  6. `NotificationCenterModal.tsx`: show "Restock" only when `useStockAlerts` has rows.
+  7. `utils/format.utils.ts`: `formatCount(count, singular, plural = singular + "s")`; use it in
+     `TransactionHistoryCard` ("1 item"), `CartBar.tsx` and `CartModal.tsx` ("1 pc").
+  8. `CartModal.tsx`: when nothing has a price, the total reads "No prices set" instead of "—".
+  - Validate: `yarn build` + `yarn lint`, then retake History, Masterfile, sign-in, cart and
+    bell at 360 px, light and dark (preview on `127.0.0.1` only).
+- [ ] **Batch 2: reliability** (H5 M1 M2 H6): not-synced sheet with Retry and Discard, skipping
+      permanent failures; network-error detection in `toError`/`describeError` and `runWrite`;
+      update prompt (decision 4A).
+- [ ] **Batch 3: native feel on phones** (M4 M5 M6 L3 L5 L6): five tabs (decision 2A), title
+      shown once, list on the background, filter sheet, one date format, dark `theme-color`,
+      stat cards.
+- [ ] **Batch 4: tablet and desktop** (H4 M3 M8): browser root size (decision 1A), icon-rail
+      sidebar between `md` and `lg`, `React.lazy` per route.
+- [ ] **Batch 5: database and housekeeping** (M9 L7 L8): migration 7, archived items and
+      `inventory_summary` owner-only (decision 3A; the user runs it), regenerate `BPS-1`,
+      delete `HomeView.tsx` (user), settle `hook/account/`.
 
 ### Phase 6: Check on a phone (user)
 - [ ] Light mode and dark mode at phone width
@@ -197,6 +233,11 @@ plus forced loading / error / empty), measured for sub-44 px targets, clipping a
   Live through Supabase Realtime (`setCustomToken` also sets the realtime token). The actor is
   never notified, except Low/Out stock, which goes to every owner. Low stock stays one push per
   item (user's choice). The 08:00 digest stays push-only; read rows are deleted after 30 days.
+- 2026-10-03 (V1.3 Phase 5 audit): **desktop uses the browser's root size** (16 px, zoom works;
+  the width-based scale in `theme.css` goes). **Phone tabs are five**: Home, Sell, Inventory,
+  Stock, Account; Team opens from Account. **Archived items and `inventory_summary` are
+  owner-only** (migration 7). **Updates ask first**: "New version ready · Reload", held back while
+  the offline queue flushes.
 - 2026-10-02 (V1.3 Phase 1): the app's Supabase project is **`kuesqdurgmlncugdurxq`**; the CLI
   was relinked to it (the old link to `fskokirvjcxuxiclkpie` was stale). `send-push` has no
   `config.toml`, so every redeploy needs `--no-verify-jwt`.
@@ -258,4 +299,5 @@ RPCs: `login_email`, `register_email`, `request_password_reset`, `decide_passwor
 ## LATER (out of V1 on purpose)
 
 Multi-shop SaaS, suppliers and costs, analyzer and volume ranking,
-update prompt, CSV import/export, barcode scanning, pgTAP tests, code-splitting the bundle.
+CSV import/export, barcode scanning, pgTAP tests. (The update prompt and code-splitting moved to
+Phase 5 fixes, Batches 2 and 4.)
