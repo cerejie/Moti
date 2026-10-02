@@ -1,10 +1,20 @@
-import { History, Info, PackageMinus, PackagePlus, Warehouse } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  History,
+  Info,
+  PackageMinus,
+  PackagePlus,
+  Pencil,
+  Warehouse,
+} from "lucide-react";
 import { movementReasonLabels } from "../../../enums/stock.enum";
 import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
+import { useItemArchive } from "../../../hook/data/inventory/inventory.form.hook";
 import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
 import { useItemMovements } from "../../../hook/data/movement/movement.list.hook";
-import { itemDetailModalKey } from "../../../keys/modal.keys";
+import { itemDetailModalKey, itemFormModalKey } from "../../../keys/modal.keys";
 import type { IDetailSection } from "../../../models/common/detail.model";
 import type { StockAction } from "../../../enums/stock.enum";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -83,17 +93,22 @@ const sections: IDetailSection<IInventoryItem>[] = [
 const ItemDetailModal = () => {
   const { modal, closeModal } = useModal<IInventoryItem>(itemDetailModalKey);
   const stockModal = useStockMovementModal();
+  const formModal = useModal<IInventoryItem>(itemFormModalKey);
+  const { archive, restore } = useItemArchive();
   const { isOwner, viewMovements } = usePermissions();
   const item = modal.data;
   const history = useItemMovements(item?.id, modal.visible && viewMovements);
   const active = item ? item.archived_at === null : false;
 
-  // One dialog at a time: the detail closes and the stock dialog takes its place.
-  const startStock = (action: StockAction) => {
+  // One dialog at a time: the detail closes and the next dialog takes its place.
+  const handOff = (next: (current: IInventoryItem) => void) => {
     if (!item) return;
     closeModal();
-    stockModal.openModal({ item, action });
+    next(item);
   };
+
+  const startStock = (action: StockAction) =>
+    handOff((current) => stockModal.openModal({ item: current, action }));
 
   const renderHistory = () => {
     if (history.isLoading) return <StateBox loading>Loading history…</StateBox>;
@@ -131,6 +146,27 @@ const ItemDetailModal = () => {
       size="lg"
       record={item}
       sections={sections}
+      footer={
+        isOwner && (
+          <>
+            {active ? (
+              <AppButton tone="dangerSoft" onPress={() => handOff(archive)}>
+                <Archive />
+                Archive
+              </AppButton>
+            ) : (
+              <AppButton variant="outline" onPress={() => handOff(restore)}>
+                <ArchiveRestore />
+                Restore
+              </AppButton>
+            )}
+            <AppButton variant="outline" onPress={() => handOff(formModal.openModal)}>
+              <Pencil />
+              Edit item
+            </AppButton>
+          </>
+        )
+      }
       header={
         active && (
           <div className={detailActions}>

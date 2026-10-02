@@ -274,8 +274,23 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
      Categories and Brands. A row opens its existing detail sheet; ⋮ menus move into the
      sheet where one exists.
   4. Remove `PressableCard`, the six `*Card` row components and their card styles.
-  - Open question for that plan: Inventory's inline "Add stock" (a trailing icon on the row, or
-    only inside the item sheet).
+  - [x] Pilot coded 2026-10-03, `yarn build` + `yarn lint` clean. User's choices: "Add stock"
+        only in the item sheet; price only in the sheet. `ListRow` (title, subtitle, trailing,
+        `onPress` → react-aria `Button` + chevron) and `ListGroup` (`<ul>`, one `bg-card` surface,
+        `divide-y`), styles in `styles/list/list.styles.ts`. `DataTable` takes `renderRow`
+        (phones: rows in a `ListGroup`, skeleton rows; empty/error outside it), kept beside
+        `renderCard` until every list moves. `InventoryItemRow`: name / `code · brand`, on-hand +
+        unit over the status as text (only Low / Out coloured). The sheet footer gives owners
+        Archive / Restore + Edit item (each closes the sheet first). `InventoryItemCard` deleted.
+        shadcn `item` was not used: it renders a div or link, not a pressable button.
+  - [x] 360 px check, owner, light and dark: rows 62 px, no sideways scroll, Edit hands off to
+        the form, 0 console errors.
+  - [ ] User approves the screenshots, then step 3 (Sell picker adds an `action` slot to
+        `ListRow` for the Add / stepper, outside the row button).
+  - Found during the check, for Batch 8: `pb-safe` overrides the sheet footer's `p-4` bottom, so
+    on phones without a home indicator every sheet's last button touches the screen edge
+    (use `max(1rem, env(safe-area-inset-bottom))`); the pager reads "No records" while a list
+    loads.
 - [ ] **Batch 8: native shell polish** (`design-plan.md` §8, §22, §23; plan + approval first)
   1. Sign-in, register, forgot password on phones: flat on the background, no floating card,
      shadow or zoom-in.

@@ -31,19 +31,18 @@ export const mutedText = "text-muted-foreground";
 
 export const rowActions = "flex items-center justify-end gap-1";
 
-// Phone card row.
-export const itemCard =
-  "flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-card-sm active:border-primary";
-
-export const itemCardTop = "flex items-start justify-between gap-3";
-
-export const itemCardBottom = "flex items-center justify-between gap-3";
-
-export const itemCardStock = "flex items-baseline";
-
-export const itemCardActions = "flex items-center gap-1";
-
-export const itemCardOpen = "min-w-0 flex-1 text-left";
+// Phone row status under the on-hand figure: only a problem gets a colour.
+export const stockStatusText = cva("text-xs font-medium", {
+  variants: {
+    status: {
+      in_stock: "text-muted-foreground",
+      low: "text-warning",
+      out: "text-danger",
+      archived: "text-muted-foreground",
+    },
+  },
+  defaultVariants: { status: "in_stock" },
+});
 
 // Toolbar tabs sit on their own row on phones, beside the selects from md up.
 export const inventoryViewTabs = "w-full md:w-auto";

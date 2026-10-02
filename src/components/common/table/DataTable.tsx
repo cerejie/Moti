@@ -39,6 +39,12 @@ import {
   tableSkeletonBar,
   tableStateCell,
 } from "../../../styles/table/table.styles";
+import {
+  listGroupItem,
+  listSkeletonBar,
+  listSkeletonRow,
+} from "../../../styles/list/list.styles";
+import ListGroup from "../list/ListGroup";
 import ErrorState from "../status/ErrorState";
 import StateBox from "../status/StateBox";
 
@@ -68,6 +74,8 @@ type IProps<TData extends RowData> = {
   renderExpanded?: (row: TData) => ReactNode;
   // Phones get one card per row instead of the grid when this is given.
   renderCard?: (row: TData) => ReactNode;
+  // Phones get one ListRow per row inside a single ListGroup; wins over renderCard.
+  renderRow?: (row: TData) => ReactNode;
   className?: string;
 };
 
@@ -86,6 +94,7 @@ const DataTable = <TData extends RowData>({
   onRowClick,
   renderExpanded,
   renderCard,
+  renderRow,
   className,
 }: IProps<TData>) => {
   const { expandedRow, toggleRow } = useRowExpansion(tableKey);
@@ -192,6 +201,45 @@ const DataTable = <TData extends RowData>({
       );
     });
   };
+
+  if (isMobile && renderRow) {
+    const renderList = () => {
+      if (isLoading) {
+        return (
+          <ListGroup label={label} busy>
+            {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
+              <li key={`skeleton-${index}`} className={listSkeletonRow}>
+                <Skeleton className={listSkeletonBar} />
+              </li>
+            ))}
+          </ListGroup>
+        );
+      }
+      if (isError) return <ErrorState error={error} onRetry={onRetry} />;
+      if (data.length === 0) return <StateBox>{emptyText}</StateBox>;
+
+      return (
+        <ListGroup label={label}>
+          {data.map((row) => (
+            <li key={getRowId(row)} className={listGroupItem}>
+              {renderRow(row)}
+            </li>
+          ))}
+        </ListGroup>
+      );
+    };
+
+    return (
+      <div className={cn(dataCardTray, className)}>
+        {renderList()}
+        {isLoading && (
+          <p role="status" className={tableLoadingAnnounce}>
+            {loadingText}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   if (isMobile && renderCard) {
     const renderCards = () => {

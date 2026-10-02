@@ -26,7 +26,7 @@ import DataTable from "../../common/table/DataTable";
 import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import InventoryItemCard from "../cards/InventoryItemCard";
+import InventoryItemRow from "../lists/InventoryItemRow";
 import InventoryRowActions from "../menus/InventoryRowActions";
 import StockStatusBadge from "../status/StockStatusBadge";
 
@@ -173,7 +173,7 @@ const InventoryTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText={emptyTextByView[view]}
-        renderCard={(item) => <InventoryItemCard item={item} />}
+        renderRow={(item) => <InventoryItemRow item={item} />}
       />
     </TablePanel>
   );
