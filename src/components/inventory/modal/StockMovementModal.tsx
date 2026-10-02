@@ -79,7 +79,7 @@ const StockMovementModal = () => {
         <div className={stockSummary}>
           <span className={itemIdentity}>
             <span className={itemName}>{item.name}</span>
-            <span className={itemMeta}>{item.sku}</span>
+            <span className={itemMeta}>{item.item_code}</span>
           </span>
           <StockStatusBadge status={item.stock_status} />
         </div>

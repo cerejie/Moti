@@ -8,14 +8,13 @@ const optionalText = (max: number) => z.string().trim().max(max);
 
 // Numbers stay strings in the form (inputs hand back text); the service converts them.
 // Category and brand are typed names; the form hook turns them into ids on save.
+// The item code is not here: the database builds it from category and brand.
 export const itemFormSchema = z.object({
-  sku: z.string().trim().min(1, "Enter the SKU").max(40),
   name: z.string().trim().min(1, "Enter the item name").max(120),
-  category: optionalText(60),
-  brand: optionalText(60),
-  part_number: optionalText(60),
+  category: z.string().trim().min(1, "Pick or type a category").max(60),
+  brand: z.string().trim().min(1, "Pick or type a brand").max(60),
   unit: z.string().trim().min(1, "Enter the unit, e.g. pc").max(12),
-  reorder_level: wholeNumber("Reorder level"),
+  reorder_level: wholeNumber("Warning low stock quantity"),
   selling_price: z
     .string()
     .trim()

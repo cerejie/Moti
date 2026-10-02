@@ -3,7 +3,7 @@ import type { MovementReason, MovementType } from "../../../enums/stock.enum";
 export interface IStockMovement {
   id: string;
   item_id: string;
-  item: { name: string; sku: string; unit: string } | null;
+  item: { name: string; item_code: string; unit: string } | null;
   type: MovementType;
   reason: MovementReason;
   // Signed: positive for stock in, negative for stock out.

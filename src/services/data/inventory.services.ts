@@ -21,17 +21,15 @@ import brandServices from "./brand.services";
 
 const table = "inventory_items";
 const columns =
-  "id, sku, name, category_id, category:categories(name), brand_id, brand:brands(name), part_number, unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
+  "id, item_code, name, category_id, category:categories(name), brand_id, brand:brands(name), unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
 const alertLimit = 50;
 
 const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
 
 const editableValues = (values: IItemSaveValues) => ({
-  sku: values.sku.trim(),
   name: values.name.trim(),
   category_id: values.category_id,
   brand_id: values.brand_id,
-  part_number: textOrNull(values.part_number),
   unit: values.unit.trim(),
   reorder_level: Number(values.reorder_level),
   selling_price: values.selling_price === "" ? null : Number(values.selling_price),
@@ -61,7 +59,7 @@ const inventoryServices = {
       const brandIds = await brandServices.getIdsMatching(filters.search, signal);
       const byBrand = brandIds.length > 0 ? `,brand_id.in.(${brandIds.join(",")})` : "";
       query = query.or(
-        `name.ilike.${pattern},sku.ilike.${pattern},part_number.ilike.${pattern}${byBrand}`,
+        `name.ilike.${pattern},item_code.ilike.${pattern}${byBrand}`,
       );
     }
 
@@ -109,11 +107,9 @@ const inventoryServices = {
       fn: "create_item",
       label: `Add ${editable.name}`,
       args: {
-        p_sku: editable.sku,
         p_name: editable.name,
         p_category_id: editable.category_id,
         p_brand_id: editable.brand_id,
-        p_part_number: editable.part_number,
         p_unit: editable.unit,
         p_reorder_level: editable.reorder_level,
         p_selling_price: editable.selling_price,

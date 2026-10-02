@@ -26,7 +26,7 @@ const InventorySummaryCards = () => {
       <StatCard
         label="Low stock"
         value={value(data?.low_count)}
-        hint="At or below reorder level"
+        hint="At or below its warning quantity"
         icon={<TriangleAlert />}
         tone="warning"
       />

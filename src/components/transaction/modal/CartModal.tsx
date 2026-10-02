@@ -82,7 +82,7 @@ const CartModal = () => {
                   <span className={itemIdentity}>
                     <span className={itemName}>{item.name}</span>
                     <span className={itemMeta}>
-                      {item.sku} · {formatNumber(item.on_hand)} {item.unit} left
+                      {item.item_code} · {formatNumber(item.on_hand)} {item.unit} left
                     </span>
                   </span>
                   <AppButton

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Tone } from "../styles/common/tone.styles";
 
-// Derived in the database: out (0), low (<= reorder level), in stock.
+// Derived in the database: out (0), low (<= warning low stock quantity), in stock.
 export const stockStatusValues = ["in_stock", "low", "out"] as const;
 export type StockStatus = (typeof stockStatusValues)[number];
 

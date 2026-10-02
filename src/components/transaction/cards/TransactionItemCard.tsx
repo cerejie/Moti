@@ -18,7 +18,7 @@ type IProps = {
 
 // The phone row: what it is, how many are left, and the add control under the thumb.
 const TransactionItemCard = ({ item }: IProps) => {
-  const meta = [item.sku, item.brand?.name, item.category?.name].filter(Boolean).join(" · ");
+  const meta = [item.item_code, item.brand?.name, item.category?.name].filter(Boolean).join(" · ");
 
   return (
     <article className={pickCard}>

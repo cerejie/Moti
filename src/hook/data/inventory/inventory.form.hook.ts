@@ -20,11 +20,9 @@ import { useBrandOptions } from "../brand/brand.list.hook";
 import { useCategoryOptions } from "../category/category.list.hook";
 
 const toFormValues = (item?: IInventoryItem): IItemFormInput => ({
-  sku: item?.sku ?? "",
   name: item?.name ?? "",
   category: item?.category?.name ?? "",
   brand: item?.brand?.name ?? "",
-  part_number: item?.part_number ?? "",
   unit: item?.unit ?? "pc",
   reorder_level: String(item?.reorder_level ?? 5),
   selling_price: item?.selling_price == null ? "" : String(item.selling_price),

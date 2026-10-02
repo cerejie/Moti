@@ -20,7 +20,7 @@ import { newWriteId } from "../../utils/write.utils";
 const table = "transactions";
 const columns =
   "id, number, status, line_count, total_quantity, total_amount, note, created_by_name, created_at, voided_at, voided_by_name, void_reason";
-const lineColumns = "id, item_id, item:inventory_items(name, sku, unit), quantity, unit_price";
+const lineColumns = "id, item_id, item:inventory_items(name, item_code, unit), quantity, unit_price";
 
 const transactionServices = {
   getList: async (

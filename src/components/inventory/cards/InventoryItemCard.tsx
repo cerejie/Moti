@@ -33,7 +33,7 @@ const InventoryItemCard = ({ item }: IProps) => {
   const stockModal = useStockMovementModal();
   const detailModal = useModal<IInventoryItem>(itemDetailModalKey);
   const archived = item.archived_at !== null;
-  const meta = [item.sku, item.brand?.name, item.category?.name].filter(Boolean).join(" · ");
+  const meta = [item.item_code, item.brand?.name, item.category?.name].filter(Boolean).join(" · ");
 
   return (
     <article className={itemCard}>

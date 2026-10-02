@@ -20,7 +20,7 @@ export interface ITransaction {
 export interface ITransactionLine {
   id: string;
   item_id: string;
-  item: { name: string; sku: string; unit: string } | null;
+  item: { name: string; item_code: string; unit: string } | null;
   // Negative, as stored in the ledger.
   quantity: number;
   unit_price: number | null;

@@ -91,7 +91,7 @@ const TransactionDetailModal = () => {
               <span className={itemName}>{line.item?.name ?? "Deleted item"}</span>
               <span className={itemMeta}>
                 {[
-                  line.item?.sku,
+                  line.item?.item_code,
                   line.unit_price === null ? null : `${formatPeso(line.unit_price)} each`,
                 ]
                   .filter(Boolean)

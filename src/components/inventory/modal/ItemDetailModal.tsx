@@ -58,7 +58,7 @@ const sections: IDetailSection<IInventoryItem>[] = [
           <StockStatusBadge status={item.stock_status} archived={item.archived_at !== null} />
         ),
       },
-      { key: "reorder", label: "Reorder level", render: (item) => formatNumber(item.reorder_level) },
+      { key: "reorder", label: "Warning low stock quantity", render: (item) => formatNumber(item.reorder_level) },
       { key: "location", label: "Shelf / location", render: (item) => item.location ?? "—" },
     ],
   },
@@ -67,10 +67,9 @@ const sections: IDetailSection<IInventoryItem>[] = [
     title: "Item",
     icon: <Info />,
     items: [
-      { key: "sku", label: "SKU", render: (item) => item.sku },
+      { key: "code", label: "Item code", render: (item) => item.item_code },
       { key: "category", label: "Category", render: (item) => item.category?.name ?? "—" },
       { key: "brand", label: "Brand", render: (item) => item.brand?.name ?? "—" },
-      { key: "part", label: "Part number", render: (item) => item.part_number ?? "—" },
       {
         key: "price",
         label: "Selling price",
@@ -128,7 +127,7 @@ const ItemDetailModal = () => {
       open={modal.visible}
       onOpenChange={(open) => !open && closeModal()}
       title={item?.name ?? "Item"}
-      description={item?.sku}
+      description={item?.item_code}
       size="lg"
       record={item}
       sections={sections}

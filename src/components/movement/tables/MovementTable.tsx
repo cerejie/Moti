@@ -39,7 +39,7 @@ const columns: IDataTableColumn<IStockMovement>[] = [
     cell: ({ row }) => (
       <span className={itemIdentity}>
         <span className={itemName}>{row.original.item?.name ?? "Deleted item"}</span>
-        <span className={itemMeta}>{row.original.item?.sku ?? ""}</span>
+        <span className={itemMeta}>{row.original.item?.item_code ?? ""}</span>
       </span>
     ),
   }),

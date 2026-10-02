@@ -2,13 +2,12 @@ import type { StockStatus } from "../../../enums/stock.enum";
 
 export interface IInventoryItem {
   id: string;
-  sku: string;
+  item_code: string;
   name: string;
   category_id: string | null;
   category: { name: string } | null;
   brand_id: string | null;
   brand: { name: string } | null;
-  part_number: string | null;
   unit: string;
   on_hand: number;
   reorder_level: number;

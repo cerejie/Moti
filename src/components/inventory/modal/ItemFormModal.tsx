@@ -21,11 +21,11 @@ const ItemFormModal = () => {
       title: "Item",
       fields: [
         { name: "name", label: "Item name", type: "text", span: "full", required: true, placeholder: "e.g. Brake pad set, front" },
-        { name: "sku", label: "SKU", type: "text", required: true, placeholder: "e.g. BP-1023" },
         {
           name: "category",
           label: "Category",
           type: "creatable",
+          required: true,
           options: categoryOptions,
           placeholder: "Pick or type a new category",
         },
@@ -33,20 +33,20 @@ const ItemFormModal = () => {
           name: "brand",
           label: "Brand",
           type: "creatable",
+          required: true,
           options: brandOptions,
           placeholder: "Pick or type a new brand",
         },
-        { name: "part_number", label: "Part number", type: "text" },
         { name: "unit", label: "Unit", type: "text", required: true, placeholder: "pc, set, L" },
-        { name: "location", label: "Shelf / location", type: "text", placeholder: "e.g. Rack B-3" },
+        { name: "location", label: "Shelf / location", type: "text", placeholder: "Optional, e.g. Rack B-3" },
       ],
     },
     {
       key: "stock",
       title: "Stock and price",
-      description: "You get a low-stock alert when on-hand drops to the reorder level.",
+      description: "You get a low-stock alert when on-hand drops to this quantity.",
       fields: [
-        { name: "reorder_level", label: "Reorder level", type: "number", required: true },
+        { name: "reorder_level", label: "Warning low stock quantity", type: "number", required: true },
         { name: "selling_price", label: "Selling price", type: "amount", placeholder: "Optional" },
         {
           name: "opening_stock",

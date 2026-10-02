@@ -37,7 +37,7 @@ const AttentionPanel = () => {
     if (count === 0) {
       return (
         <StateBox icon={<PackageCheck />} title="All stocked up">
-          Nothing is at or below its reorder level.
+          Nothing is at or below its warning quantity.
         </StateBox>
       );
     }
@@ -49,7 +49,7 @@ const AttentionPanel = () => {
             <span className={dashboardRowText}>
               <span className={itemName}>{item.name}</span>
               <span className={itemMeta}>
-                {item.sku} · reorder at {formatNumber(item.reorder_level)}
+                {item.item_code} · warning at {formatNumber(item.reorder_level)}
               </span>
             </span>
             <span className={dashboardRowEnd}>

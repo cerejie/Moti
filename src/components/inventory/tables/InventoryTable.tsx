@@ -40,7 +40,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
       <span className={itemIdentity}>
         <span className={itemName}>{row.original.name}</span>
         <span className={itemMeta}>
-          {[row.original.sku, row.original.brand?.name, row.original.part_number]
+          {[row.original.item_code, row.original.brand?.name]
             .filter(Boolean)
             .join(" · ")}
         </span>
@@ -78,7 +78,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   }),
   column.display({
     id: "reorder",
-    header: "Reorder at",
+    header: "Warn at",
     cell: ({ row }) => (
       <span className={mutedText}>{formatNumber(row.original.reorder_level)}</span>
     ),
@@ -127,7 +127,7 @@ const InventoryTable = () => {
         <FilterToolbar
           filterKey={inventoryTableKey}
           searchKey={inventoryTableKey}
-          searchPlaceholder="Search name, SKU, brand or part no."
+          searchPlaceholder="Search name, item code or brand"
           controls={[
             {
               key: "categoryId",

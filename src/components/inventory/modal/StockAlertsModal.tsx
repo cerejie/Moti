@@ -42,7 +42,7 @@ const StockAlertsModal = () => {
     if (items.length === 0) {
       return (
         <StateBox icon={<PackageCheck />} title="All stocked up">
-          No item is at or below its reorder level.
+          No item is at or below its warning quantity.
         </StateBox>
       );
     }
@@ -54,7 +54,7 @@ const StockAlertsModal = () => {
             <span className={dashboardRowText}>
               <span className={itemName}>{item.name}</span>
               <span className={itemMeta}>
-                {item.sku} · reorder at {formatNumber(item.reorder_level)}
+                {item.item_code} · warning at {formatNumber(item.reorder_level)}
               </span>
             </span>
             <span className={dashboardRowEnd}>
@@ -77,7 +77,7 @@ const StockAlertsModal = () => {
       open={modal.visible}
       onOpenChange={(open) => !open && closeModal()}
       title="Stock alerts"
-      description="Items at or below their reorder level. They clear once restocked."
+      description="Items at or below their warning quantity. They clear once restocked."
       size="md"
       footer={
         <>

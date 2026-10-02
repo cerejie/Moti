@@ -33,7 +33,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
       <span className={itemIdentity}>
         <span className={itemName}>{row.original.name}</span>
         <span className={itemMeta}>
-          {[row.original.sku, row.original.brand?.name, row.original.part_number]
+          {[row.original.item_code, row.original.brand?.name]
             .filter(Boolean)
             .join(" · ")}
         </span>
@@ -97,7 +97,7 @@ const TransactionItemTable = () => {
         <FilterToolbar
           filterKey={transactionPickTableKey}
           searchKey={transactionPickTableKey}
-          searchPlaceholder="Search name, SKU, brand or part no."
+          searchPlaceholder="Search name, item code or brand"
           controls={[
             {
               key: "categoryId",

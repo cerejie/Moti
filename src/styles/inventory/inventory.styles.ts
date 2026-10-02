@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-// Item name over its SKU / brand line, in table cells and cards alike.
+// Item name over its item code / brand line, in table cells and cards alike.
 export const itemIdentity = "flex min-w-0 flex-col gap-0.5";
 
 export const itemName = "truncate font-semibold text-foreground";

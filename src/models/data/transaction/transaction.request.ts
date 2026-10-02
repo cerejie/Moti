@@ -15,7 +15,7 @@ export type IVoidFormInput = z.infer<typeof voidFormSchema>;
 // The part of an item the cart keeps: enough to show the line and cap its quantity.
 export type ICartItem = Pick<
   IInventoryItem,
-  "id" | "name" | "sku" | "unit" | "on_hand" | "selling_price"
+  "id" | "name" | "item_code" | "unit" | "on_hand" | "selling_price"
 >;
 
 export interface ICartLine {

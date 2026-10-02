@@ -16,7 +16,7 @@ import { newWriteId } from "../../utils/write.utils";
 
 const table = "stock_movements";
 const columns =
-  "id, item_id, item:inventory_items(name, sku, unit), type, reason, quantity, balance_after, note, created_by_name, created_at";
+  "id, item_id, item:inventory_items(name, item_code, unit), type, reason, quantity, balance_after, note, created_by_name, created_at";
 const itemHistoryLimit = 20;
 
 const movementServices = {
