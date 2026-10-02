@@ -11,3 +11,4 @@ export const transactionVoidModalKey = "transaction-void";
 export const userCreateModalKey = "user-create";
 export const userPasswordModalKey = "user-password";
 export const syncQueueModalKey = "sync-queue";
+export const filterSheetModalKey = "filter-sheet";

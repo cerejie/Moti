@@ -10,6 +10,7 @@ import {
 import { cn } from "@/utils/cn.utils";
 import type { Tone } from "../../../styles/common/tone.styles";
 import {
+  statCardHint,
   statCardIcon,
   statCardLabel,
   statCardRoot,
@@ -59,7 +60,7 @@ const StatCard = ({
       <ItemContent>
         <ItemTitle className={statCardLabel({ tone, size })}>{label}</ItemTitle>
         <span className={statCardValue({ size })}>{value}</span>
-        {hint && <ItemDescription>{hint}</ItemDescription>}
+        {hint && <ItemDescription className={statCardHint}>{hint}</ItemDescription>}
         {footer}
       </ItemContent>
       {trailing && (

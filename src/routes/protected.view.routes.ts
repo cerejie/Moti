@@ -66,7 +66,7 @@ export const protectedViewRoutes: IRoute[] = [
   {
     key: "movements",
     label: "Stock history",
-    shortLabel: "History",
+    shortLabel: "Stock",
     icon: ArrowLeftRight,
     path: ROUTES.movements,
     can: "viewMovements",
@@ -78,6 +78,8 @@ export const protectedViewRoutes: IRoute[] = [
     label: "Team",
     icon: Users,
     path: ROUTES.users,
+    // Phones keep five tabs; Team opens from Account.
+    tabParent: "account",
     can: "manageUsers",
     loader: permissionLoader("manageUsers", ROUTES.transaction),
     Component: UsersView,

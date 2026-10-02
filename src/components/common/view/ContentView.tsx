@@ -16,6 +16,7 @@ import {
   contentViewCardBody,
   contentViewCardFrame,
   contentViewHeader,
+  contentViewHeaderTitleOnly,
   contentViewHeading,
   contentViewRoot,
 } from "../../../styles/view/contentView.styles";
@@ -62,7 +63,12 @@ const ContentView = ({
   const shell = (
     <>
       {hasHeader && (
-        <header className={contentViewHeader}>
+        <header
+          className={cn(
+            contentViewHeader,
+            !back && !actions && contentViewHeaderTitleOnly,
+          )}
+        >
           {back ? (
             <AppButton
               href={back.path}

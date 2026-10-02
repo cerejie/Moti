@@ -1,6 +1,7 @@
 import AccountProfileCard from "../../components/account/cards/AccountProfileCard";
 import InstallAppCard from "../../components/account/cards/InstallAppCard";
 import NotificationsCard from "../../components/account/cards/NotificationsCard";
+import TeamLinkCard from "../../components/account/cards/TeamLinkCard";
 import ChangePasswordCard from "../../components/account/forms/ChangePasswordCard";
 import BentoCell from "../../components/common/view/BentoCell";
 import BentoGrid from "../../components/common/view/BentoGrid";
@@ -12,6 +13,7 @@ const AccountView = () => (
       <BentoCell span="half">
         <AccountProfileCard />
       </BentoCell>
+      <TeamLinkCard />
       <BentoCell span="half">
         <ChangePasswordCard />
       </BentoCell>

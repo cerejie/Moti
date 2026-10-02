@@ -34,6 +34,19 @@ export const useNavigationMenu = () => {
     }));
 };
 
+// The phone tab bar: routes with a tabParent drop out and light their parent tab instead.
+export const useTabMenu = () => {
+  const menu = useNavigationMenu();
+  const hosted = menu.find(({ route, active }) => active && route.tabParent);
+
+  return menu
+    .filter(({ route }) => !route.tabParent)
+    .map(({ route, active }) => ({
+      route,
+      active: active || route.key === hosted?.route.tabParent,
+    }));
+};
+
 export const useActiveNavRoute = () => {
   const { pathname } = useLocation();
 

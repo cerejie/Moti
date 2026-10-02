@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
+import { useIsMobile } from "@/hook/use-mobile";
 import { cn } from "@/utils/cn.utils";
 import {
   tablePanelBody,
+  tablePanelFlat,
   tablePanelRoot,
   tablePanelToolbar,
 } from "../../../styles/table/tablePanel.styles";
@@ -30,6 +32,20 @@ const TablePanel = ({
   className,
   children,
 }: IProps) => {
+  const isMobile = useIsMobile();
+
+  // On a phone the row cards sit on the page background like a native list,
+  // so the panel frame (and its header, unused on phones today) is dropped.
+  if (isMobile) {
+    return (
+      <section className={cn(tablePanelFlat, className)}>
+        {toolbar}
+        {children}
+        {footer}
+      </section>
+    );
+  }
+
   return (
     <SectionCard
       padded={false}

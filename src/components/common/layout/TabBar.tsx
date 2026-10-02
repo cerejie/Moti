@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/utils/cn.utils";
-import { useNavigationMenu } from "../../../hook/layout/navigation.hook";
+import { useTabMenu } from "../../../hook/layout/navigation.hook";
 import {
   tabbarIndicator,
   tabbarItem,
@@ -11,7 +11,7 @@ import {
 } from "../../../styles/layout/tabbar.styles";
 
 const TabBar = () => {
-  const menu = useNavigationMenu();
+  const menu = useTabMenu();
 
   return (
     <nav className={tabbarRoot} aria-label="Primary">

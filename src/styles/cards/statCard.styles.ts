@@ -3,8 +3,9 @@ import { cva } from "class-variance-authority";
 // Metric tile on shadcn's Item (outline). Item owns the layout, padding and
 // focus ring; only the tone colours are layered on. Tones come from the
 // shared semantic set so the same meaning is never two colours. `lg` is a
-// summary row: roomier padding and a bigger icon chip and type.
-export const statCardRoot = cva("", {
+// summary row: roomier padding and a bigger icon chip and type. On a phone the
+// half-width tile stacks (icon, value, label) so the value leads and nothing wraps.
+export const statCardRoot = cva("max-md:flex-col max-md:items-start max-md:gap-2", {
   variants: {
     tone: {
       neutral: "",
@@ -60,8 +61,9 @@ export const statCardLabel = cva("", {
   defaultVariants: { tone: "neutral", size: "md" },
 });
 
+// The value is listed after its label for screen readers but drawn above it on a phone.
 export const statCardValue = cva(
-  "truncate font-semibold tabular-nums text-foreground",
+  "truncate font-semibold tabular-nums text-foreground max-md:order-first max-md:text-2xl",
   {
     variants: {
       size: {
@@ -74,3 +76,6 @@ export const statCardValue = cva(
 );
 
 export const statCardTrailing = "text-muted-foreground";
+
+// The hint needs more width than a half-screen tile has.
+export const statCardHint = "max-md:hidden";

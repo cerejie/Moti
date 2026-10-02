@@ -42,24 +42,33 @@ export function formatShortDate(value: string | null | undefined): string {
   return Number.isNaN(date.getTime()) ? "—" : shortDateFormatter.format(date);
 }
 
-const dateTimeFormatter = new Intl.DateTimeFormat("en-PH", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
+const dateTimeOptions: Intl.DateTimeFormatOptions = {
+  month: "short",
+  day: "numeric",
   hour: "2-digit",
   minute: "2-digit",
-  hour12: false,
+  // h23, not hour12: false, which some engines render as "24:05" past midnight.
+  hourCycle: "h23",
+};
+
+const dateTimeFormatter = new Intl.DateTimeFormat("en-US", dateTimeOptions);
+
+const dateTimeYearFormatter = new Intl.DateTimeFormat("en-US", {
+  ...dateTimeOptions,
+  year: "numeric",
 });
 
 /**
- * Format an API timestamp as "07/03/2026 13:52" — the compact date + time used
- * in activity timelines. Returns an em dash for missing/invalid values.
+ * Format an API timestamp as "Oct 2, 18:52", adding the year only when it is
+ * not this one ("Oct 2, 2025, 18:52"). Returns an em dash for missing/invalid values.
  */
 export function formatDateTime(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return dateTimeFormatter.format(date).replace(",", "");
+  const formatter =
+    date.getFullYear() === new Date().getFullYear() ? dateTimeFormatter : dateTimeYearFormatter;
+  return formatter.format(date);
 }
 
 // The ten digits a PH mobile number has after +63 / 0, always starting with 9.

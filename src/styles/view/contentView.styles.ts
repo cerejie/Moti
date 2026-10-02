@@ -9,7 +9,11 @@ export const contentViewRoot = "flex flex-col gap-6";
 export const contentViewHeader =
   "flex flex-col gap-4 md:flex-row md:items-start md:justify-between";
 
-export const contentViewHeading = "flex flex-col gap-1";
+// On phones the topbar already carries the title, so the h1 stays for screen readers only.
+export const contentViewHeading = "flex flex-col gap-1 max-md:sr-only";
+
+// A header holding only the title leaves the phone layout entirely, gap included.
+export const contentViewHeaderTitleOnly = "max-md:sr-only";
 
 // A sub-page's back link stands in for the heading. It is pulled out of the
 // column's gutter toward the rail so it reads as navigation, not as part of

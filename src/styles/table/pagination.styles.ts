@@ -1,6 +1,7 @@
-// TablePagination, the footer of every paged table.
+// TablePagination, the footer of every paged table. On a phone it has no panel to
+// rule off from, so it lines up with the cards instead.
 export const paginationRoot =
-  "flex flex-col items-center justify-between gap-3 border-t border-border px-4 py-3 md:flex-row";
+  "flex flex-col items-center justify-between gap-3 border-border md:flex-row md:border-t md:px-4 md:py-3";
 
 export const paginationSummary = "text-sm text-muted-foreground tabular-nums";
 

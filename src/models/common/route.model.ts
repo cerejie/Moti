@@ -11,6 +11,8 @@ export type IRoute = {
   icon?: LucideIcon;
   group?: string;
   isNotNav?: boolean;
+  // Keeps the route in the sidebar but off the phone tab bar; that tab stays lit on it.
+  tabParent?: string;
   // Hides the route from navigation unless the signed-in role has this permission.
   can?: keyof IPermissions;
   children?: IRoute[];

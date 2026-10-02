@@ -17,7 +17,7 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Phase 5 fixes, Batch 3 (Batches 1–2 coded; owner-screen and preview checks pending)
+      next up: Phase 5 fixes, Batch 4 (Batches 1–3 coded; owner-screen and preview checks pending)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -168,9 +168,29 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
      toast "New version ready · Reload", hidden while the queue flushes. `registerSW.js` is no
      longer injected.
   - [ ] Check with `yarn preview`: offline sale → badge → sheet; update toast after a rebuild
-- [ ] **Batch 3: native feel on phones** (M4 M5 M6 L3 L5 L6): five tabs (decision 2A), title
-      shown once, list on the background, filter sheet, one date format, dark `theme-color`,
-      stat cards.
+- [x] **Batch 3: native feel on phones** (M4 M5 M6 L3 L5 L6). Coded 2026-10-03, `yarn build` +
+      `yarn lint` clean. UI only, no migration.
+  1. Tabs: `IRoute.tabParent` keeps a route in the sidebar but off the phone tab bar and lights
+     its parent tab; `useTabMenu` feeds `TabBar`. Team has `tabParent: "account"`; Stock history's
+     tab reads "Stock". `TeamLinkCard` (own `BentoCell`, `manageUsers` only) sits on Account at
+     every width (user's choice).
+  2. Title once: on phones `ContentView`'s heading is `sr-only` (the topbar shows the title); a
+     title-only header leaves the layout entirely.
+  3. List on the background: `TablePanel` on phones renders toolbar, cards and pager in a plain
+     stack (no `SectionCard`; it drops title/actions there, unused today). The pager loses its
+     rule and padding below `md`.
+  4. Filter sheet: `FilterSelect` (one select, shared) and `FilterSheet` (Filters button with a
+     count badge → `AppModal` with the selects, Clear + Done; key `filter-sheet:<filterKey>`).
+     `FilterToolbar` on phones: search + Filters in one row, the domain's controls below.
+     `IFilterControl` moved to `models/common/filter.model.ts`. Segment controls (`sm`) stretch
+     to equal columns on phones.
+  5. Dates: `formatDateTime` reads "Oct 2, 18:52" (year added when not this year, `h23`).
+  6. Status bar: `--status-bar` token (light `--primary`, kept orange by choice; dark `--panel`),
+     written into `<meta name="theme-color">` by `useApplyTheme`. The manifest has one
+     `background_color`, so the launch screen stays white in dark mode.
+  7. Stat cards: on phones they stack (icon, value `text-2xl` drawn first, label); hint hidden.
+  - [ ] 360 px check, owner, light and dark: five tabs (Team lights Account), Inventory and Sell
+        filter sheet + badge, flat lists, single title, dashboard cards, dark status bar.
 - [ ] **Batch 4: tablet and desktop** (H4 M3 M8): browser root size (decision 1A), icon-rail
       sidebar between `md` and `lg`, `React.lazy` per route.
 - [ ] **Batch 5: database and housekeeping** (M9 L7 L8): migration 7, archived items and

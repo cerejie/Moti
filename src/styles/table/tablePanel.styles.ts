@@ -10,3 +10,6 @@ export const tablePanelToolbar = "border-b px-4 py-3";
 export const tablePanelBody = "min-w-0 bg-background px-4";
 
 export const tablePanelState = "p-4";
+
+// Phone layout: toolbar, cards and pager stacked straight on the page background.
+export const tablePanelFlat = "flex min-w-0 flex-col gap-4";

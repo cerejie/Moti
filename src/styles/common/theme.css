@@ -78,6 +78,8 @@
   /* Shell: panels float on the app backdrop. */
   --app: #f1f1f3;
   --panel: #ffffff;
+  /* The phone status bar (<meta name="theme-color">), written by useApplyTheme. */
+  --status-bar: var(--primary);
   --surface: #ffffff;
   --text-subtle: #71717a;
   --primary-hover: #c2410c;
@@ -143,6 +145,7 @@
 
   --app: #0e0e10;
   --panel: #18181b;
+  --status-bar: var(--panel);
   --surface: #18181b;
   --text-subtle: #a1a1aa;
   --primary-hover: #fb923c;
