@@ -32,8 +32,7 @@ Work top to bottom; tick each one when done.
          email refused, pending login refused, anon cannot create an owner
    - [x] `supabase db push` (migrations 4 and 5 applied, 2026-10-02)
    - [x] As the owner, approve "Test Employee" (`moti.test.employee@example.com`) under Team
-   - [ ] Run the role probe: employee half passed 14/14 (2026-10-02); owner half (history,
-         ledger, void) still needs an owner login — done in V1.3 Phase 4
+   - [x] Run the role probe: both roles, 24 checks (V1.3 Phase 4, 2026-10-02)
    - [x] As the employee, confirm only Transaction and My account show (headless check, 2026-10-02)
    - [x] Add an item typing a new category and brand, see both in Masterfile
          (`BRA-BRE-000001`, Brake pads / Brembo, by the developer, 2026-10-02)
@@ -81,12 +80,34 @@ each user's own token; every push matched its inbox row and nothing reached the 
 
 ### Phase 4: Visual test (Claude drives the app)
 Claude may create owner and employee test accounts (user's permission, 2026-10-02).
-- [ ] Every screen, every role (owner, employee, developer if possible): sign-in, register, forgot
-      password, dashboard, transaction (cart + checkout), inventory, masterfile, history + void,
-      team approvals, my account, alerts
-- [ ] Phone (390), tablet (820), desktop (1440), light and dark; a screenshot of each
-- [ ] Employee sees the test item on Transaction
-- [ ] API role probe, both roles (closes the open item in step 2)
+- [x] Every screen, every role (signed out, owner, employee, developer — the user signed in the
+      developer in a visible window): sign-in, register, forgot password, dashboard, transaction
+      (cart + checkout), inventory, masterfile, history + void, team approvals, my account, bell
+- [x] Phone (390), tablet (820), desktop (1440), light and dark: 203 full-page screenshots in
+      `C:/Users/CCLISO~1/AppData/Local/Temp/claude/c--Users-cclisondato-Documents-MyProgramming-Ejie-Business-Moti/f093b466-7ff7-4fdd-a7b1-ecb19fdd9a0b/scratchpad/shots/<role>/<screen>-<size>-<theme>.png`
+      (`report.txt` and the scripts `visual.mjs`, `probe.mjs` sit next to them)
+- [x] Employee sees the test item on Transaction (`BRA-UMA-000001` "Front"; the Brembo item of
+      step 2 is now this Uma Racing item)
+- [x] API role probe, both roles: 24 checks, all as designed (2 noted below)
+- Works: sign-up → pending refused → owner approves in Team → sign-in; UI checkout #4 (stock
+  27 → 26) and void from History (back to 27); employee nav is Sell + Account only and typed
+  URLs land on Transaction; zero console errors, failed requests or sideways page scroll.
+- Found (for Phase 5, nothing fixed):
+  1. Phone History cards overlap and scramble: `TransactionHistoryCard` is an `AppButton`, whose
+     fixed height and centred no-wrap layout squash the two rows. Also "1 items" (no plural).
+  2. Tables inside `ViewTabs` clip their last column: Transaction "Add" at 1440, History Total +
+     Status at 820, Masterfile row menu on phone. Likely the underline panel's `p-6` plus a
+     `flex-1` panel without `min-w-0`; tab panels also sit indented from the page header.
+  3. Tablet (820) keeps the full sidebar, so Inventory's table clips Status and the header
+     actions stack awkwardly; Masterfile on phone renders a table, not cards.
+  4. Touch targets under 40 px on phone/tablet: Show password, segment filters (All/Low/Out…),
+     tabs, row menus, Rows per page, auth links.
+  5. "Brake pad set" still has its pre-V1.2 code `BPS-1` (never regenerated).
+  6. API, by design today: employees can read archived items (`inventory_items_select` is
+     `app.is_staff()`) and call `inventory_summary` (no role check). A repeat void is a no-op
+     by design (offline replay), confirmed: no second stock return.
+  7. The stock-alerts header shows "Restock" even when the list is "All stocked up".
+- Test data left: approved employee `moti.visual.muqu8jcr@example.com`, transaction #4 voided.
 
 ### Phase 5: Audit
 - [ ] UI and UX: on a phone it must feel like a native mobile app (PWA); on tablet and desktop, a
