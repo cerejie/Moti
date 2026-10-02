@@ -1,7 +1,7 @@
 export const itemFormModalKey = "item-form";
 export const itemDetailModalKey = "item-detail";
 export const stockMovementModalKey = "stock-movement";
-export const stockAlertsModalKey = "stock-alerts";
+export const notificationCenterModalKey = "notification-center";
 export const categoryFormModalKey = "category-form";
 export const brandFormModalKey = "brand-form";
 export const cartModalKey = "transaction-cart";

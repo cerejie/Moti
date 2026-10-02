@@ -13,6 +13,7 @@ export const transactionLinesKey = "transaction-lines";
 export const movementListKey = "movement-list";
 export const itemMovementsKey = "item-movements";
 export const userListKey = "user-list";
+export const inboxListKey = "inbox-list";
 
 // Everything a stock change can move.
 export const stockQueryKeys = [

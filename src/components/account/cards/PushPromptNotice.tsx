@@ -3,9 +3,9 @@ import { usePushPrompt } from "../../../hook/common/push.hook";
 import AppButton from "../../common/button/AppButton";
 import AppAlert from "../../common/status/AppAlert";
 
-// Shown once to an owner whose device is not yet subscribed.
+// Shown until dismissed to anyone whose device is not yet subscribed.
 const PushPromptNotice = () => {
-  const { visible, enable, enabling, dismiss } = usePushPrompt();
+  const { visible, summary, enable, enabling, dismiss } = usePushPrompt();
 
   if (!visible) return null;
 
@@ -13,7 +13,7 @@ const PushPromptNotice = () => {
     <AppAlert
       tone="brand"
       icon={<BellRing />}
-      title="Get low-stock alerts on this phone"
+      title="Get notifications on this device"
       status
       actions={
         <>
@@ -26,7 +26,7 @@ const PushPromptNotice = () => {
         </>
       }
     >
-      Moti notifies you the moment an item runs low or sells out.
+      {summary}
     </AppAlert>
   );
 };

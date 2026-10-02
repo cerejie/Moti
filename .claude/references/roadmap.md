@@ -50,18 +50,16 @@ The user runs every command; Claude only hands them over. Skip any already done.
 - [x] Set `push_function_url` and `push_secret` in `app.settings` (user, 2026-10-02)
 
 ### Phase 2: Notifications, built to match TARTAR
-- [ ] Study TARTAR end to end (`Ejie_Business/TARTAR`): `supabase/functions/send-push`,
-      `hook/common/push.hook.ts`, `PushPromptNotice`, `NotificationsCard`, the inbox
-      (`inbox/menus/InboxBell`, `inbox/lists/NotificationCenter`, `common/layout/PhoneAlertsSheet`,
-      `hook/data/dashboard/notification.list.hook.ts`) and its notification SQL. Moti's
-      notifications must feel as seamless as TARTAR's.
-- [ ] Ask the user: a stored notification inbox like TARTAR, or keep alerts computed from stock
-      (changes the 2026-10-02 alerts decision)
-- [ ] Owner: push when an item reaches its warning low stock quantity (exists, `push_stock_event`; verify)
-- [ ] Owner: push for every transaction an employee checks out (new)
-- [ ] Employee: push when a new inventory item is added (new)
-- [ ] Employees can turn notifications on in My account (today only owners are targeted)
-- [ ] Migration written, user runs `supabase db push`; `yarn build` + `yarn lint` clean
+- [x] Study TARTAR end to end (send-push, push hook, inbox migrations 28–30, InboxBell,
+      NotificationCenter, InboxFeed, PhoneAlertsSheet, realtime refresh)
+- [x] Ask the user: **stored inbox like TARTAR** (2026-10-02, see Decisions log)
+- [x] Owner: push + inbox when an item reaches its warning low stock quantity (`push_stock_event`,
+      now through `app.notify`, one per item, every owner including the actor)
+- [x] Owner: push + inbox for every checkout by anyone but that owner (`push_transaction_event`)
+- [x] Employee: push + inbox when a new inventory item is added (`push_item_event`)
+- [x] Employees can turn notifications on in My account; the bell shows for every role
+- [x] Migration 6 written (`20261002000006_create_notification_inbox.sql`); `yarn build` + `yarn lint` clean
+- [ ] User runs `supabase db push` (migration 6)
 
 ### Phase 3: Push end to end
 - [ ] `yarn build`, serve on port 4180 (see Visual testing setup)
@@ -151,6 +149,13 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
   `create_item` as category(3) + brand(3) + a 6-digit series per prefix (`BRA-BRE-000001`), never
   edited after. Category and brand are required. Part number is dropped. `reorder_level` keeps its
   column name but is shown as **Warning low stock quantity**; shelf location stays optional.
+- 2026-10-02 (V1.3 Phase 2, migration 6): **stored notification inbox, TARTAR's model** — replaces
+  "alerts computed only". `public.notifications` + `app.notify` (inbox row, then push); the bell
+  (every role) opens a center with Needs your action (pending sign-ups and resets, deleted once
+  decided), Stock alerts (owners, still computed live) and Updates (read/unread, Mark all read).
+  Live through Supabase Realtime (`setCustomToken` also sets the realtime token). The actor is
+  never notified, except Low/Out stock, which goes to every owner. Low stock stays one push per
+  item (user's choice). The 08:00 digest stays push-only; read rows are deleted after 30 days.
 - 2026-10-02 (V1.3 Phase 1): the app's Supabase project is **`kuesqdurgmlncugdurxq`**; the CLI
   was relinked to it (the old link to `fskokirvjcxuxiclkpie` was stale). `send-push` has no
   `config.toml`, so every redeploy needs `--no-verify-jwt`.
@@ -180,11 +185,12 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
 | `transactions` | number, status completed/voided, line_count, total_quantity, total_amount (display), note, void info, client_id |
 | `stock_movements` | append-only ledger: type, reason (+ `void`), signed quantity, balance_after, transaction_id, unit_price, client_id |
 | `push_subscriptions` | one row per device endpoint |
+| `notifications` | inbox: one row per recipient per event; title, body, url, tag, pending, read_at |
 
 RPCs: `login_email`, `register_email`, `request_password_reset`, `decide_password_reset`,
 `change_own_password`, `admin_create_user_email`, `admin_set_password`, `my_authority_role`,
 `create_item`, `record_movement`, `record_transaction`, `void_transaction`, `inventory_summary`,
-`save_push_subscription`, `delete_push_subscription`.
+`save_push_subscription`, `delete_push_subscription`, `mark_notifications_read`.
 
 ## Go-live checklist (the user runs these)
 
@@ -210,5 +216,5 @@ RPCs: `login_email`, `register_email`, `request_password_reset`, `decide_passwor
 
 ## LATER (out of V1 on purpose)
 
-Multi-shop SaaS, suppliers and costs, analyzer and volume ranking, persisted notification feed,
+Multi-shop SaaS, suppliers and costs, analyzer and volume ranking,
 update prompt, CSV import/export, barcode scanning, pgTAP tests, code-splitting the bundle.

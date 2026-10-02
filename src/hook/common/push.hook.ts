@@ -24,6 +24,10 @@ const noWorkerMessage =
   "Notifications need the installed app or the published site. Reload and try again.";
 const incompleteMessage = "This device returned an incomplete push subscription.";
 
+const ownerSummary =
+  "Low and out-of-stock items, every checkout by your team, sign-ups and password resets, plus a stock check every morning at 8.";
+const employeeSummary = "New items as soon as they are added to the inventory.";
+
 const currentRegistration = async (): Promise<ServiceWorkerRegistration | null> => {
   if (!isPushSupported()) return null;
   return (await navigator.serviceWorker.getRegistration()) ?? null;
@@ -98,11 +102,12 @@ export const usePushStatusListener = () => {
 };
 
 export const usePushNotifications = () => {
+  const { isOwner } = usePermissions();
   const permission = usePushStore(selectPushPermission);
   const subscribed = usePushStore(selectPushSubscribed);
 
   const enableMutation = useAppMutation(subscribeThisDevice, {
-    successMessage: "Low-stock notifications are on for this device",
+    successMessage: "Notifications are on for this device",
   });
   const disableMutation = useAppMutation(unsubscribeThisDevice, {
     successMessage: "Notifications are off for this device",
@@ -119,6 +124,7 @@ export const usePushNotifications = () => {
 
   return {
     mode: modeOf(),
+    summary: isOwner ? ownerSummary : employeeSummary,
     enable: () => enableMutation.mutate(),
     disable: () => disableMutation.mutate(),
     enabling: enableMutation.isPending,
@@ -126,15 +132,15 @@ export const usePushNotifications = () => {
   };
 };
 
-// The one-time nudge on the owner's dashboard to turn alerts on.
+// The one-time nudge, on the dashboard and in the notification center, to turn push on.
 export const usePushPrompt = () => {
-  const { receiveStockAlerts } = usePermissions();
-  const { mode, enable, enabling } = usePushNotifications();
+  const { mode, summary, enable, enabling } = usePushNotifications();
   const dismissed = usePushStore(selectPushPromptDismissed);
   const dismissPrompt = usePushStore((state) => state.dismissPrompt);
 
   return {
-    visible: receiveStockAlerts && mode === "off" && !dismissed,
+    visible: mode === "off" && !dismissed,
+    summary,
     enable,
     enabling,
     dismiss: dismissPrompt,

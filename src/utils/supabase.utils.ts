@@ -47,6 +47,8 @@ export const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {
 
 export const setCustomToken = (token: string | null): void => {
   customToken = token;
+  // Realtime opens its own socket, so it needs the token separately from customFetch.
+  void supabase.realtime.setAuth(token);
 };
 
 export const onSessionExpired = (handler: (() => void) | null): void => {
