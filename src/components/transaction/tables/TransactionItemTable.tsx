@@ -20,7 +20,7 @@ import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
 import StockStatusBadge from "../../inventory/status/StockStatusBadge";
-import TransactionItemCard from "../cards/TransactionItemCard";
+import TransactionItemRow from "../lists/TransactionItemRow";
 import CartQuantityControl from "../menus/CartQuantityControl";
 
 const column = dataTableColumns<IInventoryItem>();
@@ -134,7 +134,7 @@ const TransactionItemTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No item matches. Try another name, category or brand."
-        renderCard={(item) => <TransactionItemCard item={item} />}
+        renderRow={(item) => <TransactionItemRow item={item} />}
       />
     </TablePanel>
   );

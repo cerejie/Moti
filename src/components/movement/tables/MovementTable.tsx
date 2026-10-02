@@ -23,7 +23,7 @@ import DataTable from "../../common/table/DataTable";
 import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import MovementCard from "../cards/MovementCard";
+import MovementRow from "../lists/MovementRow";
 
 const column = dataTableColumns<IStockMovement>();
 
@@ -128,7 +128,7 @@ const MovementTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No stock movements yet."
-        renderCard={(movement) => <MovementCard movement={movement} />}
+        renderRow={(movement) => <MovementRow movement={movement} />}
       />
     </TablePanel>
   );

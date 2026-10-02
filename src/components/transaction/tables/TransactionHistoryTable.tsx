@@ -22,7 +22,7 @@ import DataTable from "../../common/table/DataTable";
 import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import TransactionHistoryCard from "../cards/TransactionHistoryCard";
+import TransactionHistoryRow from "../lists/TransactionHistoryRow";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
 
 const column = dataTableColumns<ITransaction>();
@@ -119,7 +119,7 @@ const TransactionHistoryTable = () => {
         onRetry={() => void query.refetch()}
         onRowClick={(transaction) => openModal(transaction)}
         emptyText="No transactions yet."
-        renderCard={(transaction) => <TransactionHistoryCard transaction={transaction} />}
+        renderRow={(transaction) => <TransactionHistoryRow transaction={transaction} />}
       />
     </TablePanel>
   );

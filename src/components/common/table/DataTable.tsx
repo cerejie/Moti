@@ -19,9 +19,6 @@ import {
   type IDataTableColumn,
 } from "./dataTable.config";
 import {
-  dataCardItem,
-  dataCardList,
-  dataCardSkeleton,
   dataCardTray,
   dataTableCell,
   dataTableCellEnds,
@@ -72,9 +69,7 @@ type IProps<TData extends RowData> = {
   onRowClick?: (row: TData) => void;
   // Renders an expanded panel under the row; enables row expansion when given.
   renderExpanded?: (row: TData) => ReactNode;
-  // Phones get one card per row instead of the grid when this is given.
-  renderCard?: (row: TData) => ReactNode;
-  // Phones get one ListRow per row inside a single ListGroup; wins over renderCard.
+  // Phones get one ListRow per row inside a single ListGroup instead of the grid.
   renderRow?: (row: TData) => ReactNode;
   className?: string;
 };
@@ -93,7 +88,6 @@ const DataTable = <TData extends RowData>({
   loadingText = "Loading…",
   onRowClick,
   renderExpanded,
-  renderCard,
   renderRow,
   className,
 }: IProps<TData>) => {
@@ -232,51 +226,6 @@ const DataTable = <TData extends RowData>({
     return (
       <div className={cn(dataCardTray, className)}>
         {renderList()}
-        {isLoading && (
-          <p role="status" className={tableLoadingAnnounce}>
-            {loadingText}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  if (isMobile && renderCard) {
-    const renderCards = () => {
-      if (isLoading) {
-        return Array.from({ length: SKELETON_ROWS }).map((_, index) => (
-          <li key={`skeleton-${index}`}>
-            <Skeleton className={dataCardSkeleton} />
-          </li>
-        ));
-      }
-      if (isError) {
-        return (
-          <li className={dataCardItem}>
-            <ErrorState error={error} onRetry={onRetry} />
-          </li>
-        );
-      }
-      if (data.length === 0) {
-        return (
-          <li className={dataCardItem}>
-            <StateBox>{emptyText}</StateBox>
-          </li>
-        );
-      }
-
-      return data.map((row) => (
-        <li key={getRowId(row)} className={dataCardItem}>
-          {renderCard(row)}
-        </li>
-      ));
-    };
-
-    return (
-      <div className={cn(dataCardTray, className)}>
-        <ul aria-label={label} aria-busy={isLoading} className={dataCardList}>
-          {renderCards()}
-        </ul>
         {isLoading && (
           <p role="status" className={tableLoadingAnnounce}>
             {loadingText}

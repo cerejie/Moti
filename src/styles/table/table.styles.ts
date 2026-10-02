@@ -91,14 +91,8 @@ export const simpleTableCell = cva("", {
 export const simpleTableSticky =
   "[&>[data-slot=table-container]]:overflow-visible [&_[data-slot=table-head]]:sticky [&_[data-slot=table-head]]:top-0 [&_[data-slot=table-head]]:z-10 [&_[data-slot=table-head]]:bg-background";
 
-// Phone layout: the same rows as a stack of cards, straight on the page background.
+// Phone layout: the rows as one native list, straight on the page background.
 export const dataCardTray = "pt-1 pb-3";
-
-export const dataCardList = "flex flex-col gap-2";
-
-export const dataCardItem = "list-none";
-
-export const dataCardSkeleton = "h-20 w-full rounded-xl";
 
 // A header that names a column for screen readers only, e.g. row actions.
 export const tableHeadHidden = "sr-only";

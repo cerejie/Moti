@@ -1,3 +1,5 @@
+import { cva } from "class-variance-authority";
+
 // Transaction: the item picker, its add / quantity control, the cart bar and
 // the cart review.
 
@@ -36,16 +38,19 @@ export const cartSummaryTotal = "text-xl font-bold tabular-nums text-foreground"
 
 export const cartForm = "flex flex-col gap-4";
 
-// Phone row of the picker.
-export const pickCard = "flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-card-sm";
-
-export const pickCardRow = "flex items-center justify-between gap-3";
-
 // Success prompt: the totals under the message.
 export const receiptLine = "text-sm text-muted-foreground tabular-nums";
 
 // History status tabs sit on their own row on phones.
 export const historyStatusTabs = "w-full md:w-auto";
 
-// History row on phones.
-export const historyCardRow = "flex items-center justify-between gap-3";
+// History row total on phones; a voided sale's total is struck through.
+export const historyRowTotal = cva("font-semibold tabular-nums", {
+  variants: {
+    voided: {
+      true: "text-muted-foreground line-through",
+      false: "text-foreground",
+    },
+  },
+  defaultVariants: { voided: false },
+});

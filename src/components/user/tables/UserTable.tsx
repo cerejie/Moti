@@ -5,12 +5,13 @@ import type { UserView } from "../../../models/data/user/user.request";
 import type { IUser } from "../../../models/data/user/user.response";
 import { itemIdentity, itemMeta, itemName, mutedText } from "../../../styles/inventory/inventory.styles";
 import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
-import { userCard, userCardTop, userViewTabs } from "../../../styles/user/user.styles";
+import { userViewTabs } from "../../../styles/user/user.styles";
 import { formatShortDate } from "../../../utils/format.utils";
 import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
+import UserRow from "../lists/UserRow";
 import UserRowActions from "../menus/UserRowActions";
 import UserStatusBadges from "../status/UserStatusBadges";
 
@@ -60,21 +61,6 @@ const viewOptions: { value: UserView; label: string }[] = [
   { value: "rejected", label: "Disabled" },
 ];
 
-const UserCard = ({ user }: { user: IUser }) => (
-  <article className={userCard}>
-    <div className={userCardTop}>
-      <span className={itemIdentity}>
-        <span className={itemName}>{user.full_name}</span>
-        <span className={itemMeta}>
-          {effectiveRoleLabels[user.role]} · {user.email}
-        </span>
-      </span>
-      <UserRowActions user={user} />
-    </div>
-    <UserStatusBadges user={user} />
-  </article>
-);
-
 const UserTable = () => {
   const { query, view, setView } = useUserList();
 
@@ -101,7 +87,7 @@ const UserTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText={view === "pending" ? "No sign-ups waiting." : "No accounts here."}
-        renderCard={(user) => <UserCard user={user} />}
+        renderRow={(user) => <UserRow user={user} />}
       />
     </TablePanel>
   );

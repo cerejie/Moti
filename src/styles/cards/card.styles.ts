@@ -41,7 +41,3 @@ export const sectionCardFooter = "justify-end gap-2 border-t";
 export const sectionCardInset = "py-4";
 
 export const sectionCardFlush = "gap-0 px-0";
-
-// A whole card that opens something; content wraps freely, unlike a button's fixed row.
-export const pressableCard =
-  "flex w-full cursor-default flex-col gap-2 rounded-xl border bg-card p-4 text-left shadow-card-sm outline-none transition-colors data-[pressed]:border-primary data-[pressed]:bg-muted/50 data-[focus-visible]:border-ring data-[focus-visible]:ring-3 data-[focus-visible]:ring-ring/50";

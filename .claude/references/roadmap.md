@@ -262,7 +262,7 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
         sends (#7 Completed), voided, stock back to 27. Tables: 0 overflow on all 6 table
         screens at 820 / 1024 / 1280 / 1440, light and dark; search ≥ 224 px. 360 px: every list
         sits on the `bg-app` grey (dark `#0e0e10`); filter sheet title and ✕ share one centre line.
-- [ ] **Batch 7: native list rows on phones** (`design-plan.md` §2, §10, §11; plan + approval first)
+- [x] **Batch 7: native list rows on phones** (`design-plan.md` §2, §10, §11; plan + approval first)
   Every phone list is still a stack of bordered, shadowed cards (7 lists), which the design
   plan rules out: rows sit in one list surface, hairline dividers, 1–2 lines, the value or
   status trailing, a chevron when the row opens something.
@@ -285,8 +285,22 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
         shadcn `item` was not used: it renders a div or link, not a pressable button.
   - [x] 360 px check, owner, light and dark: rows 62 px, no sideways scroll, Edit hands off to
         the form, 0 console errors.
-  - [ ] User approves the screenshots, then step 3 (Sell picker adds an `action` slot to
-        `ListRow` for the Add / stepper, outside the row button).
+  - [x] User approved the pilot 2026-10-03.
+  - [x] Steps 3 + 4 coded 2026-10-03, `yarn build` + `yarn lint` clean. `ListRow` gained an
+        `action` slot (Add / stepper / ⋮, outside the row button; ⋮-wide even when empty so
+        trailing values line up) and `text-base` (lists inside tabs had inherited `text-sm`).
+        Rows: Sell `₱price · N pc left` + Add / stepper; History `#n` / `date · by`, total over
+        the status (user's choice: Voided red, its total struck through); Stock history
+        `reason · date · by`, signed qty over `N pc left`; Team `role · email`, status (Pending
+        amber, "Reset asked") + ⋮; Categories / Brands `Added date`, item count + ⋮ (no sheet
+        exists for users, categories or brands, so their ⋮ stays on the row). `DataTable` lost
+        `renderCard`; `PressableCard`, the five `*Card` rows, `UserCard`, `masterfile.styles.ts`
+        and the card styles are gone.
+  - [x] 360 px check, owner, light and dark, all 7 lists: rows 62–63 px, no sideways scroll,
+        Add does not open anything, History row opens its sheet, ⋮ opens its menu, 0 console
+        errors.
+  - Found during the check, for later: the transaction sheet reads "1 · 1 pcs" (should be
+    "1 pc"); the Team ⋮ menu wraps "Set password" onto two lines.
   - Found during the check, for Batch 8: `pb-safe` overrides the sheet footer's `p-4` bottom, so
     on phones without a home indicator every sheet's last button touches the screen edge
     (use `max(1rem, env(safe-area-inset-bottom))`); the pager reads "No records" while a list
