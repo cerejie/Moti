@@ -110,12 +110,19 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
 - Test data left: approved employee `moti.visual.muqu8jcr@example.com`, transaction #4 voided.
 
 ### Phase 5: Audit
-- [ ] UI and UX: on a phone it must feel like a native mobile app (PWA); on tablet and desktop, a
+Run 2026-10-03: 141 screenshots (signed out, owner, employee at 360 / 820 / 1440, light and dark,
+plus forced loading / error / empty), measured for sub-44 px targets, clipping and console errors.
+- [x] UI and UX: on a phone it must feel like a native mobile app (PWA); on tablet and desktop, a
       web app. Layout, navigation, touch targets, safe areas, the four data states, typography,
       consistency
-- [ ] Architecture as it stands now, with suggestions
-- [ ] Report ranked by severity, with screenshots, as a page the user can open; no code changes
-      without a plan and approval
+- [x] Architecture as it stands now, with suggestions (0 layer-law violations; RLS sound)
+- [x] Report ranked by severity, with screenshots: https://claude.ai/artifact/TkmJx2sUyrQnoiokLPzUe7
+      (6 High, 9 Medium, 8 Low; Phase 4 findings 1–7 folded in). Nothing fixed yet.
+- [ ] Fix batches, one plan and approval each: 1 phone fixes (H1 H2 H3 M7 L1 L2 L4),
+      2 reliability (H5 M1 M2 H6), 3 native feel (M4 M5 M6 L3 L5 L6), 4 tablet/desktop
+      (H4 M3 M8), 5 database + housekeeping (M9 L7 L8)
+- [ ] User decides: desktop root size (H4), phone tabs (M4), employee API access (M9),
+      update prompt style (H6)
 
 ### Phase 6: Check on a phone (user)
 - [ ] Light mode and dark mode at phone width
@@ -129,7 +136,8 @@ Claude may create owner and employee test accounts (user's permission, 2026-10-0
 
 ## Visual testing setup
 
-- Serve with `yarn build`, then `yarn preview --host --port 4180 --strictPort` in the background.
+- Serve with `yarn build`, then `yarn preview --host 127.0.0.1 --port 4180 --strictPort` in the
+  background (bare `--host` exposes it on the LAN).
   **Never port 4173**: TARTAR's service worker is installed on `localhost:4173`, so a browser shows
   TARTAR there. The user keeps their own TARTAR preview running; never stop it.
 - No Chrome or Playwright browsers on this machine. Install `playwright-core` in the session
