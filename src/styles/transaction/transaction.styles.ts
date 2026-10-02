@@ -34,7 +34,12 @@ export const cartLineTotal = "font-semibold tabular-nums text-foreground";
 
 export const cartSummary = "flex items-center justify-between gap-3 rounded-xl bg-muted p-3";
 
-export const cartSummaryTotal = "text-xl font-bold tabular-nums text-foreground";
+// The caption wraps under "Total"; the value on the right never breaks.
+export const cartSummaryMeta = "text-xs text-muted-foreground";
+
+export const cartSummaryTotal = "shrink-0 text-xl font-bold tabular-nums text-foreground";
+
+export const cartSummaryNoPrice = "shrink-0 whitespace-nowrap text-muted-foreground";
 
 export const cartForm = "flex flex-col gap-4";
 

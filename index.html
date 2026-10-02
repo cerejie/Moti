@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- viewport-fit=cover exposes env(safe-area-inset-*) so the installed app can
-         paint under the notch and home indicator. Zoom is left enabled on purpose. -->
+         paint under the notch and home indicator. Zoom is left enabled on purpose.
+         interactive-widget makes Android shrink the app above the keyboard (iOS ignores it;
+         useKeyboardInset covers iOS). -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
     />
-    <meta name="theme-color" content="#ea580c" />
+    <!-- The light --status-bar token in theme.css. -->
+    <meta name="theme-color" content="#ffffff" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

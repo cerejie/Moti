@@ -1,4 +1,4 @@
-export const accountMenuTrigger = "h-11 gap-2.5 rounded-pill px-1 md:pr-3";
+export const accountMenuTrigger = "h-11 min-w-11 gap-2.5 rounded-pill px-1 md:pr-3";
 
 export const accountMenuAvatar = "bg-primary font-semibold text-primary-foreground";
 

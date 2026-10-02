@@ -17,8 +17,8 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Phase 6 (check on a phone)
-      (Phase 5 Batches 1–8 coded and checked, migration 7 applied)
+      next up: Phase 6 (check on a phone), the user's own check on a real Android and iPhone
+      (Phase 5 Batches 1–8 coded and checked, migration 7 applied; Phase 6 pre-check fixes coded)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -335,6 +335,28 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
 - [ ] Sell list rows, the Add / − + stepper, the cart bar and cart sheet, the bottom tab bar
 - [ ] The keyboard does not hide the field or the Save button inside a form sheet
 - [ ] Report anything that looks off
+- [x] **Pre-check by Claude** (2026-10-03, before the user's phone report): 360 × 780, owner and
+      employee, light and dark, standalone insets simulated (47 / 34 px). Screenshots:
+      https://claude.ai/artifact/8yfYU7LJntHS4Ma3G4YdDr. Passed: app bar and tab bar clear the
+      insets, sheet footers clear the home indicator, Sell rows 62 px, stepper 44 px, the sticky
+      cart bar holds 11 px above the tab bar on a long list, no sideways scroll, 0 console errors.
+      Fixed (user chose a white light status bar; fix both Android and iPhone keyboards):
+  1. `index.html`: viewport `interactive-widget=resizes-content` (Android shrinks the app above
+     the keyboard); starting `theme-color` `#ffffff`.
+  2. New `hook/common/keyboard.hook.ts` `useKeyboardInset` (mounted in `App.tsx`): while an
+     overlaid keyboard is open (iOS; gap ≥ 120 px, not pinch zoom) it writes `--keyboard-inset`
+     and `--visible-height` on `<html>` and scrolls the focused dialog field into view.
+     `drawerContent` rides the sheet on the keyboard (`data-[side=bottom]:bottom-(--keyboard-inset)`)
+     and caps it at `min(92dvh, --visible-height − 2rem)`. Defaults live in `theme.css` `:root`.
+  3. `theme.css`: light `--status-bar` is `var(--panel)` (was `--primary`, an orange strip over
+     the white app bar on Android); `[data-slot="tabs-trigger"]` joins the coarse 44 px rule.
+  4. Cart total caption wraps (`cartSummaryMeta`), "No prices set" / the amount never break;
+     account avatar trigger `min-w-11`.
+  - Verified: simulated iOS keyboard (300 px, visual viewport only), light and dark: sheet bottom
+    on the keyboard, Save 33 px above it, focused field visible (cart note, Add item first and
+    last), sheet back down on close. Rerun of the 360 px pass: no sub-44 px controls, cart total
+    unclipped, 0 console errors. Not checkable on desktop: real standalone launch, real insets,
+    real keyboards. The manifest `theme_color` stays orange (Android may show it during launch).
 
 ### Phase 7: Deploy (when happy)
 - [ ] Host on Vercel (or similar) from the repo
@@ -361,6 +383,12 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   `registration.getNotifications()` in the page. Edge subscribes through WNS.
 - Stopping a background `yarn preview` on Windows can leave the vite process running; ask the user
   to stop it.
+- Simulating installed-app insets: override the safe-area utilities with fixed values in an
+  injected stylesheet, including variant classes (`.max-md\:pb-tabbar`). Build the CSS with
+  `String.raw`, or JavaScript eats the `\:` and the rule is silently dropped (it made the cart bar
+  look hidden under the tab bar). Edge cannot emulate `display-mode: standalone`.
+- iOS keyboard stand-in: an init script replaces `window.visualViewport` with an `EventTarget`
+  whose `height` shrinks while the layout viewport stays put, then dispatches `resize`.
 
 ## Decisions log
 

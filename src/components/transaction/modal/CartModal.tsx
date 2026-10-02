@@ -16,6 +16,8 @@ import {
   cartRowBottom,
   cartRowTop,
   cartSummary,
+  cartSummaryMeta,
+  cartSummaryNoPrice,
   cartSummaryTotal,
   quantityStepper,
   quantityValue,
@@ -131,12 +133,12 @@ const CartModal = () => {
           <div className={cartSummary}>
             <span className={itemIdentity}>
               <span className={itemName}>Total</span>
-              <span className={itemMeta}>
+              <span className={cartSummaryMeta}>
                 {formatCount(cart.totalQuantity, "pc")}
                 {cart.hasUnpriced ? " · items without a price not counted" : ""}
               </span>
             </span>
-            <span className={cart.totalAmount === null ? mutedText : cartSummaryTotal}>
+            <span className={cart.totalAmount === null ? cartSummaryNoPrice : cartSummaryTotal}>
               {cart.totalAmount === null ? "No prices set" : formatPeso(cart.totalAmount)}
             </span>
           </div>

@@ -79,7 +79,7 @@
   --app: #f1f1f3;
   --panel: #ffffff;
   /* The phone status bar (<meta name="theme-color">), written by useApplyTheme. */
-  --status-bar: var(--primary);
+  --status-bar: var(--panel);
   --surface: #ffffff;
   --text-subtle: #71717a;
   --primary-hover: #c2410c;
@@ -99,6 +99,9 @@
   --input-bg: #ffffff;
   --input-border: #e4e4e7;
   --shadow-color: #18181b;
+  /* Written by useKeyboardInset while an overlaid keyboard (iOS) is open. */
+  --keyboard-inset: 0px;
+  --visible-height: 100dvh;
 }
 
 .dark {
@@ -297,6 +300,7 @@
     [data-slot="input-group"],
     [data-slot="select-trigger"],
     [data-slot="tabs-list"],
+    [data-slot="tabs-trigger"],
     [data-slot="toggle-group-item"],
     [data-slot="combobox-trigger"],
     [data-slot="dialog-close"],

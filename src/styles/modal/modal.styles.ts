@@ -57,7 +57,9 @@ export const modalFooter = `-mx-6 -mb-6 border-t border-border px-6 py-4 ${modal
 // installed app (a bare pb-safe would zero it on phones without one).
 export const drawerFooter = `border-t border-border pb-safe-4 ${modalActionSize}`;
 
-export const drawerContent = "max-h-[92dvh]";
+// While an iOS keyboard is open the sheet rides on top of it and fits the space left.
+export const drawerContent =
+  "max-h-[min(92dvh,calc(var(--visible-height)-2rem))] data-[side=bottom]:bottom-(--keyboard-inset)";
 
 export const drawerBody = "overflow-y-auto px-4";
 
