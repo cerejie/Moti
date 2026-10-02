@@ -20,7 +20,7 @@ import {
   quantityStepper,
   quantityValue,
 } from "../../../styles/transaction/transaction.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatNumber, formatPeso } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import FormField from "../../common/form/FormField";
 import FormRoot from "../../common/form/FormRoot";
@@ -132,12 +132,12 @@ const CartModal = () => {
             <span className={itemIdentity}>
               <span className={itemName}>Total</span>
               <span className={itemMeta}>
-                {formatNumber(cart.totalQuantity)} pcs
+                {formatCount(cart.totalQuantity, "pc")}
                 {cart.hasUnpriced ? " · items without a price not counted" : ""}
               </span>
             </span>
-            <span className={cartSummaryTotal}>
-              {cart.totalAmount === null ? "—" : formatPeso(cart.totalAmount)}
+            <span className={cart.totalAmount === null ? mutedText : cartSummaryTotal}>
+              {cart.totalAmount === null ? "No prices set" : formatPeso(cart.totalAmount)}
             </span>
           </div>
         )}

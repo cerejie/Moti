@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../../hook/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
+import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook";
 import { notificationCenterModalKey } from "../../../keys/modal.keys";
 import { ROUTES } from "../../../routes/route.paths";
 import {
@@ -18,6 +19,8 @@ import InboxFeed from "../lists/InboxFeed";
 const NotificationCenterModal = () => {
   const { receiveStockAlerts } = usePermissions();
   const { modal, closeModal } = useModal(notificationCenterModalKey);
+  const alerts = useStockAlerts(receiveStockAlerts);
+  const hasAlerts = (alerts.data?.length ?? 0) > 0;
   const navigate = useNavigate();
 
   const goToDashboard = () => {
@@ -44,9 +47,11 @@ const NotificationCenterModal = () => {
           <section className={inboxSection}>
             <div className={inboxSectionHeader}>
               <h3 className={inboxSectionTitle}>Stock alerts</h3>
-              <AppButton variant="ghost" size="sm" onPress={goToDashboard}>
-                Restock
-              </AppButton>
+              {hasAlerts && (
+                <AppButton variant="ghost" size="sm" onPress={goToDashboard}>
+                  Restock
+                </AppButton>
+              )}
             </div>
             <StockAlertsList />
           </section>

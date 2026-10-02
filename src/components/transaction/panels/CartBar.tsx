@@ -8,7 +8,7 @@ import {
   cartBarText,
   cartBarTotal,
 } from "../../../styles/transaction/transaction.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatNumber, formatPeso } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 
 // Shows once something is picked; checkout happens in the cart review.
@@ -22,10 +22,10 @@ const CartBar = () => {
     <div className={cartBar}>
       <span className={cartBarText}>
         <span className={cartBarTotal}>
-          {totalAmount === null ? `${formatNumber(totalQuantity)} pcs` : formatPeso(totalAmount)}
+          {totalAmount === null ? formatCount(totalQuantity, "pc") : formatPeso(totalAmount)}
         </span>
         <span className={itemMeta}>
-          {formatNumber(itemCount)} item{itemCount === 1 ? "" : "s"} ·{" "}
+          {formatCount(itemCount, "item")} ·{" "}
           {formatNumber(totalQuantity)} total
         </span>
       </span>

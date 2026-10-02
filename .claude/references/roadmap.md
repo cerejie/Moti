@@ -17,7 +17,7 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Phase 5 fixes, Batch 1 (plan already approved)
+      next up: Phase 5 fixes, Batch 2 (Batch 1 coded; owner-screen check pending)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -123,8 +123,8 @@ plus forced loading / error / empty), measured for sub-44 px targets, clipping a
 
 ### Phase 5 fixes, one batch per conversation
 Each batch gets its own plan and approval, except Batch 1, which is already approved.
-- [ ] **Batch 1: phone fixes** (H1 H2 H3 M7 L1 L2 L4). **Plan approved 2026-10-03; start
-      coding directly.** UI only, no migration.
+- [x] **Batch 1: phone fixes** (H1 H2 H3 M7 L1 L2 L4). Coded 2026-10-03, `yarn build` + `yarn lint`
+      clean. UI only, no migration.
   1. `styles/common/theme.css`: inside `@layer base`, a `@media (pointer: coarse)` block giving
      `min-height: 2.75rem` to `[data-slot]` button, input, input-group, select-trigger,
      tabs-list, toggle-group-item, combobox-trigger, dialog-close, sheet-close; plus
@@ -148,6 +148,10 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   8. `CartModal.tsx`: when nothing has a price, the total reads "No prices set" instead of "—".
   - Validate: `yarn build` + `yarn lint`, then retake History, Masterfile, sign-in, cart and
     bell at 360 px, light and dark (preview on `127.0.0.1` only).
+  - [x] Signed out (sign-in, register, forgot password) at 360 px with a touch pointer, light and
+        dark: every button and link ≥ 44 px, zero console errors. The text input inside an input
+        group stays 36 px tall in its 44 px frame (tapping the frame's edge does not focus it).
+  - [ ] History, Masterfile, cart and bell at 360 px: needs an owner sign-in (no password kept)
 - [ ] **Batch 2: reliability** (H5 M1 M2 H6): not-synced sheet with Retry and Discard, skipping
       permanent failures; network-error detection in `toError`/`describeError` and `runWrite`;
       update prompt (decision 4A).

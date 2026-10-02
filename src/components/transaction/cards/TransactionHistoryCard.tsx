@@ -2,9 +2,9 @@ import { useModal } from "../../../hook/common/modal.hook";
 import { transactionDetailModalKey } from "../../../keys/modal.keys";
 import type { ITransaction } from "../../../models/data/transaction/transaction.response";
 import { itemIdentity, itemMeta, itemName, priceText } from "../../../styles/inventory/inventory.styles";
-import { historyCard, historyCardRow } from "../../../styles/transaction/transaction.styles";
-import { formatDateTime, formatNumber, formatPeso } from "../../../utils/format.utils";
-import AppButton from "../../common/button/AppButton";
+import { historyCardRow } from "../../../styles/transaction/transaction.styles";
+import { formatCount, formatDateTime, formatPeso } from "../../../utils/format.utils";
+import PressableCard from "../../common/card/PressableCard";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
 
 type IProps = {
@@ -15,9 +15,7 @@ const TransactionHistoryCard = ({ transaction }: IProps) => {
   const { openModal } = useModal<ITransaction>(transactionDetailModalKey);
 
   return (
-    <AppButton
-      variant="ghost"
-      className={historyCard}
+    <PressableCard
       aria-label={`Open transaction #${transaction.number}`}
       onPress={() => openModal(transaction)}
     >
@@ -32,14 +30,14 @@ const TransactionHistoryCard = ({ transaction }: IProps) => {
       </span>
       <span className={historyCardRow}>
         <span className={itemMeta}>
-          {formatNumber(transaction.line_count)} items ·{" "}
-          {formatNumber(transaction.total_quantity)} pcs
+          {formatCount(transaction.line_count, "item")} ·{" "}
+          {formatCount(transaction.total_quantity, "pc")}
         </span>
         <span className={priceText}>
           {transaction.total_amount === null ? "—" : formatPeso(transaction.total_amount)}
         </span>
       </span>
-    </AppButton>
+    </PressableCard>
   );
 };
 

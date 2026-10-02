@@ -12,6 +12,7 @@ import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
+import MasterfileCard from "../../masterfile/cards/MasterfileCard";
 
 const column = dataTableColumns<IBrand>();
 
@@ -81,6 +82,14 @@ const BrandTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No brands yet. Add one here or type a new brand on the item form."
+        renderCard={(brand) => (
+          <MasterfileCard
+            name={brand.name}
+            itemCount={itemCountOf(brand)}
+            createdAt={brand.created_at}
+            actions={<BrandActions brand={brand} />}
+          />
+        )}
       />
     </TablePanel>
   );

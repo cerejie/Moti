@@ -48,7 +48,4 @@ export const receiptLine = "text-sm text-muted-foreground tabular-nums";
 export const historyStatusTabs = "w-full md:w-auto";
 
 // History row on phones.
-export const historyCard =
-  "flex w-full flex-col gap-2 rounded-xl border bg-card p-4 text-left shadow-card-sm active:border-primary";
-
 export const historyCardRow = "flex items-center justify-between gap-3";

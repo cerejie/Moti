@@ -12,6 +12,7 @@ import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import TablePanel from "../../common/table/TablePanel";
 import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
+import MasterfileCard from "../../masterfile/cards/MasterfileCard";
 
 const column = dataTableColumns<ICategory>();
 
@@ -81,6 +82,14 @@ const CategoryTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No categories yet. Add one to group your items."
+        renderCard={(category) => (
+          <MasterfileCard
+            name={category.name}
+            itemCount={itemCountOf(category)}
+            createdAt={category.created_at}
+            actions={<CategoryActions category={category} />}
+          />
+        )}
       />
     </TablePanel>
   );

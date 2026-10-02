@@ -33,7 +33,7 @@ export const viewTabsTrigger = cva("", {
 export const viewTabsContent = cva("", {
   variants: {
     variant: {
-      underline: "p-6",
+      underline: "pt-2",
       chip: "flex flex-col gap-3",
     },
   },

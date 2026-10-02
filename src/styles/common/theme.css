@@ -317,6 +317,29 @@
     }
   }
 
+  /* 44 px touch targets on touch screens. The generated components/ui keep their compact
+     sizes; DialogClose overrides data-slot to dialog-close, so it needs its own selector. */
+  @media (pointer: coarse) {
+    [data-slot="button"],
+    [data-slot="input"],
+    [data-slot="input-group"],
+    [data-slot="select-trigger"],
+    [data-slot="tabs-list"],
+    [data-slot="toggle-group-item"],
+    [data-slot="combobox-trigger"],
+    [data-slot="dialog-close"],
+    [data-slot="sheet-close"] {
+      min-height: 2.75rem;
+    }
+
+    [data-slot="button"][data-size^="icon"],
+    [data-slot="combobox-trigger"],
+    [data-slot="dialog-close"],
+    [data-slot="sheet-close"] {
+      min-width: 2.75rem;
+    }
+  }
+
   /* Lucide writes px width/height attributes, which would not follow the desktop scale. */
   svg.lucide[width="12"] { width: 0.75rem; height: 0.75rem; }
   svg.lucide[width="14"] { width: 0.875rem; height: 0.875rem; }

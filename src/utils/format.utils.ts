@@ -92,6 +92,11 @@ export function formatNumber(value: number): string {
   return numberFormatter.format(value);
 }
 
+// A count with its unit in the right number, e.g. "1 item", "3 items", "1 pc".
+export function formatCount(count: number, singular: string, plural = `${singular}s`): string {
+  return `${formatNumber(count)} ${count === 1 ? singular : plural}`;
+}
+
 // A signed ledger quantity, e.g. +12 or −3.
 export function formatSignedQuantity(value: number): string {
   return value > 0 ? `+${formatNumber(value)}` : `−${formatNumber(Math.abs(value))}`;
