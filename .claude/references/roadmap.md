@@ -17,7 +17,7 @@ SaaS build, which comes later.
       part number dropped, "Warning low stock quantity" label (migration 5)
 - [ ] Next steps (below), in order
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
-      next up: Phase 5 fixes, Batch 4 (Batches 1–3 coded; owner-screen and preview checks pending)
+      next up: Phase 5 fixes, Batch 5 (Batches 1–4 coded; owner-screen, preview and width checks pending)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## Next steps
@@ -191,8 +191,23 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   7. Stat cards: on phones they stack (icon, value `text-2xl` drawn first, label); hint hidden.
   - [ ] 360 px check, owner, light and dark: five tabs (Team lights Account), Inventory and Sell
         filter sheet + badge, flat lists, single title, dashboard cards, dark status bar.
-- [ ] **Batch 4: tablet and desktop** (H4 M3 M8): browser root size (decision 1A), icon-rail
-      sidebar between `md` and `lg`, `React.lazy` per route.
+- [x] **Batch 4: tablet and desktop** (H4 M3 M8). Coded 2026-10-03, `yarn build` + `yarn lint`
+      clean. UI only, no migration.
+  1. Root size: `theme.css` drops the `0.7vw` desktop scale, the `--root-floor` steps and the
+     `svg.lucide[width]` rem rules; every width uses the browser's 16 px, so zoom works.
+  2. Icon rail from `md` to `lg`: `sidebar.styles.ts` `md:max-lg:` variants (`w-18`, group
+     labels and item text `sr-only`, icon centred). `AppSidebar` wraps items in `AppTooltip`
+     (new `isDisabled` prop), on only in that band via `useMediaQuery` (new
+     `hook/common/media.hook.ts`, `useSyncExternalStore`).
+  3. Code-splitting: every page (public and protected) uses React Router's `lazy: { Component }`
+     instead of `React.lazy`, so the chunk loads alongside the permission loader with no
+     Suspense. The root route has an empty `HydrateFallback`. First load went from one 1.36 MB
+     chunk to about 0.98 MB (entry 390 kB + shared vendor chunk 515 kB, which Rolldown names
+     `format.utils-*.js` + small stores); 124 + 148 kB gzip. The 500 kB warning stays on the
+     vendor chunk (supabase, react-aria, react-query, all used by the shell). Workbox still
+     precaches every chunk, so offline navigation is unchanged.
+  - [ ] Check at 820, 1024, 1280, 1440: the rail and its tooltips, tables no longer clipped,
+        Ctrl +/- zoom. If 1024–1279 clips with the full sidebar, extend the rail to `xl`.
 - [ ] **Batch 5: database and housekeeping** (M9 L7 L8): migration 7, archived items and
       `inventory_summary` owner-only (decision 3A; the user runs it), regenerate `BPS-1`,
       delete `HomeView.tsx` (user), settle `hook/account/`.

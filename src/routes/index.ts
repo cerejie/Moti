@@ -10,6 +10,8 @@ export const createAppRouter = (signedIn: boolean) =>
   createBrowserRouter([
     {
       Component: RouteRoot,
+      // Blank while the first screen's chunk loads; without it React Router warns.
+      HydrateFallback: () => null,
       children: signedIn
         ? [...protectedRoutes, { path: "*", Component: NotFoundRoute }]
         : [...publicRoutes, { path: "*", Component: SignedOutRoute }],

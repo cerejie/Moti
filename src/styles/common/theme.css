@@ -277,49 +277,6 @@
     border-color: var(--border);
   }
 
-  /* Desktop scale: from lg up the root size is a share of the window width, so the layout
-     keeps its proportions at 100%, 125% and 150% zoom. Phones keep the browser default. */
-  @media (min-width: 64rem) {
-    html {
-      font-size: clamp(var(--root-floor), 0.7vw, 1.25rem);
-    }
-  }
-
-  /* 13 physical pixels at every pixel density, so small screens stay readable. */
-  :root {
-    --root-floor: 0.8125rem;
-  }
-
-  @media (min-resolution: 1.1dppx) {
-    :root {
-      --root-floor: 0.7386rem;
-    }
-  }
-
-  @media (min-resolution: 1.25dppx) {
-    :root {
-      --root-floor: 0.65rem;
-    }
-  }
-
-  @media (min-resolution: 1.5dppx) {
-    :root {
-      --root-floor: 0.5417rem;
-    }
-  }
-
-  @media (min-resolution: 1.75dppx) {
-    :root {
-      --root-floor: 0.4643rem;
-    }
-  }
-
-  @media (min-resolution: 2dppx) {
-    :root {
-      --root-floor: 0.4063rem;
-    }
-  }
-
   /* 44 px touch targets on touch screens. The generated components/ui keep their compact
      sizes; DialogClose overrides data-slot to dialog-close, so it needs its own selector. */
   @media (pointer: coarse) {
@@ -342,18 +299,6 @@
       min-width: 2.75rem;
     }
   }
-
-  /* Lucide writes px width/height attributes, which would not follow the desktop scale. */
-  svg.lucide[width="12"] { width: 0.75rem; height: 0.75rem; }
-  svg.lucide[width="14"] { width: 0.875rem; height: 0.875rem; }
-  svg.lucide[width="16"] { width: 1rem; height: 1rem; }
-  svg.lucide[width="18"] { width: 1.125rem; height: 1.125rem; }
-  svg.lucide[width="20"] { width: 1.25rem; height: 1.25rem; }
-  svg.lucide[width="24"] { width: 1.5rem; height: 1.5rem; }
-  svg.lucide[width="28"] { width: 1.75rem; height: 1.75rem; }
-  svg.lucide[width="32"] { width: 2rem; height: 2rem; }
-  svg.lucide[width="40"] { width: 2.5rem; height: 2.5rem; }
-  svg.lucide[width="48"] { width: 3rem; height: 3rem; }
 
   html {
     color-scheme: light;

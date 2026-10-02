@@ -7,13 +7,6 @@ import {
   Users,
 } from "lucide-react";
 import type { IRoute } from "../models/common/route.model";
-import AccountView from "../pages/Account/AccountView";
-import DashboardView from "../pages/Dashboard/DashboardView";
-import InventoryView from "../pages/Inventory/InventoryView";
-import MasterfileView from "../pages/Masterfile/MasterfileView";
-import MovementsView from "../pages/Movements/MovementsView";
-import TransactionView from "../pages/Transaction/TransactionView";
-import UsersView from "../pages/Users/UsersView";
 import { permissionLoader } from "./route.loader";
 import { ROUTES } from "./route.paths";
 
@@ -24,6 +17,7 @@ export const menuGroup = "Menu";
 // order here is the order they render in. `can` hides a route from roles without
 // that permission, and its loader turns a typed URL away the same way.
 // Every role can transact, so Transaction is where a refused URL lands.
+// Each screen is its own chunk, fetched during navigation alongside its loader.
 export const protectedViewRoutes: IRoute[] = [
   {
     key: "dashboard",
@@ -34,7 +28,7 @@ export const protectedViewRoutes: IRoute[] = [
     can: "viewDashboard",
     // Employees land on Transaction instead.
     loader: permissionLoader("viewDashboard", ROUTES.transaction),
-    Component: DashboardView,
+    lazy: { Component: async () => (await import("../pages/Dashboard/DashboardView")).default },
   },
   {
     key: "transaction",
@@ -43,7 +37,7 @@ export const protectedViewRoutes: IRoute[] = [
     icon: ShoppingCart,
     path: ROUTES.transaction,
     can: "transact",
-    Component: TransactionView,
+    lazy: { Component: async () => (await import("../pages/Transaction/TransactionView")).default },
   },
   {
     key: "inventory",
@@ -52,7 +46,7 @@ export const protectedViewRoutes: IRoute[] = [
     path: ROUTES.inventory,
     can: "browseInventory",
     loader: permissionLoader("browseInventory", ROUTES.transaction),
-    Component: InventoryView,
+    lazy: { Component: async () => (await import("../pages/Inventory/InventoryView")).default },
   },
   {
     key: "masterfile",
@@ -61,7 +55,7 @@ export const protectedViewRoutes: IRoute[] = [
     isNotNav: true,
     can: "manageInventory",
     loader: permissionLoader("manageInventory", ROUTES.transaction),
-    Component: MasterfileView,
+    lazy: { Component: async () => (await import("../pages/Masterfile/MasterfileView")).default },
   },
   {
     key: "movements",
@@ -71,7 +65,7 @@ export const protectedViewRoutes: IRoute[] = [
     path: ROUTES.movements,
     can: "viewMovements",
     loader: permissionLoader("viewMovements", ROUTES.transaction),
-    Component: MovementsView,
+    lazy: { Component: async () => (await import("../pages/Movements/MovementsView")).default },
   },
   {
     key: "users",
@@ -82,7 +76,7 @@ export const protectedViewRoutes: IRoute[] = [
     tabParent: "account",
     can: "manageUsers",
     loader: permissionLoader("manageUsers", ROUTES.transaction),
-    Component: UsersView,
+    lazy: { Component: async () => (await import("../pages/Users/UsersView")).default },
   },
   {
     key: "account",
@@ -91,6 +85,6 @@ export const protectedViewRoutes: IRoute[] = [
     icon: UserRound,
     path: ROUTES.account,
     group: "Settings",
-    Component: AccountView,
+    lazy: { Component: async () => (await import("../pages/Account/AccountView")).default },
   },
 ];

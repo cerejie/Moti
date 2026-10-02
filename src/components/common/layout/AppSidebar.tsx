@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useMediaQuery } from "../../../hook/common/media.hook";
 import { useNavigationGroups } from "../../../hook/layout/navigation.hook";
 import {
   sidebarContent,
@@ -17,11 +18,16 @@ import {
   sidebarMenuButton,
   sidebarRoot,
 } from "../../../styles/layout/sidebar.styles";
+import AppTooltip from "../view/AppTooltip";
+
+// Matches the md-to-lg band where sidebar.styles.ts draws the icon rail.
+const railQuery = "(width >= 48rem) and (width < 64rem)";
 
 // A fixed desktop panel, as in TARTAR: collapsible="none" renders it inline in
 // the shell's flex row instead of as an off-canvas drawer.
 const AppSidebar = () => {
   const groups = useNavigationGroups();
+  const isRail = useMediaQuery(railQuery);
 
   return (
     <Sidebar collapsible="none" className={sidebarRoot}>
@@ -36,15 +42,17 @@ const AppSidebar = () => {
                 <SidebarMenu className={sidebarMenu}>
                   {group.items.map(({ route, active }) => (
                     <SidebarMenuItem key={route.key}>
-                      <SidebarMenuButton
-                        href={route.path}
-                        isActive={active}
-                        aria-current={active ? "page" : undefined}
-                        className={sidebarMenuButton}
-                      >
-                        <route.icon aria-hidden="true" />
-                        <span>{route.label}</span>
-                      </SidebarMenuButton>
+                      <AppTooltip label={route.label} side="right" isDisabled={!isRail}>
+                        <SidebarMenuButton
+                          href={route.path}
+                          isActive={active}
+                          aria-current={active ? "page" : undefined}
+                          className={sidebarMenuButton}
+                        >
+                          <route.icon aria-hidden="true" />
+                          <span>{route.label}</span>
+                        </SidebarMenuButton>
+                      </AppTooltip>
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>
