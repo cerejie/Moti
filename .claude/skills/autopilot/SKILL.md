@@ -1,6 +1,6 @@
 ---
 name: autopilot
-description: "Hands-off improvement loop that stands in for the user: deep-critique audits the whole app → decision-making rules on every finding → the verdicts become a round plan in the roadmap → implementation batches fix it (consulting the critique report and decision-making whenever a choice comes up), each gated by yarn build + yarn lint + a visual re-sweep, committed in the TARTAR format and pushed → deep-critique audits again. Every phase runs in a fresh worker sub-agent (a clean context, the equivalent of /clear and a new conversation) and resumes from disk, so a run can also be continued across sessions with /clear + /autopilot. Loops until a critique round finds nothing left to fix — only 'leave' or user decisions. Use only when the user types /autopilot or the prompt starts with 'AUTOPILOT'. Never auto-invoke on an ordinary prompt."
+description: "Hands-off improvement loop that stands in for the user: deep-critique audits the whole app → decision-making rules on every finding → the verdicts become a round plan in the roadmap → implementation batches fix it (consulting the critique report and decision-making whenever a choice comes up), each gated by yarn build + yarn lint + a visual re-sweep, committed in the TARTAR format and pushed → a check round verifies the work against the roadmap and plans only the remaining polish. Every phase runs in a fresh worker sub-agent (a clean context, the equivalent of /clear and a new conversation) and resumes from disk, so a run can also be continued across sessions with /clear + /autopilot. Bounded: only round 1 is an open audit; later rounds may only shrink, and the run ends when a check round finds the roadmap fully landed. Use only when the user types /autopilot or the prompt starts with 'AUTOPILOT'. Never auto-invoke on an ordinary prompt."
 ---
 
 # /autopilot — critique → decide → plan → implement → critique again
@@ -34,11 +34,20 @@ context**, the equivalent of `/clear` and a new conversation:
 - Workers read regions, not whole files, and load only the skills and reference files their
   step needs (`token-efficiency`).
 
-## Until it is right — when the loop ends
+## It must end — when the loop ends
 
-The loop runs until a critique round, on a fresh full sweep, finds **no fix-now finding at any
-severity** — everything left is `leave` (the design is right) or `user decides`. That round
-writes `STOP: converged`. There is no round limit.
+The loop is bounded. Only **round 1** is an open audit: it sees everything, decides, and writes
+the roadmap. Every later round is a **check round** — it asks one question: *did the work land
+as the roadmap planned?* Its scope can only shrink:
+
+- **In scope:** a planned finding whose fix is missing, partial or did not hold, and a
+  regression the round's own fixes caused. These become the next round's polishing roadmap.
+- **Out of scope:** anything new and unrelated to the plan. It is recorded as `defer` under
+  "Backlog" in the roadmap's V1.4 section — never `fix now`, never a reason for another round.
+- **Twice is enough:** a finding still failing after two implementation attempts goes to
+  `USER-DECISIONS.md` as `user decides`, with what was tried.
+
+A check round with nothing in scope writes `STOP: converged` and the run is over.
 
 Invoking this skill is the user's **standing authorization** to audit, decide, plan, implement,
 commit and push on the current branch without asking, step after step, and to spawn one worker
@@ -127,10 +136,15 @@ unconfirmed — check on a phone".
    the tablet and desktop shot of each screen.
 2. **Audit.** Load `deep-critique` and run it at depth `deep` on the whole app,
    `focus=mobile,ux` plus every other lens at standard depth. It stays read-only. Use the sweep as
-   its visual evidence; it reads the code, migrations and config for everything else. Round
-   n > 1: read the previous round's decisions first — do not re-raise a finding decided `leave`
-   unless its screen or code changed since; confirm fixed findings are actually fixed (a fix that
-   did not hold is a new High finding). Save the full report as `round-<n>-critique.md`.
+   its visual evidence; it reads the code, migrations and config for everything else. Save the
+   full report as `round-<n>-critique.md`.
+
+   **Round n > 1 is a check round, not a new audit** ("It must end"). Read the roadmap's
+   Round n − 1 batches and that round's critique and decisions, then audit only: each planned
+   finding against its Verification step (missing, partial or not holding → a High finding that
+   keeps its ID), and the screens and files those batches touched, for regressions. Never
+   re-raise a finding decided `leave` or `defer`. Anything new and unrelated is listed under
+   "Backlog" as `defer`. A finding failing for the second time is `user decides`.
 3. **Decide.** Load `decision-making` and rule on every finding as the user — from memory, the
    roadmap's Decisions log, `design-plan.md`, CLAUDE.md and the report's evidence. Tier by its
    Step 0 (most are Simple). Verdicts:
@@ -240,8 +254,9 @@ Gallery: <OUT>/index.html
 ```
 MODE: <critique|implement>
 AUTOPILOT — Moti round <n>[, batch <k>]. Branch <branch>. Last commit Development v<X.YY>
-(<what it did>), pushed. <critique: "Full sweep, then deep-critique deep on the whole app;
-previous decisions in round-<n-1>-decisions.md."> <implement: "Batch <k>: <theme> — <IDs>;
+(<what it did>), pushed. <critique: "Check round: full sweep, then verify the Round <n-1>
+roadmap batches against round-<n-1>-critique.md and round-<n-1>-decisions.md; in-scope gaps and
+regressions only."> <implement: "Batch <k>: <theme> — <IDs>;
 report round-<n>-critique.md.">
 ```
 
