@@ -21,3 +21,17 @@ Fixed: QA-02 offline, rows kept from an earlier search, filter or page are dimme
 Verified: build + lint clean; re-sweep transaction, inventory, movements ok; verification steps ok — QA-01: replay refused with 401 → on /login, entry kept with no failure; signed in again → 1 `record_transaction` sent, queue empty, no sync sheet touched. QA-02: offline search "brake" → notice + dimmed rows (phone and desktop, light and dark); back online → notice gone, 1 real result. QA-03: service workers blocked, offline, first visit to Stock history → "This page couldn't be loaded" + Reload, no developer text; Reload online opens the screen (phone and desktop). Emulated viewport only; writes faked
 Note: the first probe run could not sign in (the test machine's network blip seen in round 1); the rerun passed unchanged.
 Push: ok
+
+## implement 1.2 — Development v1.25 (2026-10-03)
+Sweep: 168 captures (full: the colour tokens reach every screen), 92 with measured issues (all known: 36 px inputs, 40 px Add on tablet, the sign-in hero), 0 console errors, 0 failed steps
+Plan / findings: A11Y-01, MOB-02, UI-04, UX-03, UI-02, MOB-04. File plan: ~ `styles/common/theme.css` (text tone tokens, muted text, menu rows in the 44 px rule), ~ `styles/layout/auth.styles.ts` (hero accent), ~ `styles/view/tabs.styles.ts` (tab label), ~ `styles/layout/accountMenu.styles.ts` + `components/common/layout/AccountMenu.tsx` (separator), ~ `AccountProfileCard.tsx`, ~ `TransactionDetailModal.tsx`, ~ `TransactionHistoryTable.tsx`, ~ `components/common/form/FormField.tsx`
+Decisions: 8 (see round-1-decisions.md)
+Fixed: A11Y-01 coloured and muted text in light mode is darker; fills, borders and dark mode are unchanged (`theme.css`, `auth.styles.ts`, `tabs.styles.ts`)
+Fixed: MOB-02 menu rows are 44 px on touch — account menu and every row menu (`theme.css`)
+Fixed: UI-04 the account menu no longer overflows its box by 4 px (`AccountMenu.tsx`, `accountMenu.styles.ts`)
+Fixed: UX-03 the owner's Profile card no longer says "Ask the owner" (`AccountProfileCard.tsx`)
+Fixed: UI-02 "1 item · 1 pc" in the transaction sheet and the history table (`TransactionDetailModal.tsx`, `TransactionHistoryTable.tsx`)
+Fixed: MOB-04 whole-number fields ask for the digit pad (`FormField.tsx`)
+Verified: build + lint clean; full re-sweep ok; verification steps ok — A11Y-01: contrast probe (sign-in, dashboard, Sell, Inventory, Stock history, Account at 360 px) light mode: only the white label on the orange button is under 4.5:1 (A11Y-02, parked), dark clean. MOB-02 / UI-04: account-menu captures have no `small` or `clipped` entry; rows 44 px, menu 216 = 216. UX-03: owner "The name and email you sign in with.", employee keeps the old line. UI-02: sheet and desktop table read "1 item · 1 pc", "2 items · 4 pcs". MOB-04: `reorder_level` and `opening_stock` report `inputmode=numeric`. Emulated viewport only; writes faked
+Note: the tab label (4.49:1) was not listed in the report but failed its Verification probe, so it was fixed here. Stock movement's Quantity field was not opened in the probe; it goes through the same `number` branch.
+Push: ok

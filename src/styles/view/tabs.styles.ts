@@ -20,7 +20,8 @@ export const viewTabsList = cva("w-full", {
   defaultVariants: { variant: "underline" },
 });
 
-export const viewTabsTrigger = cva("", {
+// The stock unselected label (foreground at 60%) is 4.49:1 on the app backdrop.
+export const viewTabsTrigger = cva("text-muted-foreground", {
   variants: {
     variant: {
       underline: "flex-none",

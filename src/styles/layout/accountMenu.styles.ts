@@ -11,3 +11,6 @@ export const accountMenuRole = "truncate text-xs font-normal text-muted-foregrou
 export const accountMenuPopover = "min-w-56";
 
 export const accountMenuHeader = "flex flex-col gap-0.5 px-2 py-1.5";
+
+// The generated separator bleeds 4 px past the menu and leaves it scrollable sideways.
+export const accountMenuSeparator = "mx-0";

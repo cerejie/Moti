@@ -13,6 +13,7 @@ import {
   accountMenuName,
   accountMenuPopover,
   accountMenuRole,
+  accountMenuSeparator,
   accountMenuText,
   accountMenuTrigger,
 } from "../../../styles/layout/accountMenu.styles";
@@ -71,7 +72,7 @@ const AccountMenu = ({ name, subtitle, email, actions }: IProps) => {
           </DropdownMenuLabel>
           {regular.map(renderItem)}
         </DropdownMenuGroup>
-        {danger.length > 0 && <DropdownMenuSeparator />}
+        {danger.length > 0 && <DropdownMenuSeparator className={accountMenuSeparator} />}
         {danger.length > 0 && (
           <DropdownMenuGroup aria-label="Session">{danger.map(renderItem)}</DropdownMenuGroup>
         )}

@@ -21,7 +21,14 @@ const AccountProfileCard = () => {
   ];
 
   return (
-    <SectionCard title="Profile" description="Ask the owner to change your name or email.">
+    <SectionCard
+      title="Profile"
+      description={
+        role === "employee"
+          ? "Ask the owner to change your name or email."
+          : "The name and email you sign in with."
+      }
+    >
       <dl className={accountFacts}>
         {facts.map((fact) => (
           <div key={fact.label} className={accountFact}>

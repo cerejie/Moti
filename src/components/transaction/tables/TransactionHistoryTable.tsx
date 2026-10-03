@@ -16,7 +16,7 @@ import {
   priceText,
 } from "../../../styles/inventory/inventory.styles";
 import { historyStatusTabs } from "../../../styles/transaction/transaction.styles";
-import { formatDateTime, formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatDateTime, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
@@ -49,7 +49,7 @@ const columns: IDataTableColumn<ITransaction>[] = [
     header: "Items",
     cell: ({ row }) => (
       <span className={mutedText}>
-        {formatNumber(row.original.line_count)} · {formatNumber(row.original.total_quantity)} pcs
+        {formatCount(row.original.line_count, "item")} · {formatCount(row.original.total_quantity, "pc")}
       </span>
     ),
   }),

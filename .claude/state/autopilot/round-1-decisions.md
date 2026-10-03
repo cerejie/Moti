@@ -37,3 +37,14 @@
 - QA-02: where the rule lives → one helper `isShowingPausedRows` in `query.utils.ts`, passed by the four tables as `isStale`; the list hooks stay unchanged.
 - QA-03: one root error element or one per screen → one on the root route (the finding's direction; it replaces the shell, and Reload brings it back). It also removes the launch splash, since it can be the first thing to render.
 - QA-03: what text to show → never the error's own message (it is the developer text); a fixed sentence, or the offline sentence when the device is offline.
+
+## In-flight decisions — batch 2 (implement 1.2)
+
+- A11Y-01: how to darken coloured text without touching components → Tailwind's `--text-color-*` theme keys in `theme.css`, fed by new `--primary-text`, `--success-text`, `--warning-text`, `--danger-text`, `--info-text` tokens (`text-primary` and the rest pick them up; `bg-*` and `border-*` keep the fills; dark mode points them back at the fills, so nothing changes there).
+- A11Y-01: which shades → `#b03a0a`, `#147438`, `#92400e`, `#b91c1c`, `#1d4ed8` (each is at least 5:1 on white, on its own tint and on the app backdrop, with room for the 90 % alert text); muted text `#71717a` → `#66666e` (5.04 on the backdrop).
+- A11Y-01: the sign-in hero is carbon in light mode too, where darker orange would lose contrast → its accent text gets its own `text-on-hero-accent` (the brand fill).
+- A11Y-01: the unselected page tab (stock `text-foreground/60`, 4.49:1) → `text-muted-foreground` in `tabs.styles.ts` (the generated tab is not edited; dark mode already uses that colour).
+- UI-04: what is clipped → not the label: the generated separator's `-mx-1` makes the menu 4 px wider than its box. Fixed with `mx-0` on the account menu's separator (looks the same, the bleed was already cut off).
+- UX-03: what the owner's line says → "The name and email you sign in with." (the app has no screen where an owner edits these, so the line promises nothing); employees keep the old line.
+- UI-02: wording → "1 item · 1 pc", the same as the checkout receipt.
+- MOB-04: `enterKeyHint` too? → no (the finding's direction is `inputMode` only; every `number` field is a whole positive count, so the digit pad fits all three).

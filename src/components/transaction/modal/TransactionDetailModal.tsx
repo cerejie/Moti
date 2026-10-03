@@ -16,8 +16,8 @@ import {
 } from "../../../styles/inventory/inventory.styles";
 import { detailSection, detailSectionHeader } from "../../../styles/modal/detail.styles";
 import {
+  formatCount,
   formatDateTime,
-  formatNumber,
   formatPeso,
   formatSignedQuantity,
 } from "../../../utils/format.utils";
@@ -39,7 +39,7 @@ const sections: IDetailSection<ITransaction>[] = [
       {
         key: "items",
         label: "Items",
-        render: (tx) => `${formatNumber(tx.line_count)} · ${formatNumber(tx.total_quantity)} pcs`,
+        render: (tx) => `${formatCount(tx.line_count, "item")} · ${formatCount(tx.total_quantity, "pc")}`,
       },
       {
         key: "total",

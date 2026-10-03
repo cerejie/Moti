@@ -33,9 +33,10 @@ Report: .claude/state/autopilot/round-1-critique.md
 - [x] Batch 1: sync and failure paths — QA-01, QA-03, QA-02 — `store/common/sync.store.ts`,
       `utils/error.utils.ts`, `routes/index.ts` + a root error element in `components/common/status/`,
       `components/common/table/DataTable.tsx` + the list hooks — Development v1.24
-- [ ] Batch 2: contrast and touch quick wins — A11Y-01, MOB-02, UI-04, UX-03, UI-02, MOB-04 —
-      `styles/common/theme.css`, `styles/common/tone.styles.ts`, `AccountProfileCard.tsx`,
-      `TransactionDetailModal.tsx`, `TransactionHistoryTable.tsx`, `components/common/form/FormField.tsx`
+- [x] Batch 2: contrast and touch quick wins — A11Y-01, MOB-02, UI-04, UX-03, UI-02, MOB-04 —
+      `styles/common/theme.css`, `styles/layout/auth.styles.ts`, `styles/view/tabs.styles.ts`,
+      `AccountMenu.tsx` + its styles, `AccountProfileCard.tsx`, `TransactionDetailModal.tsx`,
+      `TransactionHistoryTable.tsx`, `components/common/form/FormField.tsx` — Development v1.25
 - [ ] Batch 3: phone shell and lists — UX-01, UX-02, MOB-03, UI-01 — `StockAlertsList.tsx`,
       `NotificationCenterModal.tsx`, `AttentionPanel.tsx`, `pages/Account/AccountView.tsx` + a new
       account card, `TablePagination.tsx`, `styles/table/pagination.styles.ts`,

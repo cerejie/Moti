@@ -155,7 +155,7 @@ const FormField = <TValues extends FieldValues>({
         const inputType =
           type === "phone" ? "tel" : type === "number" ? "number" : "text";
         const inputMode =
-          type === "amount" ? "decimal" : type === "phone" ? "tel" : undefined;
+          type === "amount" ? "decimal" : type === "phone" ? "tel" : "numeric";
 
         if (!addon) {
           return (

@@ -16,7 +16,7 @@ export const authHeroBody =
 export const authHeroTitle =
   "mb-3 text-3xl leading-tight font-bold tracking-tight text-on-hero";
 
-export const authHeroAccent = "text-primary";
+export const authHeroAccent = "text-on-hero-accent";
 
 export const authHeroCopy = "max-w-md text-md leading-relaxed text-on-hero-muted";
 
@@ -25,7 +25,7 @@ export const authHeroList = "mt-8 flex flex-col gap-3.5";
 export const authHeroItem = "flex items-center gap-3 text-sm text-on-hero";
 
 export const authHeroIcon =
-  "inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary [&_svg]:size-4";
+  "inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-on-hero-accent [&_svg]:size-4";
 
 // Racing stripes in the hero's lower corner: the sporty accent, decoration only.
 export const authStripes =
