@@ -19,8 +19,9 @@ SaaS build, which comes later.
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
       next up: Phase 6 (check on a phone), the user's own check on a real Android and iPhone
       (Phase 5 Batches 1–8 coded and checked, migration 7 applied; Phase 6 pre-check fixes coded)
-- [ ] V1.4: Autopilot loop (below): critique → decide → fix, round after round, until a round finds
-      nothing left to fix
+- [x] V1.4: Autopilot loop (below): critique → decide → fix, round after round, until a round finds
+      nothing left to fix (2026-10-03: converged after round 2; 4 questions wait in
+      `.claude/state/autopilot/USER-DECISIONS.md`)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 
 ## V1.4: Autopilot loop
@@ -45,6 +46,19 @@ Report: .claude/state/autopilot/round-1-critique.md
       `store/common/sheet.store.ts` (new), `components/common/modal/AppModal.tsx`, `ConfirmationModal.tsx`,
       `App.tsx`, `CartModal.tsx` + a new `CartQuantityInput.tsx`, `styles/transaction/transaction.styles.ts`
       — Development v1.27
+
+### Round 2 (2026-10-03) — check round: 15 of 15 Round 1 findings hold, 0 regressions; 0 fix now, 3 defer, 0 leave, 0 user decides
+Report: .claude/state/autopilot/round-2-critique.md
+No batches: nothing in scope. The loop converged after round 2 (`.claude/state/autopilot/STOP`).
+Still open for the user: the 4 questions in `USER-DECISIONS.md`, and a check on a real phone (back
+gesture, digit pad, daylight contrast).
+
+### Backlog (`defer`: new and unrelated to a round's plan, never a reason for another round)
+- BL-01: the push prompt takes the top third of the bell until it is answered.
+- BL-02: on a phone the push prompt's sentence breaks inside "sign-ups".
+- BL-03: on desktop the cart sheet's quantity field is 44 px beside 40 px − and + buttons.
+- From round 1, deferred: PROD-01 (search Stock history), QA-04 (re-check the session on a
+  permission error), OPS-01 (build + lint on push).
 
 ## Next steps
 

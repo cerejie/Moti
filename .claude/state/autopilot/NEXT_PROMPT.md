@@ -1,7 +1,6 @@
 MODE: critique
-AUTOPILOT — Moti round 2. Branch moti-development. Last commit Development v1.27
-(round 1 batch 4: sheet back gesture and cart quantity), pushed. Check round: full sweep, then verify the Round 1
-roadmap batches against round-1-critique.md and round-1-decisions.md; in-scope gaps and
-regressions only.
+AUTOPILOT — Moti: the run is over. Branch moti-development. Last commit Development v1.28
+(round 2 check: all 15 Round 1 findings hold, no regressions), pushed. `STOP` exists: converged
+after round 2. Nothing to do until the user deletes `STOP`; a new run then starts as round 3, a
+check round over the answered questions in `USER-DECISIONS.md` and the roadmap's Backlog.
 The run is on `moti-development`; stay on it, never switch.
-Round 2 is a check round ("It must end"): nothing in scope → write `STOP: converged`. MOB-01's back handling lives in `hook/common/sheet.hook.ts` (mounted in `App.tsx`), not `modal.hook.ts`.

@@ -57,3 +57,11 @@ Fixed: UX-04 the cart sheet's quantity can be typed (`CartQuantityInput.tsx`, `C
 Verified: build + lint clean; re-sweep ok; verification steps ok — MOB-01 (owner, 360 px and 1440 px): Home → Sell → Add → Review & checkout → back: `/transaction`, 0 dialogs, cart bar shown; back again: `/`. Closed with "Keep adding" or Escape: one back goes Home. Also: forward after closing, reload with the sheet open, the item form on Inventory, the bell, a bell row that opens Inventory (back → Sell → Home), checkout → receipt sheet → back, and plain screen-to-screen back all land where expected; history length never grew beyond one entry per open sheet. UX-04 (360 px, item with 49 left): 12 → 12 and "12 pcs" in the total; 99999 → 49; cleared → 1; + → 2; Enter keeps the sheet open and sends nothing; field 64×44, 16 px, `inputmode=numeric`. Emulated viewport only; writes faked
 Note: the item-form sheet was not in the sweep (`SCREENS` name is `item-form`); it was opened in the probe instead. The real Android back gesture and the iOS edge swipe are only checkable on a phone. On desktop the quantity field is 44 px beside 40 px buttons.
 Push: ok
+
+## critique 2 — Development v1.28 (2026-10-03)
+Sweep: 168 captures (full), 92 with measured issues (all known: 36 px inputs, 40 px Add and segmented filter on tablet, the sign-in hero), 0 console errors, 0 failed steps
+Plan / findings: check round — 15 planned findings re-verified, 15 hold; 0 regressions; 3 new unrelated notes (BL-01..03)
+Decisions: 3 defer to Backlog, 0 fix now (see round-2-decisions.md); converged, `STOP` written
+Verified: build + lint clean; preview served the new build (same entry chunk as `dist/index.html`); every Round 1 Verification step re-run with the batch probes (phone and desktop where the step asks); sweep diffed against round 1 (37 issues gone, none new); 14 shots opened by eye, the rest judged from the measured report; emulated viewport only; writes faked; no source changed
+Note: the employee has no History tab, so UI-02 was checked as the owner (sheet and desktop table).
+Push: ok
