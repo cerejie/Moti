@@ -19,7 +19,29 @@ SaaS build, which comes later.
 - [ ] V1.3: notifications, visual test and audit (phases below), one conversation per phase;
       next up: Phase 6 (check on a phone), the user's own check on a real Android and iPhone
       (Phase 5 Batches 1–8 coded and checked, migration 7 applied; Phase 6 pre-check fixes coded)
+- [ ] V1.4: Autopilot loop (below): critique → decide → fix, round after round, until a round finds
+      nothing left to fix
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
+
+## V1.4: Autopilot loop
+
+Run with `/autopilot`. State lives in `.claude/state/autopilot/` (`NEXT_PROMPT.md`, the round
+reports and decisions, `USER-DECISIONS.md` for what only the user can decide, `LOG.md`).
+
+### Round 1 (2026-10-03) — 25 findings: 15 fix now, 3 defer, 3 leave, 4 user decides
+Report: .claude/state/autopilot/round-1-critique.md
+- [ ] Batch 1: sync and failure paths — QA-01, QA-03, QA-02 — `store/common/sync.store.ts`,
+      `utils/error.utils.ts`, `routes/index.ts` + a root error element in `components/common/status/`,
+      `components/common/table/DataTable.tsx` + the list hooks
+- [ ] Batch 2: contrast and touch quick wins — A11Y-01, MOB-02, UI-04, UX-03, UI-02, MOB-04 —
+      `styles/common/theme.css`, `styles/common/tone.styles.ts`, `AccountProfileCard.tsx`,
+      `TransactionDetailModal.tsx`, `TransactionHistoryTable.tsx`, `components/common/form/FormField.tsx`
+- [ ] Batch 3: phone shell and lists — UX-01, UX-02, MOB-03, UI-01 — `StockAlertsList.tsx`,
+      `NotificationCenterModal.tsx`, `AttentionPanel.tsx`, `pages/Account/AccountView.tsx` + a new
+      account card, `TablePagination.tsx`, `styles/table/pagination.styles.ts`,
+      `styles/dashboard/dashboard.styles.ts`
+- [ ] Batch 4: sheet back gesture and cart quantity — MOB-01, UX-04 — `hook/common/modal.hook.ts`,
+      `components/common/modal/AppModal.tsx`, `CartModal.tsx`, `styles/transaction/transaction.styles.ts`
 
 ## Next steps
 
