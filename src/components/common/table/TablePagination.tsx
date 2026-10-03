@@ -21,6 +21,7 @@ import {
   paginationRoot,
   paginationSizeGroup,
   paginationSizeLabel,
+  paginationSinglePage,
   paginationSizeTrigger,
   paginationStep,
   paginationStepDisabled,
@@ -64,7 +65,7 @@ const TablePagination = ({
             : `Showing ${firstRow}–${lastRow} of ${totalCount}`}
       </p>
 
-      <div className={paginationControls}>
+      <div className={cn(paginationControls, pageCount <= 1 && paginationSinglePage)}>
         {showSizePicker && (
           <div className={paginationSizeGroup}>
             <span className={paginationSizeLabel}>Rows</span>

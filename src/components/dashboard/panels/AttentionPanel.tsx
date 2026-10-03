@@ -35,11 +35,7 @@ const AttentionPanel = () => {
       return <ErrorState error={alerts.error} onRetry={() => void alerts.refetch()} />;
     }
     if (count === 0) {
-      return (
-        <StateBox icon={<PackageCheck />} title="All stocked up">
-          Nothing is at or below its warning quantity.
-        </StateBox>
-      );
+      return <StateBox compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
     }
 
     return (

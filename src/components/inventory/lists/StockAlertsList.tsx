@@ -27,11 +27,7 @@ const StockAlertsList = () => {
     return <ErrorState error={alerts.error} onRetry={() => void alerts.refetch()} />;
   }
   if (items.length === 0) {
-    return (
-      <StateBox icon={<PackageCheck />} title="All stocked up">
-        No item is at or below its warning quantity.
-      </StateBox>
-    );
+    return <StateBox compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
   }
 
   return (

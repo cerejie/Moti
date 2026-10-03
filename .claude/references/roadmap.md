@@ -37,10 +37,10 @@ Report: .claude/state/autopilot/round-1-critique.md
       `styles/common/theme.css`, `styles/layout/auth.styles.ts`, `styles/view/tabs.styles.ts`,
       `AccountMenu.tsx` + its styles, `AccountProfileCard.tsx`, `TransactionDetailModal.tsx`,
       `TransactionHistoryTable.tsx`, `components/common/form/FormField.tsx` — Development v1.25
-- [ ] Batch 3: phone shell and lists — UX-01, UX-02, MOB-03, UI-01 — `StockAlertsList.tsx`,
+- [x] Batch 3: phone shell and lists — UX-01, UX-02, MOB-03, UI-01 — `StockAlertsList.tsx`,
       `NotificationCenterModal.tsx`, `AttentionPanel.tsx`, `pages/Account/AccountView.tsx` + a new
       account card, `TablePagination.tsx`, `styles/table/pagination.styles.ts`,
-      `styles/dashboard/dashboard.styles.ts`
+      `styles/dashboard/dashboard.styles.ts` — Development v1.26
 - [ ] Batch 4: sheet back gesture and cart quantity — MOB-01, UX-04 — `hook/common/modal.hook.ts`,
       `components/common/modal/AppModal.tsx`, `CartModal.tsx`, `styles/transaction/transaction.styles.ts`
 

@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/utils/cn.utils";
-import { stateBox } from "../../../styles/state/state.styles";
+import { stateBox, stateLine } from "../../../styles/state/state.styles";
 
 type IProps = {
   tone?: "default" | "danger";
   loading?: boolean;
+  // A single line with no box, for an empty state above or beside other content.
+  compact?: boolean;
   icon?: ReactNode;
   title?: string;
   action?: ReactNode;
@@ -24,6 +26,7 @@ type IProps = {
 const StateBox = ({
   tone = "default",
   loading = false,
+  compact = false,
   icon,
   title,
   action,
@@ -31,6 +34,15 @@ const StateBox = ({
   children,
 }: IProps) => {
   const media = loading ? <Spinner /> : icon;
+
+  if (compact) {
+    return (
+      <p className={cn(stateLine, className)}>
+        {media}
+        {title ?? children}
+      </p>
+    );
+  }
 
   return (
     <Empty className={cn(stateBox({ tone }), className)}>

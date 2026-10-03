@@ -1,3 +1,4 @@
+import AccountDeviceCard from "../../components/account/cards/AccountDeviceCard";
 import AccountProfileCard from "../../components/account/cards/AccountProfileCard";
 import InstallAppCard from "../../components/account/cards/InstallAppCard";
 import NotificationsCard from "../../components/account/cards/NotificationsCard";
@@ -22,6 +23,9 @@ const AccountView = () => (
       </BentoCell>
       <BentoCell span="half">
         <InstallAppCard />
+      </BentoCell>
+      <BentoCell span="half">
+        <AccountDeviceCard />
       </BentoCell>
     </BentoGrid>
   </ContentView>

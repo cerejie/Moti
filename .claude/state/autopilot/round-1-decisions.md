@@ -48,3 +48,14 @@
 - UX-03: what the owner's line says → "The name and email you sign in with." (the app has no screen where an owner edits these, so the line promises nothing); employees keep the old line.
 - UI-02: wording → "1 item · 1 pc", the same as the checkout receipt.
 - MOB-04: `enterKeyHint` too? → no (the finding's direction is `inputMode` only; every `number` field is a whole positive count, so the digit pad fits all three).
+
+## In-flight decisions — batch 3 (implement 1.3)
+
+- UX-01: where the compact empty state lives → a `compact` prop on `StateBox` (one line, no box; the boxed form stays the default), used by the bell's stock alerts and the dashboard's "Needs attention" card.
+- UX-01: wording → "All stocked up" alone; the sentence under it repeated the title.
+- UX-02: one card or two → one card, "Appearance and sign out", last on Account (the finding's direction; Sign out is the last thing on the screen, where people look for it).
+- UX-02: theme control → the existing `SegmentedControl` (`lg`, Light / Dark) over the theme store's `toggleTheme`; the store is not changed, and tapping the chosen side does nothing.
+- UX-02: remove "My account" from the avatar menu? → no (the finding keeps the menu for desktop; removing an entry is outside it).
+- MOB-03: single page on a phone → keep the count line, hide "Page 1 of 1" and both arrows (the count still says the list is complete); from `md` up nothing changes.
+- MOB-03: rows picker on a phone → hidden with CSS only, so the page size chosen on a wider screen still applies.
+- UI-01: breakpoint → two columns until `xl`, as decided in the round; at 1440 px the Low stock hint wraps to two lines without truncating, as it did before.
