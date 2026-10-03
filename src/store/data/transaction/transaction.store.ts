@@ -21,7 +21,7 @@ const initialValues: States = {
 
 // A quantity never drops below 1 or rises past what is on the shelf; the
 // database checks again at checkout.
-const clampQuantity = (quantity: number, onHand: number) =>
+export const clampQuantity = (quantity: number, onHand: number) =>
   Math.max(1, Math.min(Math.floor(quantity), onHand));
 
 // Kept in memory only: a cart lives for one sale, and sign-out clears it.

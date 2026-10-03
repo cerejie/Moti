@@ -59,3 +59,17 @@
 - MOB-03: single page on a phone → keep the count line, hide "Page 1 of 1" and both arrows (the count still says the list is complete); from `md` up nothing changes.
 - MOB-03: rows picker on a phone → hidden with CSS only, so the page size chosen on a wider screen still applies.
 - UI-01: breakpoint → two columns until `xl`, as decided in the round; at 1440 px the Low stock hint wraps to two lines without truncating, as it did before.
+
+## In-flight decisions — batch 4 (implement 1.4)
+
+- MOB-01: where the rule lives → not `modal.hook.ts`: `AppModal` (and the confirmation dialog) announce themselves in a small `sheet.store`, and one `useSheetHistory(router)` in `App.tsx` keeps history in step (a back press then runs the sheet's own close handler, so its form and error reset the same way ✕ does; closing the store entry directly would skip that).
+- MOB-01: router hooks or the router object → the router object (`router.state` / `router.subscribe`): it knows at once that a navigation is in flight, so closing a sheet and going to another screen in the same tap (a row in the bell) is never cancelled by the sheet's own pop.
+- MOB-01: a sheet that closes as another opens (cart → receipt) → the new sheet takes over the same history entry; no pop and push.
+- MOB-01: an entry left behind (reload with a sheet open, forward after closing, a screen opened from inside a sheet) → stepped over automatically; back still lands where it would have.
+- MOB-01: desktop too? → yes (one rule for every size; browser back closing a dialog is what people expect there as well).
+- MOB-01: blocking modals (`dismissible={false}`) → own no entry and are not closed by back (none exist today).
+- MOB-01: revert-and-defer rule → not triggered: the probe found no history side effect (see LOG).
+- UX-04: where the field lives → a new `CartQuantityInput.tsx` beside `CartQuantityControl.tsx`; the list row keeps its stepper, as decided.
+- UX-04: when the quantity is saved → as it is typed (the total follows), tidied on blur: over the stock → what is on hand, empty → 1.
+- UX-04: Enter in the field → finishes typing only; without this it would complete the sale, because the field sits inside the checkout form.
+- UX-04: clamp → the store's own `clampQuantity`, exported, so the field and the store cannot disagree.

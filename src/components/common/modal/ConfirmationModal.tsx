@@ -14,6 +14,7 @@ import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useConfirmation } from "../../../hook/common/confirmation.hook";
+import { useSheetEntry } from "../../../hook/common/sheet.hook";
 import {
   confirmBody,
   confirmClose,
@@ -52,6 +53,8 @@ const ConfirmationModal = () => {
       closeConfirm();
     }
   };
+
+  useSheetEntry(confirm.visible, () => handleOpenChange(false));
 
   return (
     <AlertDialog isOpen={confirm.visible} onOpenChange={handleOpenChange}>

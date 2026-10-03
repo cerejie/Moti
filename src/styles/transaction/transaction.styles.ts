@@ -11,6 +11,10 @@ export const quantityStepper = "flex items-center gap-1";
 
 export const quantityValue = "min-w-8 text-center font-bold tabular-nums";
 
+// Typed quantity in the cart review: thumb-sized, and 16 px text so iOS does not zoom.
+export const quantityInput =
+  "min-h-touch w-16 px-1 text-center text-base font-bold tabular-nums md:text-base";
+
 export const addButton = "min-h-touch md:min-h-9";
 
 // Floats above the tab bar while items are picked; the whole bar opens the cart.

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hook/use-mobile";
 import { cn } from "@/utils/cn.utils";
+import { useSheetEntry } from "../../../hook/common/sheet.hook";
 import type { ModalSize } from "../../../models/common/view.model";
 import {
   drawerBody,
@@ -65,6 +66,7 @@ const AppModal = ({
 }: IProps) => {
   const isMobile = useIsMobile();
   const hasCloseBar = hideHeader && dismissible;
+  useSheetEntry(open && dismissible, () => onOpenChange(false));
 
   // Phones get a bottom sheet. The aria drawer is built on Base UI, so the
   // aria sheet from the bottom stands in for it.

@@ -20,7 +20,6 @@ import {
   cartSummaryNoPrice,
   cartSummaryTotal,
   quantityStepper,
-  quantityValue,
 } from "../../../styles/transaction/transaction.styles";
 import { formatCount, formatNumber, formatPeso } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
@@ -29,6 +28,7 @@ import FormRoot from "../../common/form/FormRoot";
 import AppModal from "../../common/modal/AppModal";
 import AppAlert from "../../common/status/AppAlert";
 import StateBox from "../../common/status/StateBox";
+import CartQuantityInput from "../menus/CartQuantityInput";
 
 const formId = "checkout-form";
 
@@ -107,7 +107,7 @@ const CartModal = () => {
                     >
                       <Minus />
                     </AppButton>
-                    <span className={quantityValue}>{quantity}</span>
+                    <CartQuantityInput item={item} quantity={quantity} />
                     <AppButton
                       size="icon-lg"
                       variant="outline"

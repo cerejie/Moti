@@ -5,6 +5,7 @@ import { useAccountExpiryHook } from "./hook/data/account/account.expiry.hook";
 import { useAppRouter } from "./hook/data/account/account.me.hook";
 import { useInstallListener } from "./hook/common/install.hook";
 import { useKeyboardInset } from "./hook/common/keyboard.hook";
+import { useSheetHistory } from "./hook/common/sheet.hook";
 import { useAppUpdate } from "./hook/common/update.hook";
 import { useApplyTheme } from "./hook/layout/theme.hook";
 
@@ -15,6 +16,7 @@ function App() {
   useInstallListener();
   useAppUpdate();
   const router = useAppRouter();
+  useSheetHistory(router);
 
   return (
     <>

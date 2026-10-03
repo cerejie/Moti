@@ -41,8 +41,10 @@ Report: .claude/state/autopilot/round-1-critique.md
       `NotificationCenterModal.tsx`, `AttentionPanel.tsx`, `pages/Account/AccountView.tsx` + a new
       account card, `TablePagination.tsx`, `styles/table/pagination.styles.ts`,
       `styles/dashboard/dashboard.styles.ts` — Development v1.26
-- [ ] Batch 4: sheet back gesture and cart quantity — MOB-01, UX-04 — `hook/common/modal.hook.ts`,
-      `components/common/modal/AppModal.tsx`, `CartModal.tsx`, `styles/transaction/transaction.styles.ts`
+- [x] Batch 4: sheet back gesture and cart quantity — MOB-01, UX-04 — `hook/common/sheet.hook.ts` +
+      `store/common/sheet.store.ts` (new), `components/common/modal/AppModal.tsx`, `ConfirmationModal.tsx`,
+      `App.tsx`, `CartModal.tsx` + a new `CartQuantityInput.tsx`, `styles/transaction/transaction.styles.ts`
+      — Development v1.27
 
 ## Next steps
 
