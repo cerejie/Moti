@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Fragment } from "react";
+import { WifiOff } from "lucide-react";
 import type { RowData } from "@tanstack/react-table";
 import { useTable } from "@tanstack/react-table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,6 +35,8 @@ import {
   tableLoadingAnnounce,
   tableRowClickable,
   tableSkeletonBar,
+  tableStaleNotice,
+  tableStaleRows,
   tableStateCell,
 } from "../../../styles/table/table.styles";
 import {
@@ -42,10 +45,21 @@ import {
   listSkeletonRow,
 } from "../../../styles/list/list.styles";
 import ListGroup from "../list/ListGroup";
+import AppAlert from "../status/AppAlert";
 import ErrorState from "../status/ErrorState";
 import StateBox from "../status/StateBox";
 
 const SKELETON_ROWS = 5;
+
+const staleNotice = (
+  <AppAlert
+    tone="warning"
+    status
+    icon={<WifiOff />}
+    title="You're offline — this is the last list loaded, not your new search or filter."
+    className={tableStaleNotice}
+  />
+);
 
 type IColumnLike = { columnDef: { meta?: { hideBelow?: "lg" | "xl" } } };
 
@@ -63,6 +77,8 @@ type IProps<TData extends RowData> = {
   isLoading?: boolean;
   isError?: boolean;
   error?: unknown;
+  // The rows belong to an earlier search, filter or page that cannot be refreshed now.
+  isStale?: boolean;
   onRetry?: () => void;
   emptyText?: string;
   loadingText?: string;
@@ -83,6 +99,7 @@ const DataTable = <TData extends RowData>({
   isLoading = false,
   isError = false,
   error,
+  isStale = false,
   onRetry,
   emptyText = "Nothing to show yet.",
   loadingText = "Loading…",
@@ -107,6 +124,7 @@ const DataTable = <TData extends RowData>({
   const leafHeaders = headerGroups[headerGroups.length - 1]?.headers ?? [];
   const leafColumns = table.getAllLeafColumns();
   const columnCount = leafColumns.length;
+  const showStale = isStale && !isLoading && !isError && data.length > 0;
 
   const renderBody = () => {
     if (isLoading) {
@@ -213,18 +231,21 @@ const DataTable = <TData extends RowData>({
       if (data.length === 0) return <StateBox>{emptyText}</StateBox>;
 
       return (
-        <ListGroup label={label}>
-          {data.map((row) => (
-            <li key={getRowId(row)} className={listGroupItem}>
-              {renderRow(row)}
-            </li>
-          ))}
-        </ListGroup>
+        <div className={cn(showStale && tableStaleRows)}>
+          <ListGroup label={label}>
+            {data.map((row) => (
+              <li key={getRowId(row)} className={listGroupItem}>
+                {renderRow(row)}
+              </li>
+            ))}
+          </ListGroup>
+        </div>
       );
     };
 
     return (
       <div className={cn(dataCardTray, className)}>
+        {showStale && staleNotice}
         {renderList()}
         {isLoading && (
           <p role="status" className={tableLoadingAnnounce}>
@@ -237,6 +258,7 @@ const DataTable = <TData extends RowData>({
 
   return (
     <div className={cn(dataTableTray, className)}>
+      {showStale && staleNotice}
       <Table aria-label={label} className={dataTableGrid}>
         <TableHeader className={dataTableHeader}>
           {leafHeaders.map((header, index) => (
@@ -252,7 +274,9 @@ const DataTable = <TData extends RowData>({
           ))}
         </TableHeader>
 
-        <TableBody aria-busy={isLoading}>{renderBody()}</TableBody>
+        <TableBody aria-busy={isLoading} className={cn(showStale && tableStaleRows)}>
+          {renderBody()}
+        </TableBody>
       </Table>
 
       {isLoading && (

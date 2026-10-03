@@ -96,3 +96,8 @@ export const dataCardTray = "pt-1 pb-3";
 
 // A header that names a column for screen readers only, e.g. row actions.
 export const tableHeadHidden = "sr-only";
+
+// Rows kept from an earlier query that cannot be refreshed: a notice above, the rows dimmed.
+export const tableStaleNotice = "mb-2";
+
+export const tableStaleRows = "opacity-60";

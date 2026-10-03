@@ -17,6 +17,7 @@ import {
 } from "../../../styles/inventory/inventory.styles";
 import { historyStatusTabs } from "../../../styles/transaction/transaction.styles";
 import { formatDateTime, formatNumber, formatPeso } from "../../../utils/format.utils";
+import { isShowingPausedRows } from "../../../utils/query.utils";
 import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
 import TablePagination from "../../common/table/TablePagination";
@@ -115,6 +116,7 @@ const TransactionHistoryTable = () => {
         columns={columns}
         getRowId={(transaction) => transaction.id}
         isLoading={query.isLoading}
+        isStale={isShowingPausedRows(query)}
         isError={query.isError}
         error={query.error}
         onRetry={() => void query.refetch()}

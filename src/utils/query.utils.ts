@@ -19,3 +19,9 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Offline, a new search, filter or page keeps the previous rows and cannot fetch its own.
+export const isShowingPausedRows = (query: {
+  isPlaceholderData: boolean;
+  isPaused: boolean;
+}): boolean => query.isPlaceholderData && query.isPaused;

@@ -20,3 +20,9 @@ export const appShellContentInner =
 // The exact inverse of the column's gutters, for a surface that runs to the
 // panel edges and sets its own margin instead (the ContentView card).
 export const appShellGutterBleed = "-mx-4 -mt-4 -mb-10 md:-mx-6 md:-mt-6 lg:-mx-8";
+
+// The route error stands in for the whole shell, so it centres itself on the backdrop.
+export const routeErrorPage =
+  "flex min-h-dvh items-center justify-center bg-app p-4 text-foreground";
+
+export const routeErrorPanel = "w-full max-w-md";

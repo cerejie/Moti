@@ -30,9 +30,9 @@ reports and decisions, `USER-DECISIONS.md` for what only the user can decide, `L
 
 ### Round 1 (2026-10-03) — 25 findings: 15 fix now, 3 defer, 3 leave, 4 user decides
 Report: .claude/state/autopilot/round-1-critique.md
-- [ ] Batch 1: sync and failure paths — QA-01, QA-03, QA-02 — `store/common/sync.store.ts`,
+- [x] Batch 1: sync and failure paths — QA-01, QA-03, QA-02 — `store/common/sync.store.ts`,
       `utils/error.utils.ts`, `routes/index.ts` + a root error element in `components/common/status/`,
-      `components/common/table/DataTable.tsx` + the list hooks
+      `components/common/table/DataTable.tsx` + the list hooks — Development v1.24
 - [ ] Batch 2: contrast and touch quick wins — A11Y-01, MOB-02, UI-04, UX-03, UI-02, MOB-04 —
       `styles/common/theme.css`, `styles/common/tone.styles.ts`, `AccountProfileCard.tsx`,
       `TransactionDetailModal.tsx`, `TransactionHistoryTable.tsx`, `components/common/form/FormField.tsx`

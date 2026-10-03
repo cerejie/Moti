@@ -1,5 +1,8 @@
 import type { IQueuedWrite } from "../models/common/write.model";
+import { SessionExpiredError } from "./error.utils";
 import { supabase, toError } from "./supabase.utils";
+
+const unauthorizedStatus = 401;
 
 export const executeWrite = async (write: IQueuedWrite): Promise<void> => {
   const run = async () => {
@@ -19,8 +22,8 @@ export const executeWrite = async (write: IQueuedWrite): Promise<void> => {
     }
   };
 
-  const { data, error } = await run();
-  if (error) throw toError(error);
+  const { data, error, status } = await run();
+  if (error) throw status === unauthorizedStatus ? new SessionExpiredError() : toError(error);
 
   const matched = write.kind === "update" || write.kind === "delete";
   if (matched && Array.isArray(data) && data.length === 0) {

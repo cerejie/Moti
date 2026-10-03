@@ -14,6 +14,7 @@ import {
 } from "../../../styles/inventory/inventory.styles";
 import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
 import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { isShowingPausedRows } from "../../../utils/query.utils";
 import FilterToolbar from "../../common/filter/FilterToolbar";
 import DataTable from "../../common/table/DataTable";
 import TablePagination from "../../common/table/TablePagination";
@@ -131,6 +132,7 @@ const TransactionItemTable = () => {
         columns={columns}
         getRowId={(item) => item.id}
         isLoading={query.isLoading}
+        isStale={isShowingPausedRows(query)}
         isError={query.isError}
         error={query.error}
         onRetry={() => void query.refetch()}

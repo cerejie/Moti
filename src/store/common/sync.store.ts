@@ -7,7 +7,7 @@ import type {
   IQueuedWriteInput,
   IQueueEntry,
 } from "../../models/common/write.model";
-import { isNetworkError } from "../../utils/error.utils";
+import { isNetworkError, isSessionExpired } from "../../utils/error.utils";
 import { queryClient } from "../../utils/query.utils";
 import { executeWrite, newWriteId } from "../../utils/write.utils";
 import { selectSessionOwner, useAccountStore } from "../data/account/account.store";
@@ -60,8 +60,8 @@ export const useSyncStore = create<States & Actions>()(
         let sent = 0;
 
         try {
-          // A refused write is set aside so the ones behind it still go out;
-          // a network error stops the run and keeps everything for next time.
+          // A refused write is set aside so the ones behind it still go out; a network
+          // error or an expired session stops the run and keeps everything for next time.
           let next = get().queue.find((entry) => !entry.failure);
           while (next) {
             const { id } = next;
@@ -71,7 +71,7 @@ export const useSyncStore = create<States & Actions>()(
               sent += 1;
               set((state) => ({ queue: state.queue.filter((entry) => entry.id !== id) }));
             } catch (error) {
-              if (isNetworkError(error)) break;
+              if (isNetworkError(error) || isSessionExpired(error)) break;
               set((state) => ({
                 queue: state.queue.map((entry) =>
                   entry.id === id ? { ...entry, failure: errorText(error) } : entry,

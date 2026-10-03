@@ -27,3 +27,13 @@
 - TEST-01 → leave — the roadmap already parks pgTAP under LATER by the user's own decision.
 - PERF-01 → leave — measured and accepted in Phase 5 Batch 4; self-hosting fonts would be a new dependency for little gain.
 - UI-05 → leave — 13.6 px secondary text is deliberate density; titles and inputs are 16 px.
+
+## In-flight decisions — batch 1 (implement 1.1)
+
+- QA-01: how to recognise an expired session in a replay → HTTP 401 on the write itself, raised as `SessionExpiredError` in `write.utils.ts` (the status is the fact; matching the text "JWT expired" or one PostgREST code would miss the others).
+- QA-01: clear old auth failures in `adoptOwner`? → no (after the fix a 401 never becomes a `failure`, so there is nothing to clear; an entry parked before this version still has Retry in the sync sheet).
+- QA-01: also queue a live (not replayed) write that gets 401? → no (outside the finding; it changes what checkout reports to the seller. Left as is).
+- QA-02: when to show the notice → only when the rows are placeholder rows and the query is paused (online, the old rows show for a moment while the new ones load; dimming then would flicker).
+- QA-02: where the rule lives → one helper `isShowingPausedRows` in `query.utils.ts`, passed by the four tables as `isStale`; the list hooks stay unchanged.
+- QA-03: one root error element or one per screen → one on the root route (the finding's direction; it replaces the shell, and Reload brings it back). It also removes the launch splash, since it can be the first thing to render.
+- QA-03: what text to show → never the error's own message (it is the developer text); a fixed sentence, or the offline sentence when the device is offline.

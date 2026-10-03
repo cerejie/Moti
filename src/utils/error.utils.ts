@@ -16,6 +16,17 @@ export class NetworkError extends Error {
   }
 }
 
+// The server refused the token, not the write; it can be sent again after signing in.
+export class SessionExpiredError extends Error {
+  constructor() {
+    super("Your session ended. Sign in again to continue.");
+    this.name = "SessionExpiredError";
+  }
+}
+
+export const isSessionExpired = (error: unknown): boolean =>
+  error instanceof SessionExpiredError;
+
 const fetchFailurePattern = /failed to fetch|networkerror|load failed|network request failed/i;
 
 // supabase-js reports a failed fetch as a plain object: no code, message "TypeError: …".
