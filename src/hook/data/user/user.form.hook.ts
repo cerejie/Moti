@@ -116,10 +116,10 @@ export const useUserActions = () => {
       userServices.setStatus(user, status),
     { invalidate: userInvalidations },
   );
-  const resetMutation = useAppMutation(
-    ({ user, approve }: { user: IUser; approve: boolean }) => userServices.decideReset(user, approve),
-    { invalidate: userInvalidations },
-  );
+  const resetMutation = useAppMutation(userServices.dismissReset, {
+    invalidate: userInvalidations,
+    successMessage: "Reset request dismissed",
+  });
   const removeMutation = useAppMutation(userServices.remove, {
     invalidate: userInvalidations,
     successMessage: "Account deleted",
@@ -142,14 +142,7 @@ export const useUserActions = () => {
         onConfirm: () => statusMutation.mutateAsync({ user, status: "rejected" }),
       }),
     reject: (user: IUser) => setStatus(user, "rejected"),
-    decideReset: (user: IUser, approve: boolean) =>
-      resetMutation.mutate(
-        { user, approve },
-        {
-          onSuccess: () =>
-            toast.success(approve ? "New password approved" : "Password reset declined"),
-        },
-      ),
+    dismissReset: (user: IUser) => resetMutation.mutate(user),
     remove: (user: IUser) =>
       confirm({
         kind: "delete",

@@ -39,7 +39,7 @@
   --card-foreground: #18181b;
   --popover: #ffffff;
   --popover-foreground: #18181b;
-  --primary: #ea580c;
+  --primary: #c2410c;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
@@ -62,9 +62,9 @@
   /* The active nav item is filled with the brand, as in TARTAR. */
   --sidebar: #ffffff;
   --sidebar-foreground: #18181b;
-  --sidebar-primary: #ea580c;
+  --sidebar-primary: #c2410c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ea580c;
+  --sidebar-accent: #c2410c;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #e4e4e7;
   --sidebar-ring: #ea580c;
@@ -82,7 +82,7 @@
   --status-bar: var(--panel);
   --surface: #ffffff;
   --text-subtle: #66666e;
-  --primary-hover: #c2410c;
+  --primary-hover: #9a3412;
   --primary-soft: #fff1e8;
   --primary-border: #fdba8c;
   --focus-ring: rgba(234, 88, 12, 0.35);

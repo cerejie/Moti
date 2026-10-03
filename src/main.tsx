@@ -1,16 +1,19 @@
 import "./styles/common/theme.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from "./utils/query.utils";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { selectUserId, useAccountStore } from "./store/data/account/account.store";
+import { createPersistOptions, queryClient } from "./utils/query.utils";
 import App from "./App.tsx";
+
+const persistOptions = createPersistOptions(() => selectUserId(useAccountStore.getState()));
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
       <App />
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </StrictMode>,
 );

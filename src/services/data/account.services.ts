@@ -64,7 +64,9 @@ const accountServices = {
     if (error?.code === invalidCredentialsCode) return loginDeveloper(values);
     if (error) throw toLoginError(error);
 
-    const session = data as ICustomLoginResponse;
+    const session = data as ICustomLoginResponse | null;
+    // A refused sign-in is returned, not raised, so the database keeps the attempt count.
+    if (!session?.token) throw new Error(invalidCredentialsMessage);
     setCustomToken(session.token);
     return { kind: "custom", session };
   },
@@ -86,10 +88,7 @@ const accountServices = {
 
   requestPasswordReset: async (values: IForgotPasswordInput): Promise<void> => {
     const { error } = await onlineOnly(
-      supabase.rpc("request_password_reset", {
-        p_email: values.email,
-        p_password: values.password,
-      }),
+      supabase.rpc("request_password_reset", { p_email: values.email }),
     );
     if (error) throw toError(error);
   },

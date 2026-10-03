@@ -3,7 +3,7 @@ import accountServices from "../../../services/data/account.services";
 import { resetAllStores } from "../../../store/common/reset.store";
 import { useSyncStore } from "../../../store/common/sync.store";
 import { useAccountStore } from "../../../store/data/account/account.store";
-import { queryClient } from "../../../utils/query.utils";
+import { clearPersistedQueries, queryClient } from "../../../utils/query.utils";
 import { resetLocation } from "../../../utils/route.utils";
 import { useConfirm } from "../../common/confirmation.hook";
 import { useAppMutation } from "../../common/mutation.hook";
@@ -17,6 +17,7 @@ export const endSession = async (): Promise<void> => {
   resetLocation(ROUTES.login);
   useAccountStore.getState().clear();
   queryClient.clear();
+  clearPersistedQueries();
   resetAllStores();
   await accountServices.logout();
 };

@@ -31,19 +31,20 @@ const UserRowActions = ({ user }: IProps) => {
 
   const items: IRowAction[] = [];
 
+  // Setting a temporary password answers the request; the database clears the flag.
   if (user.password_reset_requested_at) {
     items.push(
       {
-        key: "reset-approve",
-        label: "Approve new password",
+        key: "reset-set",
+        label: "Set temporary password",
         icon: <ShieldCheck />,
-        onSelect: () => actions.decideReset(user, true),
+        onSelect: () => passwordModal.openModal(user),
       },
       {
-        key: "reset-decline",
-        label: "Decline new password",
+        key: "reset-dismiss",
+        label: "Dismiss request",
         icon: <ShieldX />,
-        onSelect: () => actions.decideReset(user, false),
+        onSelect: () => actions.dismissReset(user),
       },
     );
   }

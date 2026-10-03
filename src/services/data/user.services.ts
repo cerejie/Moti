@@ -52,9 +52,9 @@ const userServices = {
     if (error) throw toError(error);
   },
 
-  decideReset: async (user: IUser, approve: boolean): Promise<void> => {
+  dismissReset: async (user: IUser): Promise<void> => {
     const { error } = await onlineOnly(
-      supabase.rpc("decide_password_reset", { p_user_id: user.id, p_approve: approve }),
+      supabase.rpc("dismiss_password_reset", { p_user_id: user.id }),
     );
     if (error) throw toError(error);
   },

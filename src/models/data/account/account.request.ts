@@ -33,13 +33,9 @@ export const registerSchema = z
   .refine(passwordsMatch, passwordMismatchIssue);
 export type IRegisterInput = z.infer<typeof registerSchema>;
 
-export const forgotPasswordSchema = z
-  .object({
-    email: emailField,
-    password: passwordField,
-    confirm_password: z.string(),
-  })
-  .refine(passwordsMatch, passwordMismatchIssue);
+export const forgotPasswordSchema = z.object({
+  email: emailField,
+});
 export type IForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 export const changePasswordSchema = z

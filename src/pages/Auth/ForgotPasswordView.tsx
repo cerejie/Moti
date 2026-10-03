@@ -4,7 +4,7 @@ import ForgotPasswordForm from "../../components/auth/forms/ForgotPasswordForm";
 const ForgotPasswordView = () => (
   <AuthShell
     title="Forgot password"
-    subtitle="Choose a new password. The owner approves it before it takes effect."
+    subtitle="Enter your email. The owner sets a temporary password for you."
   >
     <ForgotPasswordForm />
   </AuthShell>

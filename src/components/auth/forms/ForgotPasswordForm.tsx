@@ -1,4 +1,4 @@
-import { Lock, LockKeyhole, Mail, MailCheck } from "lucide-react";
+import { Mail, MailCheck } from "lucide-react";
 import { useAccountForgotHook } from "../../../hook/data/account/account.forgot.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
 import type { IForgotPasswordInput } from "../../../models/data/account/account.request";
@@ -24,24 +24,6 @@ const fields: IFieldConfig<IForgotPasswordInput>[] = [
     icon: <Mail />,
     span: "full",
   },
-  {
-    name: "password",
-    label: "New password",
-    type: "password",
-    placeholder: "At least 6 characters",
-    icon: <Lock />,
-    autoComplete: "new-password",
-    span: "full",
-  },
-  {
-    name: "confirm_password",
-    label: "Confirm new password",
-    type: "password",
-    placeholder: "Type the password again",
-    icon: <LockKeyhole />,
-    autoComplete: "new-password",
-    span: "full",
-  },
 ];
 
 const ForgotPasswordForm = () => {
@@ -52,7 +34,7 @@ const ForgotPasswordForm = () => {
       <AuthSuccessPanel
         icon={<MailCheck />}
         title="Reset requested"
-        message="The owner has been asked to approve your new password. Once approved, sign in with it. Until then your old password still works."
+        message="If this email has an account, the owner has been told. They will give you a temporary password in person. Until then your old password still works."
         onBack={backToSignIn}
       />
     );
@@ -70,7 +52,7 @@ const ForgotPasswordForm = () => {
         ))}
 
         <AppButton type="submit" loading={resetMutation.isPending} className={authSubmit}>
-          Request new password
+          Ask the owner for a new password
         </AppButton>
       </FormRoot>
 

@@ -24,7 +24,7 @@ export default defineConfig({
         // Tablets at the counter use landscape.
         orientation: 'any',
         // Matches --primary and --background in src/styles/common/theme.css (light).
-        theme_color: '#ea580c',
+        theme_color: '#c2410c',
         background_color: '#ffffff',
         categories: ['business', 'productivity'],
         icons: [

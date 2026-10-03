@@ -21,7 +21,7 @@ export const useAccountForgotHook = () => {
 
   const form = useForm<IForgotPasswordInput>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: "", password: "", confirm_password: "" },
+    defaultValues: { email: "" },
   });
 
   const resetMutation = useAppMutation(accountServices.requestPasswordReset, {
