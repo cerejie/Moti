@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useIsMobile } from "@/hook/use-mobile";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { cn } from "@/utils/cn.utils";
 import type {
   ViewLayout,
@@ -53,7 +53,7 @@ const ContentView = ({
   className,
   children,
 }: IProps) => {
-  const isMobile = useIsMobile();
+  const isCompact = useIsCompact();
 
   // A headerless page (no title, back link or actions) skips the header row
   // outright, so the body starts at the top of the surface instead of after
@@ -90,7 +90,7 @@ const ContentView = ({
             <div
               className={cn(
                 contentViewActions,
-                isMobile && contentViewActionsMobile,
+                isCompact && contentViewActionsMobile,
               )}
             >
               {actions}

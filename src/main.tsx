@@ -1,3 +1,4 @@
+import "@fontsource-variable/plus-jakarta-sans";
 import "./styles/common/theme.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

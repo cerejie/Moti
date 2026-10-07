@@ -13,7 +13,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useIsMobile } from "@/hook/use-mobile";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { cn } from "@/utils/cn.utils";
 import { useSheetEntry } from "../../../hook/common/sheet.hook";
 import type { ModalSize } from "../../../models/common/view.model";
@@ -64,13 +64,13 @@ const AppModal = ({
   hideHeader = false,
   children,
 }: IProps) => {
-  const isMobile = useIsMobile();
+  const isCompact = useIsCompact();
   const hasCloseBar = hideHeader && dismissible;
   useSheetEntry(open && dismissible, () => onOpenChange(false));
 
   // Phones get a bottom sheet. The aria drawer is built on Base UI, so the
   // aria sheet from the bottom stands in for it.
-  if (isMobile && dismissible) {
+  if (isCompact && dismissible) {
     return (
       <Sheet
         side="bottom"

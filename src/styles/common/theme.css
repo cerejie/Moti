@@ -8,20 +8,17 @@
 @import "shadcn/tailwind.css";
 /* Dark mode is the .dark class on <html>, set by the layout store. */
 @custom-variant dark (&:is(.dark *));
-
-/*
-  Digits only. This family carries nothing but U+0030-0039, so every numeral in the app
-  (stock counts, quantities) renders in Geist Mono while every other glyph falls through
-  to Geist. font-display: swap drops digits back to Geist if the URL ever moves.
-*/
-@font-face {
-  font-family: "Geist Numerals";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrcdmg.woff2")
-    format("woff2");
-  unicode-range: U+0030-0039;
+/* TARTAR's device classes: compact = phones and portrait tablets, wide = everything else. */
+@custom-variant compact {
+  @media (width < 48rem), (width < 64rem) and (orientation: portrait), (width < 64rem) and (height < 30rem) {
+    @slot;
+  }
+}
+@custom-variant toolbar-searching (:where([data-filter-toolbar]:has([data-toolbar-search]:focus-within, [data-toolbar-search][data-filled])) &);
+@custom-variant wide {
+  @media (width >= 64rem), (width >= 48rem) and (orientation: landscape) and (height >= 30rem) {
+    @slot;
+  }
 }
 
 /*
@@ -58,6 +55,7 @@
   --chart-3: #f59e0b;
   --chart-4: #16a34a;
   --chart-5: #dc2626;
+  --chart-6: #7c3aed;
 
   /* The active nav item is filled with the brand, as in TARTAR. */
   --sidebar: #ffffff;
@@ -75,8 +73,25 @@
   --on-hero: #fafafa;
   --on-hero-muted: rgba(250, 250, 250, 0.68);
 
-  /* Shell: panels float on the app backdrop. */
-  --app: #f1f1f3;
+  /* TARTAR's token names, in Moti orange. */
+  --brand: #ea580c;
+  --brand-deep: #c2410c;
+  --brand-soft: #fff1e8;
+  --brand-mist: #fff8f3;
+  --on-brand: #ffffff;
+  --on-brand-muted: rgba(255, 255, 255, 0.74);
+  --positive: #16a34a;
+  --positive-bright: #22c55e;
+  --info-soft: #eff6ff;
+  --danger-border: #fecaca;
+  --track: #e4e4e7;
+  --overlay: rgba(24, 24, 27, 0.2);
+
+  /* Shell: panels float on a warm gradient backdrop (bg-app). */
+  --backdrop: #f6f3f0;
+  --backdrop-apricot: #fde6d3;
+  --backdrop-rose: #f8e3e1;
+  --backdrop-sand: #f3eadf;
   --panel: #ffffff;
   /* The phone status bar (<meta name="theme-color">), written by useApplyTheme. */
   --status-bar: var(--panel);
@@ -137,6 +152,7 @@
   --chart-3: #fbbf24;
   --chart-4: #22c55e;
   --chart-5: #f87171;
+  --chart-6: #a78bfa;
 
   --sidebar: #18181b;
   --sidebar-foreground: #f4f4f5;
@@ -152,7 +168,24 @@
   --on-hero: #fafafa;
   --on-hero-muted: rgba(250, 250, 250, 0.68);
 
-  --app: #0e0e10;
+  --brand: #f97316;
+  --brand-deep: #ea580c;
+  --brand-soft: rgba(249, 115, 22, 0.14);
+  --brand-mist: rgba(249, 115, 22, 0.08);
+  /* Carbon on orange, matching --primary-foreground on dark. */
+  --on-brand: #0e0e10;
+  --on-brand-muted: rgba(14, 14, 16, 0.7);
+  --positive: #22c55e;
+  --positive-bright: #4ade80;
+  --info-soft: #0b1a33;
+  --danger-border: rgba(248, 113, 113, 0.32);
+  --track: #27272a;
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --backdrop: #0e0e10;
+  --backdrop-apricot: #22160e;
+  --backdrop-rose: #1f1314;
+  --backdrop-sand: #191512;
   --panel: #18181b;
   --status-bar: var(--panel);
   --surface: #18181b;
@@ -211,6 +244,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -227,7 +261,18 @@
   --color-on-hero-muted: var(--on-hero-muted);
   /* The hero is carbon in both themes, so its accent keeps the brand fill. */
   --color-on-hero-accent: var(--primary);
-  --color-app: var(--app);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-mist: var(--brand-mist);
+  --color-on-brand: var(--on-brand);
+  --color-on-brand-muted: var(--on-brand-muted);
+  --color-positive: var(--positive);
+  --color-positive-bright: var(--positive-bright);
+  --color-info-soft: var(--info-soft);
+  --color-danger-border: var(--danger-border);
+  --color-track: var(--track);
+  --color-overlay: var(--overlay);
   --color-panel: var(--panel);
   --color-surface: var(--surface);
   --color-text-muted: var(--muted-foreground);
@@ -257,18 +302,51 @@
   --text-color-destructive: var(--danger-text);
   --text-color-info: var(--info-text);
 
-  /* Named *-card-* to avoid colliding with Tailwind's own shadow scale. */
+  /* TARTAR's radius scale: every shadcn radius keys off the control radius. */
+  --radius-sm: calc(var(--radius-control) - 2px);
+  --radius-md: var(--radius-control);
+  --radius-lg: calc(var(--radius-control) + 2px);
+  --radius-xl: var(--radius-card);
+
+  /* Named *-card-* to avoid colliding with Tailwind's own shadow scale. Retire in phase 7. */
   --shadow-card-sm: 0 1px 2px color-mix(in oklab, var(--shadow-color) 6%, transparent);
   --shadow-card-md: 0 6px 24px color-mix(in oklab, var(--shadow-color) 8%, transparent);
   --shadow-card-lg: 0 20px 55px color-mix(in oklab, var(--shadow-color) 18%, transparent);
   --shadow-panel: 0 1px 2px color-mix(in oklab, var(--shadow-color) 5%, transparent),
     0 8px 24px color-mix(in oklab, var(--shadow-color) 5%, transparent);
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--shadow-color) 4%, transparent);
+  --shadow-menu: 0 8px 30px color-mix(in oklab, var(--shadow-color) 12%, transparent);
+  --shadow-overlay: 0 12px 40px color-mix(in oklab, var(--shadow-color) 16%, transparent);
+  --shadow-md: var(--shadow-menu);
+  --shadow-lg: var(--shadow-overlay);
 }
 
 @theme {
-  --font-sans: "Geist Numerals", "Geist", sans-serif;
-  /* Figures only. Reaches the UI through the numeric helpers in styles/. */
-  --font-mono: "Geist Mono", monospace;
+  --font-sans: "Plus Jakarta Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Plus Jakarta Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* TARTAR's semantic sizes. The Moti xs…3xl overrides below retire screen by screen. */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.25rem;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.5rem;
+  --text-emphasis: 1rem;
+  --text-emphasis--line-height: 1.5rem;
+  --text-section: 1.125rem;
+  --text-section--line-height: 1.75rem;
+  --text-page-title: 1.5rem;
+  --text-page-title--line-height: 2rem;
+  --text-money-lg: 1.75rem;
+  --text-money-lg--line-height: 2.25rem;
+  --text-hero: 2rem;
+  --text-hero--line-height: 2.5rem;
 
   --text-xs: 0.75rem;
   --text-sm: 0.85rem;
@@ -278,11 +356,11 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.9rem;
 
-  /* --radius-md must match --radius above. */
   --radius-xs: 0.25rem;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-surface: 1rem;
+  --radius-sheet: 1.25rem;
   --radius-panel: 1.25rem;
   --radius-pill: 999px;
 
@@ -301,6 +379,28 @@
     }
     to {
       translate: 300% 0;
+    }
+  }
+
+  --animate-route-progress: route-progress 1.1s ease-in-out infinite;
+  --animate-row-focus: row-focus 0.9s ease-in-out 3;
+
+  @keyframes route-progress {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(300%);
+    }
+  }
+
+  @keyframes row-focus {
+    0%,
+    100% {
+      background-color: var(--brand-mist);
+    }
+    50% {
+      background-color: color-mix(in oklab, var(--brand) 22%, transparent);
     }
   }
 }
@@ -370,9 +470,82 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--muted-foreground) transparent;
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-primary) transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-track:vertical {
+    margin-block: var(--radius-panel);
+  }
+
+  ::-webkit-scrollbar-track:horizontal {
+    margin-inline: var(--radius-panel);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: var(--radius-pill);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-deep);
+    background-clip: content-box;
+  }
+
+  /* Menu and list rows, which the touch-target block above does not reach. */
+  @media (pointer: coarse) {
+    :where(
+      [data-slot="native-select"],
+      [data-slot="combobox-chips"],
+      [data-slot="select-item"],
+      [data-slot="combobox-item"],
+      [data-slot="dropdown-menu-item"],
+      [data-slot="dropdown-menu-sub-trigger"],
+      [data-slot="command-item"]
+    ) {
+      min-height: var(--spacing-touch);
+    }
+
+    /* 16px text stops iOS Safari zooming the page when a field takes focus. */
+    :where(
+      [data-slot="input"],
+      [data-slot="input-group-control"],
+      [data-slot="textarea"],
+      [data-slot="native-select"]
+    ) {
+      font-size: 1rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -383,7 +556,35 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none;
+    }
   }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+/* TARTAR's backdrop gradient, in warm tints. */
+@utility bg-app {
+  background:
+    radial-gradient(1100px 760px at -8% -12%, var(--backdrop-apricot), transparent 62%),
+    radial-gradient(1000px 820px at 108% 38%, var(--backdrop-rose), transparent 60%),
+    radial-gradient(900px 700px at -6% 112%, var(--backdrop-sand), transparent 62%),
+    var(--backdrop);
+}
+
+@utility bg-auth {
+  background:
+    radial-gradient(120% 55% at 50% 118%, var(--backdrop-sand), transparent 70%),
+    radial-gradient(80% 45% at 105% -8%, var(--backdrop-apricot), transparent 70%),
+    linear-gradient(180deg, var(--brand-mist), transparent 60%),
+    var(--backdrop);
 }
 
 /* Safe-area helpers. env() only reports non-zero once index.html sets viewport-fit=cover,
@@ -408,6 +609,14 @@
 @utility px-safe {
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* p-safe-4: the spacing step, or the device inset where that is larger. */
+@utility p-safe-* {
+  padding-top: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-top, 0px));
+  padding-right: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-right, 0px));
+  padding-bottom: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-bottom, 0px));
+  padding-left: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-left, 0px));
 }
 
 /* Content that scrolls above the fixed tab bar. */

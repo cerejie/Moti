@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/input-group";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import { useIsMobile } from "@/hook/use-mobile";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { cn } from "@/utils/cn.utils";
 import type { IFieldConfig, IFieldOption } from "../../../models/common/field.model";
 import {
@@ -82,7 +82,7 @@ const FormField = <TValues extends FieldValues>({
   className,
 }: IProps<TValues>) => {
   const context = useFormContext<TValues>();
-  const isMobile = useIsMobile();
+  const isCompact = useIsCompact();
 
   const {
     type,
@@ -222,7 +222,7 @@ const FormField = <TValues extends FieldValues>({
         const value = asText(bound.value);
 
         // A phone gets the native wheel; it beats a popover list on touch.
-        if (isMobile) {
+        if (isCompact) {
           return (
             <NativeSelect
               id={fieldId}

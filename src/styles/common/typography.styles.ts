@@ -2,11 +2,11 @@
 // weight and colour trio in JSX. Sizes come from the Moti scale in theme.css,
 // which is not Tailwind's default scale.
 
-export const pageTitle = "text-2xl font-semibold tracking-tight text-foreground";
+export const pageTitle = "font-heading text-page-title font-semibold tracking-tight text-foreground";
 
 export const pageSubtitle = "text-md text-muted-foreground";
 
-export const sectionTitle = "text-lg font-semibold text-foreground";
+export const sectionTitle = "font-heading text-section font-semibold text-foreground";
 
 export const cardTitle = "text-md font-semibold text-foreground";
 

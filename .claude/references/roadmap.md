@@ -23,6 +23,29 @@ SaaS build, which comes later.
       nothing left to fix (2026-10-03: converged after round 2; 4 questions wait in
       `.claude/state/autopilot/USER-DECISIONS.md`)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
+- [ ] TARTAR redesign (phases below), one conversation per phase
+
+## TARTAR redesign
+
+Moti adopts TARTAR's UI (`Ejie_Business/TARTAR`) on desktop and phone. Port TARTAR files rather
+than invent; one phase per conversation, plan first.
+
+Decisions (user, 2026-10-07):
+1. Phone nav: keep a bottom tab bar, restyled as TARTAR's floating `AppTabBar` (not TARTAR's drawer).
+2. Tables: port TARTAR's column model (`IDataTableColumn` + `DataTableList` mobile roles), drop TanStack `ColumnDef`.
+3. Colour: keep Moti's orange palette; adopt only TARTAR's token names (brand*, radius, shadow, type
+   scale) with Moti values. Plus Jakarta Sans (`@fontsource-variable/plus-jakarta-sans`) replaces Geist.
+
+- [x] Phase 1 (2026-10-07): tokens, font, breakpoints — TARTAR token names in orange, `compact` /
+      `wide` / `toolbar-searching` variants, radius/shadow/type scales, warm `bg-app` gradient,
+      `useIsCompact` (keyboard inset already in upstream `useKeyboardInset`); Moti `text-sm/md/lg`, `shadow-card-*` and `pb-safe` kept for now
+- [ ] Phase 2: shell — PhoneShell, AppBar, AppSheet, header, floating tab bar (`pb-safe` → TARTAR's)
+- [ ] Phase 3: ContentView + ContextSwitch
+- [ ] Phase 4: table / filter system
+- [ ] Phase 5: form / modal / detail kit
+- [ ] Phase 6: cards and states
+- [ ] Phase 7: migrate screens (Inventory, Transaction, Movements, Users, Masterfile, Dashboard,
+      Account, Auth); retire Moti `text-sm/md/lg` overrides and `shadow-card-*`
 
 ## V1.4: Autopilot loop
 

@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useIsMobile } from "@/hook/use-mobile";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { cn } from "@/utils/cn.utils";
 import { useRowExpansion } from "../../../hook/common/expansion.hook";
 import {
@@ -109,7 +109,7 @@ const DataTable = <TData extends RowData>({
   className,
 }: IProps<TData>) => {
   const { expandedRow, toggleRow } = useRowExpansion(tableKey);
-  const isMobile = useIsMobile();
+  const isCompact = useIsCompact();
 
   const table = useTable({
     features: dataTableFeatures,
@@ -214,7 +214,7 @@ const DataTable = <TData extends RowData>({
     });
   };
 
-  if (isMobile && renderRow) {
+  if (isCompact && renderRow) {
     const renderList = () => {
       if (isLoading) {
         return (
