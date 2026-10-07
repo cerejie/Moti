@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useMediaQuery } from "../../../hook/common/media.hook";
+import { useIsDesktop } from "../../../hook/common/breakpoint.hook";
 import { useNavigationGroups } from "../../../hook/layout/navigation.hook";
 import {
   sidebarContent,
@@ -20,14 +20,12 @@ import {
 } from "../../../styles/layout/sidebar.styles";
 import AppTooltip from "../view/AppTooltip";
 
-// Matches the md-to-lg band where sidebar.styles.ts draws the icon rail.
-const railQuery = "(width >= 48rem) and (width < 64rem)";
-
 // A fixed desktop panel, as in TARTAR: collapsible="none" renders it inline in
 // the shell's flex row instead of as an off-canvas drawer.
 const AppSidebar = () => {
   const groups = useNavigationGroups();
-  const isRail = useMediaQuery(railQuery);
+  // Below lg (a landscape tablet) sidebar.styles.ts draws the icon rail.
+  const isRail = !useIsDesktop();
 
   return (
     <Sidebar collapsible="none" className={sidebarRoot}>

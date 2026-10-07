@@ -39,7 +39,11 @@ Decisions (user, 2026-10-07):
 - [x] Phase 1 (2026-10-07): tokens, font, breakpoints — TARTAR token names in orange, `compact` /
       `wide` / `toolbar-searching` variants, radius/shadow/type scales, warm `bg-app` gradient,
       `useIsCompact` (keyboard inset already in upstream `useKeyboardInset`); Moti `text-sm/md/lg`, `shadow-card-*` and `pb-safe` kept for now
-- [ ] Phase 2: shell — PhoneShell, AppBar, AppSheet, header, floating tab bar (`pb-safe` → TARTAR's)
+- [x] Phase 2 (2026-10-07): shell — `AppShell` returns `PhoneShell` (AppBar + scroll box + floating
+      `TabBar`) on compact, `AppHeader` + sidebar panels on wide; `AppSheet` (+ swipe, close on
+      navigate) with the compact account sheet; `pb-safe` = max(1rem, inset), `pb-safe-4` /
+      `pb-tabbar` / `--spacing-tabbar` and `Topbar` removed; shell styles on `compact:` / `wide:`;
+      Google Fonts runtime caching dropped. `AppBar` always shows the title (ContentView hides its h1)
 - [ ] Phase 3: ContentView + ContextSwitch
 - [ ] Phase 4: table / filter system
 - [ ] Phase 5: form / modal / detail kit

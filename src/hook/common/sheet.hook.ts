@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from "react";
-import type { createBrowserRouter } from "react-router-dom";
+import { useLocation, type createBrowserRouter } from "react-router-dom";
 import { useSheetStore } from "../../store/common/sheet.store";
 
 type AppRouter = ReturnType<typeof createBrowserRouter>;
@@ -26,6 +26,26 @@ export const useSheetEntry = (open: boolean, onClose: () => void) => {
     register(id, () => close.current());
     return () => unregister(id);
   }, [open, id, register, unregister]);
+};
+
+// A sheet opened on one page closes when the user navigates to another.
+export const useCloseOnNavigate = (open: boolean, onClose: () => void) => {
+  const { pathname } = useLocation();
+  const openedAt = useRef(pathname);
+  const close = useRef(onClose);
+
+  useEffect(() => {
+    close.current = onClose;
+  });
+
+  // While closed the page it would open on follows the route.
+  useEffect(() => {
+    if (!open) {
+      openedAt.current = pathname;
+      return;
+    }
+    if (openedAt.current !== pathname) close.current();
+  }, [open, pathname]);
 };
 
 // Keeps one history entry per open sheet: back closes the top sheet instead of

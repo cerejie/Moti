@@ -7,13 +7,13 @@ import { appShellGutterBleed } from "../layout/appShell.styles";
 export const contentViewRoot = "flex flex-col gap-6";
 
 export const contentViewHeader =
-  "flex flex-col gap-4 md:flex-row md:items-start md:justify-between";
+  "flex flex-col gap-4 wide:flex-row wide:items-start wide:justify-between";
 
 // On phones the topbar already carries the title, so the h1 stays for screen readers only.
-export const contentViewHeading = "flex flex-col gap-1 max-md:sr-only";
+export const contentViewHeading = "flex flex-col gap-1 compact:sr-only";
 
 // A header holding only the title leaves the phone layout entirely, gap included.
-export const contentViewHeaderTitleOnly = "max-md:sr-only";
+export const contentViewHeaderTitleOnly = "compact:sr-only";
 
 // A sub-page's back link stands in for the heading. It is pulled out of the
 // column's gutter toward the rail so it reads as navigation, not as part of
@@ -32,7 +32,7 @@ export const contentViewActionsMobile = "w-full [&>*]:flex-1";
 // header and body keep the plain shell's 24px rhythm (CardContent ships gap-3).
 export const contentViewCardFrame = cn(
   appShellGutterBleed,
-  "flex flex-1 flex-col p-4 md:p-6",
+  "flex flex-1 flex-col p-4 wide:p-6",
 );
 
 // No ring and no shadow so the frame reads as a plain white surface.

@@ -364,8 +364,6 @@
   --radius-panel: 1.25rem;
   --radius-pill: 999px;
 
-  /* Installed-app chrome. Content reserves --spacing-tabbar plus the home-indicator inset. */
-  --spacing-tabbar: 3.75rem;
   --spacing-topbar: 4.5rem;
   /* Minimum comfortable touch target on touch breakpoints. */
   --spacing-touch: 2.75rem;
@@ -593,12 +591,8 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* TARTAR's form: a 1rem bottom that grows to clear the home indicator. */
 @utility pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* A 1rem bottom that grows to clear the home indicator, for actions pinned to the screen edge. */
-@utility pb-safe-4 {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }
 
@@ -617,11 +611,6 @@
   padding-right: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-right, 0px));
   padding-bottom: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-bottom, 0px));
   padding-left: max(calc(var(--spacing) * --value(integer)), env(safe-area-inset-left, 0px));
-}
-
-/* Content that scrolls above the fixed tab bar. */
-@utility pb-tabbar {
-  padding-bottom: calc(var(--spacing-tabbar) + env(safe-area-inset-bottom, 0px));
 }
 
 /* Full app height that survives mobile browser chrome collapsing. */

@@ -53,9 +53,8 @@ export const modalActionSize =
 // The ruled action row, matching the header. Bleeds to the dialog's edges.
 export const modalFooter = `-mx-6 -mb-6 border-t border-border px-6 py-4 ${modalActionSize}`;
 
-// Keeps the sheet's 1rem bottom and grows it to clear the home indicator on an
-// installed app (a bare pb-safe would zero it on phones without one).
-export const drawerFooter = `border-t border-border pb-safe-4 ${modalActionSize}`;
+// Keeps the sheet's 1rem bottom and grows it to clear the home indicator on an installed app.
+export const drawerFooter = `border-t border-border pb-safe ${modalActionSize}`;
 
 // While an iOS keyboard is open the sheet rides on top of it and fits the space left.
 export const drawerContent =

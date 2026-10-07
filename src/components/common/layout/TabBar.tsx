@@ -1,34 +1,37 @@
 import { Link } from "react-router-dom";
-import { cn } from "@/utils/cn.utils";
 import { useTabMenu } from "../../../hook/layout/navigation.hook";
 import {
+  tabbarIcon,
   tabbarIndicator,
   tabbarItem,
-  tabbarItemActive,
   tabbarLabel,
+  tabbarList,
   tabbarRoot,
-  tabbarRow,
 } from "../../../styles/layout/tabbar.styles";
 
+// TARTAR's floating AppTabBar, fed by the role-filtered tab menu.
 const TabBar = () => {
   const menu = useTabMenu();
 
   return (
     <nav className={tabbarRoot} aria-label="Primary">
-      <div className={tabbarRow}>
+      <ul className={tabbarList}>
         {menu.map(({ route, active }) => (
-          <Link
-            key={route.key}
-            to={route.path}
-            className={cn(tabbarItem, active && tabbarItemActive)}
-            aria-current={active ? "page" : undefined}
-          >
-            {active && <span className={tabbarIndicator} aria-hidden="true" />}
-            <route.icon size={20} aria-hidden="true" />
-            <span className={tabbarLabel}>{route.shortLabel ?? route.label}</span>
-          </Link>
+          <li key={route.key}>
+            <Link
+              to={route.path}
+              className={tabbarItem({ active })}
+              aria-current={active ? "page" : undefined}
+            >
+              <span className={tabbarIcon} aria-hidden="true">
+                <route.icon />
+              </span>
+              <span className={tabbarLabel}>{route.shortLabel ?? route.label}</span>
+              {active && <span className={tabbarIndicator} aria-hidden="true" />}
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </nav>
   );
 };
