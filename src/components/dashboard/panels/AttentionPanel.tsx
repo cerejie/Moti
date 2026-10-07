@@ -18,7 +18,7 @@ import { formatNumber } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 
 const visibleRows = 6;
 
@@ -30,12 +30,12 @@ const AttentionPanel = () => {
   const count = items.length;
 
   const renderBody = () => {
-    if (alerts.isLoading) return <StateBox loading>Checking stock…</StateBox>;
+    if (alerts.isLoading) return <EmptyState loading description="Checking stock…" />;
     if (alerts.isError) {
       return <ErrorState error={alerts.error} onRetry={() => void alerts.refetch()} />;
     }
     if (count === 0) {
-      return <StateBox compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
+      return <EmptyState compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
     }
 
     return (
@@ -73,8 +73,8 @@ const AttentionPanel = () => {
   return (
     <SectionCard
       title="Needs attention"
-      description={count > 0 ? `${count} item${count === 1 ? "" : "s"} to restock` : undefined}
-      actions={
+      subtitle={count > 0 ? `${count} item${count === 1 ? "" : "s"} to restock` : undefined}
+      extra={
         count > visibleRows && (
           <AppButton href={ROUTES.inventory} variant="link">
             View all

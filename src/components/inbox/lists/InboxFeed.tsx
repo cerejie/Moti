@@ -31,7 +31,7 @@ import {
 import { formatDateTime } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 
 const inboxIcons: Record<InboxKind, LucideIcon> = {
   stock: TriangleAlert,
@@ -61,13 +61,15 @@ const InboxFeed = ({ section, onOpen }: IProps) => {
   };
 
   const renderBody = () => {
-    if (!isAction && inbox.loading) return <StateBox loading>Loading notifications…</StateBox>;
+    if (!isAction && inbox.loading) return <EmptyState loading description="Loading notifications…" />;
     if (!isAction && inbox.error) return <ErrorState error={inbox.error} onRetry={inbox.retry} />;
     if (items.length === 0) {
       return (
-        <StateBox icon={<BellOff />} title="No updates yet">
-          New notifications show up here.
-        </StateBox>
+        <EmptyState
+          icon={<BellOff />}
+          title="No updates yet"
+          description="New notifications show up here."
+        />
       );
     }
 

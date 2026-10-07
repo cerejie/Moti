@@ -13,7 +13,7 @@ import {
 import { formatDateTime } from "../../../utils/format.utils";
 import AppButton from "../button/AppButton";
 import AppModal from "../modal/AppModal";
-import StateBox from "./StateBox";
+import EmptyState from "./EmptyState";
 
 const statusText = (entry: IQueueEntry) => {
   const status = entry.failure ?? "Waiting to send";
@@ -44,7 +44,7 @@ const SyncQueueModal = () => {
       }
     >
       {queue.length === 0 ? (
-        <StateBox icon={<CloudCheck />} title="Everything is synced" />
+        <EmptyState icon={<CloudCheck />} title="Everything is synced" />
       ) : (
         <ul className={syncQueueList}>
           {queue.map((entry) => (

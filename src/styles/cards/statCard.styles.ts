@@ -1,81 +1,33 @@
-import { cva } from "class-variance-authority";
+// Stat tiles reflow by their own width (container queries), not the viewport,
+// so a quarter tile on a desktop and a half tile on a phone both fit.
+export const statCard = "@container/stat h-full";
 
-// Metric tile on shadcn's Item (outline). Item owns the layout, padding and
-// focus ring; only the tone colours are layered on. Tones come from the
-// shared semantic set so the same meaning is never two colours. `lg` is a
-// summary row: roomier padding and a bigger icon chip and type. On a phone the
-// half-width tile stacks (icon, value, label) so the value leads and nothing wraps.
-export const statCardRoot = cva("max-md:flex-col max-md:items-start max-md:gap-2", {
-  variants: {
-    tone: {
-      neutral: "",
-      brand: "border-primary/50 bg-primary/5",
-      success: "border-success/60 bg-success/5",
-      warning: "border-warning/50 bg-warning/5",
-      danger: "border-danger/50 bg-danger/5",
-      info: "border-link/50 bg-link/5",
-    },
-    size: {
-      md: "",
-      lg: "gap-4 px-6 py-5",
-    },
-  },
-  defaultVariants: { tone: "neutral", size: "md" },
-});
+export const statLink =
+  "block h-full rounded-card outline-none transition-transform select-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-pressed:scale-98 motion-reduce:transition-none";
 
-// Solid tone circle on the ItemMedia icon chip; the aria icon variant sizes
-// only the svg, so the chip's own size lives here.
-export const statCardIcon = cva("rounded-full border-transparent text-white", {
-  variants: {
-    tone: {
-      neutral: "bg-muted-foreground",
-      brand: "bg-primary",
-      success: "bg-success",
-      warning: "bg-warning",
-      danger: "bg-danger",
-      info: "bg-info",
-    },
-    size: {
-      md: "size-9 [&_svg:not([class*='size-'])]:size-5",
-      lg: "size-12 [&_svg:not([class*='size-'])]:size-6",
-    },
-  },
-  defaultVariants: { tone: "neutral", size: "md" },
-});
+export const statBody = "flex flex-col gap-2";
 
-export const statCardLabel = cva("", {
-  variants: {
-    tone: {
-      neutral: "text-muted-foreground",
-      brand: "text-primary",
-      success: "text-success",
-      warning: "text-warning",
-      danger: "text-danger",
-      info: "text-info",
-    },
-    size: {
-      md: "",
-      lg: "text-md",
-    },
-  },
-  defaultVariants: { tone: "neutral", size: "md" },
-});
+// A narrow tile puts the icon chip above the figure.
+export const statHead =
+  "flex items-start justify-between gap-2 @max-[12rem]/stat:flex-col-reverse @max-[12rem]/stat:items-stretch @max-[12rem]/stat:gap-3";
 
-// The value is listed after its label for screen readers but drawn above it on a phone.
-export const statCardValue = cva(
-  "truncate font-semibold tabular-nums text-foreground max-md:order-first max-md:text-2xl",
-  {
-    variants: {
-      size: {
-        md: "text-md",
-        lg: "text-xl",
-      },
-    },
-    defaultVariants: { size: "md" },
-  },
-);
+export const statHeading = "@container flex min-w-0 flex-1 flex-col gap-1";
 
-export const statCardTrailing = "text-muted-foreground";
+export const statTitle =
+  "text-sm text-muted-foreground @max-[12rem]/stat:truncate @max-[12rem]/stat:text-xs";
 
-// The hint needs more width than a half-screen tile has.
-export const statCardHint = "max-md:hidden";
+export const statValue =
+  "flex items-baseline gap-1 truncate font-heading text-base font-semibold tabular-nums @min-[8rem]:text-lg @min-[9.5rem]:text-xl @min-[11rem]:text-2xl";
+
+export const statAffix = "text-sm font-normal text-muted-foreground";
+
+export const statIcon =
+  "inline-flex size-9 shrink-0 items-center justify-center rounded-md @max-[12rem]/stat:rounded-full [&_svg]:size-4";
+
+export const statChipRow = "flex flex-wrap items-center gap-2";
+
+export const statCaption = "text-xs text-muted-foreground @max-[12rem]/stat:line-clamp-2";
+
+export const statSkeletonTitle = "h-4 w-3/5";
+
+export const statSkeletonValue = "h-7 w-4/5";

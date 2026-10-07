@@ -27,7 +27,7 @@ import FormField from "../../common/form/FormField";
 import FormRoot from "../../common/form/FormRoot";
 import AppModal from "../../common/modal/AppModal";
 import AppAlert from "../../common/status/AppAlert";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 import CartQuantityInput from "../menus/CartQuantityInput";
 
 const formId = "checkout-form";
@@ -75,7 +75,7 @@ const CartModal = () => {
         {mutation.error && <AppAlert tone="danger">{mutation.error.message}</AppAlert>}
 
         {empty ? (
-          <StateBox>The cart is empty. Add items from the list.</StateBox>
+          <EmptyState description="The cart is empty. Add items from the list." />
         ) : (
           <ul className={cartList}>
             {cart.lines.map(({ item, quantity }) => (

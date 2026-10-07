@@ -1,91 +1,120 @@
 import type { ReactNode } from "react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Link } from "react-aria-components";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/cn.utils";
-import type { Tone } from "../../../styles/common/tone.styles";
 import {
-  statCardHint,
-  statCardIcon,
-  statCardLabel,
-  statCardRoot,
-  statCardTrailing,
-  statCardValue,
+  statAffix,
+  statBody,
+  statCaption,
+  statCard,
+  statChipRow,
+  statHead,
+  statHeading,
+  statIcon,
+  statLink,
+  statSkeletonTitle,
+  statSkeletonValue,
+  statTitle,
+  statValue,
 } from "../../../styles/cards/statCard.styles";
+import { toneChip, toneText, type Tone } from "../../../styles/common/tone.styles";
+import { formatPeso } from "../../../utils/format.utils";
+import ErrorState from "../status/ErrorState";
 
 type IProps = {
-  label: string;
-  value: ReactNode;
-  hint?: string;
+  title: string;
+  value: number | string | null | undefined;
+  loading?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
+  // Shows the value as given; otherwise a number is formatted as pesos.
+  raw?: boolean;
+  prefix?: ReactNode;
+  unit?: string;
+  variant?: Tone;
   icon?: ReactNode;
-  tone?: Tone;
-  size?: "md" | "lg";
-  // Affordance at the end of the tile, e.g. an "opens elsewhere" arrow.
-  trailing?: ReactNode;
-  // Sits under the value; the dashboard puts a status badge here.
-  footer?: ReactNode;
-  // Renders the whole tile as a link when given.
-  to?: string;
-  className?: string;
+  chip?: ReactNode;
+  caption?: ReactNode;
+  href?: string;
+  children?: ReactNode;
+};
+
+const formatValue = (value: IProps["value"], raw: boolean) => {
+  if (value === null || value === undefined) return "—";
+  if (raw || typeof value === "string") return value;
+  return formatPeso(value);
 };
 
 const StatCard = ({
-  label,
+  title,
   value,
-  hint,
+  loading,
+  error,
+  onRetry,
+  raw = false,
+  prefix,
+  unit,
+  variant = "neutral",
   icon,
-  tone = "neutral",
-  size = "md",
-  trailing,
-  footer,
-  to,
-  className,
+  chip,
+  caption,
+  href,
+  children,
 }: IProps) => {
-  const content = (
-    <>
-      {icon && (
-        <ItemMedia
-          variant="icon"
-          className={statCardIcon({ tone, size })}
-          aria-hidden
-        >
-          {icon}
-        </ItemMedia>
-      )}
-      <ItemContent>
-        <ItemTitle className={statCardLabel({ tone, size })}>{label}</ItemTitle>
-        <span className={statCardValue({ size })}>{value}</span>
-        {hint && <ItemDescription className={statCardHint}>{hint}</ItemDescription>}
-        {footer}
-      </ItemContent>
-      {trailing && (
-        <ItemActions className={statCardTrailing}>{trailing}</ItemActions>
-      )}
-    </>
-  );
-
-  const rootClassName = cn(statCardRoot({ tone, size }), className);
-
-  // Item turns into a link only when href is present at all, so the prop is
-  // left off rather than passed as undefined. The RouterProvider in AppShell
-  // keeps the navigation client-side.
-  if (to) {
+  if (loading) {
     return (
-      <Item variant="outline" className={rootClassName} href={to}>
-        {content}
-      </Item>
+      <Card size="sm" className={statCard} aria-busy>
+        <CardContent className={statBody}>
+          <Skeleton className={statSkeletonTitle} />
+          <Skeleton className={statSkeletonValue} />
+        </CardContent>
+      </Card>
     );
   }
 
+  if (error) {
+    return (
+      <Card size="sm" className={statCard}>
+        <CardContent className={statBody}>
+          <ErrorState compact error={error} title={`${title} unavailable`} onRetry={onRetry} />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const card = (
+    <Card size="sm" className={statCard}>
+      <CardContent className={statBody}>
+        <div className={statHead}>
+          <div className={statHeading}>
+            <span className={statTitle}>{title}</span>
+            <span className={cn(statValue, toneText({ tone: variant }))}>
+              {prefix ? <span className={statAffix}>{prefix}</span> : null}
+              {formatValue(value, raw)}
+              {unit ? <span className={statAffix}>{unit}</span> : null}
+            </span>
+          </div>
+          {icon ? (
+            <span className={cn(statIcon, toneChip({ tone: variant }))} aria-hidden>
+              {icon}
+            </span>
+          ) : null}
+        </div>
+
+        {chip ? <div className={statChipRow}>{chip}</div> : null}
+        {caption ? <div className={statCaption}>{caption}</div> : null}
+        {children}
+      </CardContent>
+    </Card>
+  );
+
+  if (!href) return card;
+
   return (
-    <Item variant="outline" className={rootClassName}>
-      {content}
-    </Item>
+    <Link href={href} className={statLink}>
+      {card}
+    </Link>
   );
 };
 

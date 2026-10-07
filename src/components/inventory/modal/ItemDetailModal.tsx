@@ -40,7 +40,7 @@ import {
 import AppButton from "../../common/button/AppButton";
 import DetailModal from "../../common/modal/DetailModal";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 import StockStatusBadge from "../status/StockStatusBadge";
 
 const sections: IDetailSection<IInventoryItem>[] = [
@@ -111,11 +111,11 @@ const ItemDetailModal = () => {
     handOff((current) => stockModal.openModal({ item: current, action }));
 
   const renderHistory = () => {
-    if (history.isLoading) return <StateBox loading>Loading history…</StateBox>;
+    if (history.isLoading) return <EmptyState loading description="Loading history…" />;
     if (history.isError) {
       return <ErrorState error={history.error} onRetry={() => void history.refetch()} />;
     }
-    if (!history.data?.length) return <StateBox>No stock movements yet.</StateBox>;
+    if (!history.data?.length) return <EmptyState description="No stock movements yet." />;
 
     return (
       <ul className={historyList}>

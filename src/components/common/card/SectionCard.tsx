@@ -8,94 +8,88 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/cn.utils";
-import type { CardTone } from "../../../models/common/view.model";
 import {
-  sectionCardActions,
   sectionCardBody,
-  sectionCardFill,
-  sectionCardFlush,
+  sectionCardExtra,
+  sectionCardFlushBody,
   sectionCardFooter,
-  sectionCardHeader,
   sectionCardInset,
   sectionCardRoot,
+  sectionCardSkeleton,
+  sectionCardTitle,
 } from "../../../styles/cards/card.styles";
-import { cardTitle } from "../../../styles/common/typography.styles";
+import ErrorState from "../status/ErrorState";
 
 type IProps = {
   title?: string;
-  // Names a card that has no visible title, so it still reads as a region.
-  ariaLabel?: string;
-  description?: string;
-  actions?: ReactNode;
+  subtitle?: string;
+  extra?: ReactNode;
+  stackExtra?: boolean;
+  flush?: boolean;
+  dense?: boolean;
   footer?: ReactNode;
-  tone?: CardTone;
-  // shadcn's compact card: tighter spacing all round for a small inset block.
-  size?: "default" | "sm";
-  // Unpadded lets a table or map sit flush to the card edge.
-  padded?: boolean;
-  // Borderless drops the outline ring for cards that sit on a white page.
-  bordered?: boolean;
-  // The body takes the card's spare height rather than only its content's.
-  fill?: boolean;
-  // Takes the card out of reach - no clicks, no focus - while something else
-  // on the screen holds the user.
-  inert?: boolean;
-  className?: string;
-  children?: ReactNode;
+  loading?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
+  children: ReactNode;
 };
 
 const SectionCard = ({
   title,
-  ariaLabel,
-  description,
-  actions,
+  subtitle,
+  extra,
+  stackExtra = false,
+  flush = false,
+  dense = false,
   footer,
-  tone = "surface",
-  size = "default",
-  padded = true,
-  bordered = true,
-  fill = false,
-  inert,
-  className,
+  loading = false,
+  error,
+  onRetry,
   children,
 }: IProps) => {
-  const hasHeader = Boolean(title || description || actions);
-  const inset = padded ? undefined : sectionCardInset;
+  const inset = flush ? sectionCardInset : undefined;
+
+  const renderBody = () => {
+    if (loading) return <Skeleton className={sectionCardSkeleton} />;
+    if (error) {
+      return (
+        <ErrorState
+          compact
+          error={error}
+          title={title ? `${title} unavailable` : undefined}
+          onRetry={onRetry}
+        />
+      );
+    }
+    return children;
+  };
 
   return (
-    <Card
-      role={ariaLabel ? "region" : undefined}
-      aria-label={ariaLabel}
-      size={size}
-      className={cn(sectionCardRoot({ tone, padded, bordered }), className)}
-      inert={inert}
-    >
-      {hasHeader && (
-        <CardHeader className={cn(sectionCardHeader, inset)}>
-          {title && <CardTitle className={cardTitle}>{title}</CardTitle>}
-          {description && <CardDescription>{description}</CardDescription>}
-          {actions && (
-            <CardAction className={sectionCardActions}>{actions}</CardAction>
-          )}
+    <Card size={dense ? "sm" : "default"} className={sectionCardRoot({ flush })}>
+      {title || subtitle || extra ? (
+        <CardHeader className={inset}>
+          {title ? <CardTitle className={sectionCardTitle}>{title}</CardTitle> : null}
+          {subtitle ? <CardDescription>{subtitle}</CardDescription> : null}
+          {extra ? (
+            <CardAction className={sectionCardExtra({ stacked: stackExtra })}>
+              {extra}
+            </CardAction>
+          ) : null}
         </CardHeader>
-      )}
+      ) : null}
 
       <CardContent
-        className={cn(
-          sectionCardBody,
-          fill && sectionCardFill,
-          !padded && sectionCardFlush,
-        )}
+        className={cn(sectionCardBody, flush && sectionCardFlushBody)}
+        aria-busy={loading}
       >
-        {children}
+        {renderBody()}
       </CardContent>
 
-      {footer && (
-        <CardFooter className={cn(sectionCardFooter, inset)}>
-          {footer}
-        </CardFooter>
-      )}
+      {footer ? (
+        <CardFooter className={cn(sectionCardFooter, inset)}>{footer}</CardFooter>
+      ) : null}
     </Card>
   );
 };

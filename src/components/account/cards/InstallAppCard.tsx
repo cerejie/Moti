@@ -11,7 +11,7 @@ const InstallAppCard = () => {
   return (
     <SectionCard
       title="Install Moti"
-      actions={installed && <StatusBadge tone="success">Installed</StatusBadge>}
+      extra={installed && <StatusBadge tone="success">Installed</StatusBadge>}
     >
       <div className={accountCardBody}>
         {installed && (

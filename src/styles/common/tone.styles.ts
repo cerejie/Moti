@@ -20,21 +20,47 @@ export const tone = cva("", {
 
 export type Tone = NonNullable<VariantProps<typeof tone>["tone"]>;
 
-// Solid fills, for the one element per surface that carries emphasis.
-export const toneSolid = cva("text-white", {
+// A figure's own colour: only gains, losses and warnings tint it, the rest stay ink.
+export const toneText = cva("", {
   variants: {
     tone: {
-      neutral: "bg-muted-foreground",
-      brand: "bg-primary",
+      neutral: "text-foreground",
+      brand: "text-foreground",
+      success: "text-success",
+      warning: "text-warning",
+      danger: "text-danger",
+      info: "text-foreground",
+    },
+  },
+  defaultVariants: { tone: "neutral" },
+});
+
+// Soft icon chip beside a figure.
+export const toneChip = cva("", {
+  variants: {
+    tone: {
+      neutral: "bg-muted text-foreground",
+      brand: "bg-brand-soft text-brand",
+      success: "bg-success/10 text-success",
+      warning: "bg-warning/10 text-warning",
+      danger: "bg-danger-bg text-danger",
+      info: "bg-info-soft text-info",
+    },
+  },
+  defaultVariants: { tone: "neutral" },
+});
+
+// Solid fill for bars, dots and progress indicators.
+export const toneFill = cva("", {
+  variants: {
+    tone: {
+      neutral: "bg-primary",
+      brand: "bg-brand",
       success: "bg-success",
       warning: "bg-warning",
       danger: "bg-danger",
       info: "bg-info",
     },
   },
-  defaultVariants: { tone: "brand" },
+  defaultVariants: { tone: "neutral" },
 });
-
-// Small round icon chip used by stat cards, timelines and step markers.
-export const toneChip =
-  "flex size-8 shrink-0 items-center justify-center rounded-md border";

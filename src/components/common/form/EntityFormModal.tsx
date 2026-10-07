@@ -123,7 +123,7 @@ const EntityFormModal = <TValues extends FieldValues>({
       }
     >
       <FormRoot form={form} onSubmit={onSubmit} id={formId} className={modalForm}>
-        {error && <ErrorState message={error} />}
+        {error && <ErrorState compact message={error} />}
 
         {sections
           ? visibleSections.map((section) => (

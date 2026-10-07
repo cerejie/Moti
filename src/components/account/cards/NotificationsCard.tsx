@@ -20,7 +20,7 @@ const NotificationsCard = () => {
   return (
     <SectionCard
       title="Notifications"
-      actions={
+      extra={
         mode === "on" ? (
           <StatusBadge tone="success" dot>
             On

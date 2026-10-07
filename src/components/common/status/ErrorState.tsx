@@ -1,15 +1,26 @@
-import { AlertTriangle, RotateCw, WifiOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { Tone } from "../../../styles/common/tone.styles";
+import type { ReactNode } from "react";
+import { RotateCw, TriangleAlert, WifiOff } from "lucide-react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { errorState, errorStateMedia } from "../../../styles/status/status.styles";
 import { describeError } from "../../../utils/error.utils";
-import AppAlert from "./AppAlert";
+import AppButton from "../button/AppButton";
 
 type IProps = {
   error?: unknown;
   title?: string;
   message?: string;
+  icon?: ReactNode;
   onRetry?: () => void;
   retryLabel?: string;
+  // A tight block for inside a card, a tile or a form.
+  compact?: boolean;
   className?: string;
 };
 
@@ -17,31 +28,33 @@ const ErrorState = ({
   error,
   title,
   message,
+  icon = <TriangleAlert />,
   onRetry,
   retryLabel = "Try again",
+  compact = false,
   className,
 }: IProps) => {
   const description = describeError(error, message);
-  // Being offline is not the user's mistake, so it stays the softer warning tone.
-  const tone: Tone = description.kind === "network" ? "warning" : "danger";
+  const offline = description.kind === "network";
 
   return (
-    <AppAlert
-      tone={tone}
-      icon={description.kind === "network" ? <WifiOff /> : <AlertTriangle />}
-      title={title ?? description.title}
-      actions={
-        onRetry && (
-          <Button type="button" variant="outline" size="sm" onPress={onRetry}>
-            <RotateCw />
+    <Empty role="alert" className={errorState({ compact, className })}>
+      <EmptyHeader>
+        <EmptyMedia variant="icon" className={errorStateMedia({ offline })} aria-hidden>
+          {offline ? <WifiOff /> : icon}
+        </EmptyMedia>
+        <EmptyTitle>{title ?? description.title}</EmptyTitle>
+        <EmptyDescription>{description.message}</EmptyDescription>
+      </EmptyHeader>
+      {onRetry ? (
+        <EmptyContent>
+          <AppButton variant="outline" size="sm" onPress={onRetry}>
+            <RotateCw aria-hidden />
             {retryLabel}
-          </Button>
-        )
-      }
-      className={className}
-    >
-      <p>{description.message}</p>
-    </AppAlert>
+          </AppButton>
+        </EmptyContent>
+      ) : null}
+    </Empty>
   );
 };
 

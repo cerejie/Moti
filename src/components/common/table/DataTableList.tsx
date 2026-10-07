@@ -33,6 +33,7 @@ import {
   dataListTrail,
 } from "../../../styles/table/table.styles";
 import ErrorState from "../status/ErrorState";
+import RefreshBar from "../status/RefreshBar";
 import RecordDetailSheet from "./RecordDetailSheet";
 import TableEmptyState from "./TableEmptyState";
 
@@ -244,6 +245,7 @@ const DataTableList = <T,>({
   return (
     <>
       <div className={cn(dataListFrame, className)}>
+        {refreshing ? <RefreshBar placement="above" /> : null}
         <ul className={dataList} aria-label={label} aria-busy={refreshing}>
           {rows.map(renderRow)}
         </ul>

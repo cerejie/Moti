@@ -23,7 +23,7 @@ const AccountProfileCard = () => {
   return (
     <SectionCard
       title="Profile"
-      description={
+      subtitle={
         role === "employee"
           ? "Ask the owner to change your name or email."
           : "The name and email you sign in with."

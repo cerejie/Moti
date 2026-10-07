@@ -24,7 +24,7 @@ import {
 import AppButton from "../../common/button/AppButton";
 import DetailModal from "../../common/modal/DetailModal";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
 
 const sections: IDetailSection<ITransaction>[] = [
@@ -77,11 +77,11 @@ const TransactionDetailModal = () => {
   };
 
   const renderLines = () => {
-    if (lines.isLoading) return <StateBox loading>Loading items…</StateBox>;
+    if (lines.isLoading) return <EmptyState loading description="Loading items…" />;
     if (lines.isError) {
       return <ErrorState error={lines.error} onRetry={() => void lines.refetch()} />;
     }
-    if (!lines.data?.length) return <StateBox>No items found.</StateBox>;
+    if (!lines.data?.length) return <EmptyState description="No items found." />;
 
     return (
       <ul className={historyList}>

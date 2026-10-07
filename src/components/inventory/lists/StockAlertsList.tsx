@@ -14,7 +14,7 @@ import {
 } from "../../../styles/inventory/inventory.styles";
 import { formatNumber } from "../../../utils/format.utils";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 import StockStatusBadge from "../status/StockStatusBadge";
 
 // Computed from current stock, so an item leaves the list once it is restocked.
@@ -22,12 +22,12 @@ const StockAlertsList = () => {
   const alerts = useStockAlerts();
   const items = alerts.data ?? [];
 
-  if (alerts.isLoading) return <StateBox loading>Checking stock…</StateBox>;
+  if (alerts.isLoading) return <EmptyState loading description="Checking stock…" />;
   if (alerts.isError) {
     return <ErrorState error={alerts.error} onRetry={() => void alerts.refetch()} />;
   }
   if (items.length === 0) {
-    return <StateBox compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
+    return <EmptyState compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
   }
 
   return (

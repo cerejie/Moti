@@ -71,7 +71,16 @@ Decisions (user, 2026-10-07):
       (`useSectionDisclosure`), `kind="form"`, `submitKind`; `fieldSpan` cva; modal/form styles on
       `wide:`. Not ported: `FormSummary(Bar)`, `deriveValues`, `intro`, `DetailPanel`, `RowDetailPanel`.
       Screens pass `detailSections` / `detailActions` in phase 7
-- [ ] Phase 6: cards and states
+- [x] Phase 6 (2026-10-07): cards and states — TARTAR's `SectionCard` (`subtitle`, `extra`,
+      `stackExtra` on `compact:`, `flush`, `dense`, `loading` / `error` / `onRetry`) and `StatCard`
+      (Card + `@container/stat` reflow, `variant` tone chip, `chip`, `caption`, `href`, `raw`,
+      peso by default, `loading` / `error`); `EmptyState` replaces `StateBox` (Moti's `compact`
+      line and loading text kept); `ErrorState` is TARTAR's Empty block + `compact`, keeping
+      `describeError` (offline = warning chip); `RefreshBar` over `DataTableList` while refreshing;
+      `toneText` / `toneChip` / `toneFill` on Moti tone names; `moneyLevel` ported (not yet used);
+      no `md:` left in card/status styles. `StateBox.tsx`, `LoadingBar.tsx` and
+      `styles/state/state.styles.ts` are unused, waiting for the user to delete them. Not ported:
+      `InfoCard`, `StatDelta`, `ProgressRow`, `StatusTag` (StatusBadge stays)
 - [ ] Phase 7: migrate screens (Inventory, Transaction, Movements, Users, Masterfile, Dashboard,
       Account, Auth); retire Moti `text-sm/md/lg` overrides and `shadow-card-*`
 

@@ -16,22 +16,24 @@ import { formatDateTime, formatSignedQuantity } from "../../../utils/format.util
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import ErrorState from "../../common/status/ErrorState";
-import StateBox from "../../common/status/StateBox";
+import EmptyState from "../../common/status/EmptyState";
 
 const RecentMovementsPanel = () => {
   const recent = useRecentMovements();
   const movements = recent.data ?? [];
 
   const renderBody = () => {
-    if (recent.isLoading) return <StateBox loading>Loading activity…</StateBox>;
+    if (recent.isLoading) return <EmptyState loading description="Loading activity…" />;
     if (recent.isError) {
       return <ErrorState error={recent.error} onRetry={() => void recent.refetch()} />;
     }
     if (movements.length === 0) {
       return (
-        <StateBox icon={<History />} title="No activity yet">
-          Sales and restocks show up here as they happen.
-        </StateBox>
+        <EmptyState
+          icon={<History />}
+          title="No activity yet"
+          description="Sales and restocks show up here as they happen."
+        />
       );
     }
 
@@ -63,7 +65,7 @@ const RecentMovementsPanel = () => {
   return (
     <SectionCard
       title="Recent activity"
-      actions={
+      extra={
         <AppButton href={ROUTES.movements} variant="link">
           Full history
         </AppButton>
