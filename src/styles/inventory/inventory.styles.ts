@@ -44,9 +44,6 @@ export const stockStatusText = cva("text-xs font-medium", {
   defaultVariants: { status: "in_stock" },
 });
 
-// Toolbar tabs sit on their own row on phones, beside the selects from md up.
-export const inventoryViewTabs = "w-full md:w-auto";
-
 // Stock dialog: what is being moved, and the before → after preview.
 export const stockSummary = "flex items-center justify-between gap-3 rounded-xl bg-muted p-3";
 

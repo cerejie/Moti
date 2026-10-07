@@ -3,18 +3,14 @@ import { useModal } from "../../../hook/common/modal.hook";
 import { useCategoryDelete } from "../../../hook/data/category/category.form.hook";
 import { useCategoryList } from "../../../hook/data/category/category.list.hook";
 import { categoryFormModalKey } from "../../../keys/modal.keys";
-import { categoryTableKey } from "../../../keys/table.keys";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { ICategory } from "../../../models/data/category/category.response";
 import { itemName, mutedText } from "../../../styles/inventory/inventory.styles";
-import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
-import { formatNumber, formatShortDate } from "../../../utils/format.utils";
+import { nowrapCell } from "../../../styles/table/table.styles";
+import { formatCount, formatNumber, formatShortDate } from "../../../utils/format.utils";
 import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import MasterfileRow from "../../masterfile/lists/MasterfileRow";
-
-const column = dataTableColumns<ICategory>();
 
 const itemCountOf = (category: ICategory) => category.inventory_items[0]?.count ?? 0;
 
@@ -24,7 +20,7 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
 
   return (
     <RowActionMenu
-      label={category.name}
+      label={`Manage ${category.name}`}
       actions={[
         { key: "rename", label: "Rename", icon: <Pencil />, onSelect: () => openModal(category) },
         {
@@ -40,30 +36,32 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
 };
 
 const columns: IDataTableColumn<ICategory>[] = [
-  column.display({
-    id: "name",
-    header: "Category",
-    cell: ({ row }) => <span className={itemName}>{row.original.name}</span>,
-  }),
-  column.display({
-    id: "items",
-    header: "Items",
-    cell: ({ row }) => <span className={mutedText}>{formatNumber(itemCountOf(row.original))}</span>,
-  }),
-  column.display({
-    id: "created",
-    header: "Added",
-    cell: ({ row }) => <span className={mutedText}>{formatShortDate(row.original.created_at)}</span>,
-  }),
-  column.display({
-    id: "actions",
-    header: () => <span className={tableHeadHidden}>Actions</span>,
-    cell: ({ row }) => (
-      <div className={tableCellActions}>
-        <CategoryActions category={row.original} />
-      </div>
-    ),
-  }),
+  {
+    key: "name",
+    title: "Category",
+    render: (_, category) => <span className={itemName}>{category.name}</span>,
+    listRender: (category) => category.name,
+  },
+  {
+    key: "items",
+    title: "Items",
+    mobile: "status",
+    render: (_, category) => <span className={mutedText}>{formatNumber(itemCountOf(category))}</span>,
+    listRender: (category) => <span className={mutedText}>{formatCount(itemCountOf(category), "item")}</span>,
+  },
+  {
+    key: "created",
+    title: "Added",
+    render: (_, category) => <span className={mutedText}>{formatShortDate(category.created_at)}</span>,
+    listRender: (category) => `Added ${formatShortDate(category.created_at)}`,
+  },
+  {
+    key: "actions",
+    title: "Action",
+    align: "center",
+    className: nowrapCell,
+    render: (_, category) => <CategoryActions category={category} />,
+  },
 ];
 
 const CategoryTable = () => {
@@ -71,25 +69,14 @@ const CategoryTable = () => {
 
   return (
     <TablePanel>
-      <DataTable
-        tableKey={categoryTableKey}
+      <DataTable<ICategory>
         label="Categories"
-        data={query.data ?? []}
         columns={columns}
-        getRowId={(category) => category.id}
-        isLoading={query.isLoading}
-        isError={query.isError}
+        data={query.data ?? []}
+        loading={query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No categories yet. Add one to group your items."
-        renderRow={(category) => (
-          <MasterfileRow
-            name={category.name}
-            itemCount={itemCountOf(category)}
-            createdAt={category.created_at}
-            action={<CategoryActions category={category} />}
-          />
-        )}
       />
     </TablePanel>
   );

@@ -50,7 +50,17 @@ Decisions (user, 2026-10-07):
       `AppBar` fades the title in past 44 px; bento on `wide:`; `media.hook.ts` and
       `--spacing-topbar` deleted; skills say AppBar/AppHeader. `ViewTabs` / `SegmentTabs` stay
       until their screens move to ContextSwitch (phases 4 and 7)
-- [ ] Phase 4: table / filter system
+- [x] Phase 4 (2026-10-07): table / filter system — TARTAR's `IDataTableColumn` (`models/common/table.model.ts`,
+      `mobile` roles, `listHidden` / `listRender`, `collapse`) replaces TanStack `ColumnDef`
+      (`@tanstack/react-table` removed); `DataTableList` draws compact rows from the roles (the six
+      `*/lists/*Row` files, `ListRow` / `ListGroup` and the expansion hook/store are gone); ruled
+      TARTAR grid + `TableEmptyState`; DataTable owns paging — numbered `TablePagination` on wide,
+      `LoadMoreSentinel` (grows the page) on compact; plain `TablePanel`; TARTAR `RowActionMenu`;
+      `FilterToolbar` is layout only (`toolbar-searching`), keyed search/selects/sheet moved to
+      `FilterBar` + `filter/SearchInput`; the 4 table switches are `ContextSwitch` above the toolbar;
+      table/filter styles on `compact:` / `wide:`. Not ported: selection, sort, row focus, pending-sync
+      rows, `RecordDetailSheet` (phase 5). No ContentView `toolbar` slot needed.
+      `SegmentedControl` stays for AccountDeviceCard only
 - [ ] Phase 5: form / modal / detail kit
 - [ ] Phase 6: cards and states
 - [ ] Phase 7: migrate screens (Inventory, Transaction, Movements, Users, Masterfile, Dashboard,

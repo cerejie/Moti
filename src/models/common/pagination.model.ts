@@ -54,3 +54,27 @@ export const toPage = <T>(
   totalPages: totalPages(totalCount, pagination.pageSize),
   totalCount,
 });
+
+export type IPageItem = number | "gap-start" | "gap-end";
+
+// Phones load more rows by growing the page instead of stepping through pages.
+export const loadMoreStep = 20;
+
+export const grownPageSize = (pagination: IPaginationRequest) =>
+  pagination.pageNumber * pagination.pageSize + loadMoreStep;
+
+export const pageItems = (current: number, last: number): IPageItem[] => {
+  const siblings = [current - 1, current, current + 1].filter(
+    (page) => page > 1 && page < last,
+  );
+  const first = siblings.at(0);
+  const final = siblings.at(-1);
+  const items: IPageItem[] = [1];
+
+  if (first !== undefined && first > 2) items.push("gap-start");
+  items.push(...siblings);
+  if (final !== undefined && final < last - 1) items.push("gap-end");
+  if (last > 1) items.push(last);
+
+  return items;
+};

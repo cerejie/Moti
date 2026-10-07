@@ -7,11 +7,12 @@ import {
   type IFilterControl,
 } from "../../../models/common/filter.model";
 import {
-  filterSheetBadge,
+  filterPill,
+  filterPillBadge,
+  filterPillLabel,
   filterSheetBody,
   filterSheetSelect,
-  filterSheetTrigger,
-} from "../../../styles/filter/filterToolbar.styles";
+} from "../../../styles/filter/filter.styles";
 import AppButton from "../button/AppButton";
 import AppModal from "../modal/AppModal";
 import FilterSelect from "./FilterSelect";
@@ -21,7 +22,7 @@ type IProps = {
   controls: IFilterControl[];
 };
 
-// The phone toolbar keeps only search in view; the selects wait in a bottom sheet
+// The compact toolbar keeps only search in view; the selects wait in a bottom sheet
 // behind one button whose badge says how many are on.
 const FilterSheet = ({ filterKey, controls }: IProps) => {
   const { filters, setFilters } = useFilters(filterKey);
@@ -35,14 +36,14 @@ const FilterSheet = ({ filterKey, controls }: IProps) => {
     <>
       <AppButton
         variant="outline"
-        className={filterSheetTrigger}
+        className={filterPill}
         aria-label={activeCount > 0 ? `Filters, ${activeCount} on` : "Filters"}
         onPress={() => openModal()}
       >
         <SlidersHorizontal />
-        Filters
+        <span className={filterPillLabel}>Filters</span>
         {activeCount > 0 && (
-          <span className={filterSheetBadge} aria-hidden="true">
+          <span className={filterPillBadge} aria-hidden="true">
             {activeCount}
           </span>
         )}

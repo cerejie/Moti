@@ -1,7 +1,9 @@
+import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useTransactionItemList } from "../../../hook/data/transaction/transaction.list.hook";
 import { transactionPickTableKey } from "../../../keys/table.keys";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import {
   itemIdentity,
@@ -11,84 +13,87 @@ import {
   onHandUnit,
   onHandValue,
   priceText,
+  stockStatusText,
 } from "../../../styles/inventory/inventory.styles";
-import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
+import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatNumber, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
+import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
 import DataTable from "../../common/table/DataTable";
-import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
 import StockStatusBadge from "../../inventory/status/StockStatusBadge";
-import TransactionItemRow from "../lists/TransactionItemRow";
 import CartQuantityControl from "../menus/CartQuantityControl";
 
-const column = dataTableColumns<IInventoryItem>();
-
 const columns: IDataTableColumn<IInventoryItem>[] = [
-  column.display({
-    id: "item",
-    header: "Item",
-    cell: ({ row }) => (
+  {
+    key: "item",
+    title: "Item",
+    render: (_, item) => (
       <span className={itemIdentity}>
-        <span className={itemName}>{row.original.name}</span>
+        <span className={itemName}>{item.name}</span>
         <span className={itemMeta}>
-          {[row.original.item_code, row.original.brand?.name]
-            .filter(Boolean)
-            .join(" · ")}
+          {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
         </span>
       </span>
     ),
-  }),
-  column.display({
-    id: "category",
-    header: "Category",
-    meta: { hideBelow: "xl" },
-    cell: ({ row }) => (
-      <span className={mutedText}>{row.original.category?.name ?? "—"}</span>
-    ),
-  }),
-  column.display({
-    id: "on_hand",
-    header: "Stock left",
-    cell: ({ row }) => (
+    listRender: (item) => item.name,
+  },
+  {
+    key: "category",
+    title: "Category",
+    collapse: "xl",
+    listHidden: true,
+    render: (_, item) => <span className={mutedText}>{item.category?.name ?? "—"}</span>,
+  },
+  {
+    key: "on_hand",
+    title: "Stock left",
+    render: (_, item) => (
       <span>
-        <span className={onHandValue({ status: row.original.stock_status })}>
-          {formatNumber(row.original.on_hand)}
+        <span className={onHandValue({ status: item.stock_status })}>
+          {formatNumber(item.on_hand)}
         </span>
-        <span className={onHandUnit}>{row.original.unit}</span>
+        <span className={onHandUnit}>{item.unit}</span>
       </span>
     ),
-  }),
-  column.display({
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => <StockStatusBadge status={row.original.stock_status} />,
-  }),
-  column.display({
-    id: "price",
-    header: "Price",
-    cell: ({ row }) => (
+    listRender: (item) => (
+      <span className={stockStatusText({ status: item.stock_status })}>
+        {formatNumber(item.on_hand)} {item.unit} left
+      </span>
+    ),
+  },
+  {
+    key: "status",
+    title: "Status",
+    listHidden: true,
+    render: (_, item) => <StockStatusBadge status={item.stock_status} />,
+  },
+  {
+    key: "price",
+    title: "Price",
+    mobile: "subtitle",
+    render: (_, item) => (
       <span className={priceText}>
-        {row.original.selling_price === null ? "—" : formatPeso(row.original.selling_price)}
+        {item.selling_price === null ? "—" : formatPeso(item.selling_price)}
       </span>
     ),
-  }),
-  column.display({
-    id: "actions",
-    header: () => <span className={tableHeadHidden}>Add to transaction</span>,
-    cell: ({ row }) => (
-      <div className={tableCellActions}>
-        <CartQuantityControl item={row.original} />
-      </div>
-    ),
-  }),
+    listRender: (item) =>
+      item.selling_price === null ? "No price set" : formatPeso(item.selling_price),
+  },
+  {
+    key: "actions",
+    title: "Add",
+    align: "center",
+    className: nowrapCell,
+    render: (_, item) => <CartQuantityControl item={item} />,
+  },
 ];
 
 // The seller searches, filters and adds; the cart bar below collects the lines.
 const TransactionItemTable = () => {
   const query = useTransactionItemList();
+  const { pagination, goToPage } = usePagination(transactionPickTableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
   const page = query.data;
@@ -96,48 +101,42 @@ const TransactionItemTable = () => {
   return (
     <TablePanel
       toolbar={
-        <FilterToolbar
-          filterKey={transactionPickTableKey}
-          searchKey={transactionPickTableKey}
-          searchPlaceholder="Search name, item code or brand"
-          controls={[
-            {
-              key: "categoryId",
-              label: "Category",
-              placeholder: "All categories",
-              options: categoryOptions,
-            },
-            {
-              key: "brandId",
-              label: "Brand",
-              placeholder: "All brands",
-              options: brandOptions,
-            },
-          ]}
-        />
-      }
-      footer={
-        <TablePagination
-          paginationKey={transactionPickTableKey}
-          totalCount={page?.totalCount ?? 0}
-          isLoading={query.isLoading}
-          pageSizes={[8, 20, 50]}
-        />
+        <FilterToolbar>
+          <FilterBar
+            filterKey={transactionPickTableKey}
+            searchKey={transactionPickTableKey}
+            searchPlaceholder="Search name, item code or brand"
+            controls={[
+              {
+                key: "categoryId",
+                label: "Category",
+                placeholder: "All categories",
+                options: categoryOptions,
+              },
+              {
+                key: "brandId",
+                label: "Brand",
+                placeholder: "All brands",
+                options: brandOptions,
+              },
+            ]}
+          />
+        </FilterToolbar>
       }
     >
-      <DataTable
-        tableKey={transactionPickTableKey}
+      <DataTable<IInventoryItem>
         label="Items to sell"
-        data={page?.data ?? []}
         columns={columns}
-        getRowId={(item) => item.id}
-        isLoading={query.isLoading}
-        isStale={isShowingPausedRows(query)}
-        isError={query.isError}
+        data={page?.data ?? []}
+        loading={query.isLoading}
+        refreshing={query.isFetching && !query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
+        isStale={isShowingPausedRows(query)}
+        pagination={pagination}
+        totalCount={page?.totalCount ?? 0}
+        onPageChange={goToPage}
         emptyText="No item matches. Try another name, category or brand."
-        renderRow={(item) => <TransactionItemRow item={item} />}
       />
     </TablePanel>
   );

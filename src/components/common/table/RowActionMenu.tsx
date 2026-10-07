@@ -1,48 +1,56 @@
-import { MoreVertical } from "lucide-react";
+import { Fragment } from "react";
+import { EllipsisVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/utils/cn.utils";
 import type { IRowAction } from "../../../models/common/action.model";
-import { rowActionTrigger } from "../../../styles/table/rowActions.styles";
-import AppButton from "../button/AppButton";
+import {
+  rowActionItem,
+  rowActionMenu,
+  rowActionTrigger,
+} from "../../../styles/table/table.styles";
 
 type IProps = {
-  // Names the record the menu belongs to, e.g. "account 1234-5678".
-  label: string;
-  actions: IRowAction[];
-  className?: string;
+  actions: readonly IRowAction[];
+  // Names the menu for screen readers, e.g. "Manage Bosch".
+  label?: string;
 };
 
-const RowActionMenu = ({ label, actions, className }: IProps) => {
-  if (actions.length === 0) return null;
+const RowActionMenu = ({ actions, label = "Row actions" }: IProps) => {
+  if (!actions.some((action) => !action.disabled)) return null;
+
+  const firstDangerIndex = actions.findIndex((action) => action.danger);
 
   return (
     <DropdownMenuTrigger>
-      <AppButton
-        variant="ghost"
-        size="icon"
-        aria-label={`Manage ${label}`}
-        className={cn(rowActionTrigger, className)}
+      <Button
+        variant="outline"
+        size="icon-sm"
+        className={rowActionTrigger}
+        aria-label={label}
       >
-        <MoreVertical />
-      </AppButton>
-
-      <DropdownMenu placement="bottom end" aria-label={`Manage ${label}`}>
-        {actions.map((action) => (
-          <DropdownMenuItem
-            key={action.key}
-            id={action.key}
-            textValue={action.label}
-            variant={action.danger ? "destructive" : "default"}
-            isDisabled={action.disabled}
-            onAction={action.onSelect}
-          >
-            {action.icon}
-            {action.label}
-          </DropdownMenuItem>
+        <EllipsisVertical />
+      </Button>
+      <DropdownMenu placement="bottom end" aria-label={label} className={rowActionMenu}>
+        {actions.map((action, index) => (
+          <Fragment key={action.key}>
+            {index > 0 && index === firstDangerIndex ? <DropdownMenuSeparator /> : null}
+            <DropdownMenuItem
+              id={action.key}
+              textValue={action.label}
+              variant={action.danger ? "destructive" : "default"}
+              isDisabled={action.disabled}
+              onAction={action.onSelect}
+              className={rowActionItem}
+            >
+              {action.icon}
+              {action.label}
+            </DropdownMenuItem>
+          </Fragment>
         ))}
       </DropdownMenu>
     </DropdownMenuTrigger>

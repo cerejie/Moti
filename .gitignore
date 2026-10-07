@@ -31,3 +31,6 @@ supabase/.temp
 
 .history
 graphify-out/cache
+
+# Local design reference dumps
+.claude/state/error states/

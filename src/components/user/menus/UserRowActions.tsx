@@ -81,7 +81,7 @@ const UserRowActions = ({ user }: IProps) => {
     onSelect: () => actions.remove(user),
   });
 
-  return <RowActionMenu label={user.full_name} actions={items} />;
+  return <RowActionMenu label={`Manage ${user.full_name}`} actions={items} />;
 };
 
 export default UserRowActions;

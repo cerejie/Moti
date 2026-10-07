@@ -4,9 +4,12 @@ import {
 } from "../../../enums/transaction.enum";
 import { useFilters } from "../../../hook/common/filter.hook";
 import { useModal } from "../../../hook/common/modal.hook";
+import { usePagination } from "../../../hook/common/pagination.hook";
 import { useTransactionHistory } from "../../../hook/data/transaction/transaction.list.hook";
 import { transactionDetailModalKey } from "../../../keys/modal.keys";
 import { transactionHistoryTableKey } from "../../../keys/table.keys";
+import type { ISegmentOption } from "../../../models/common/segment.model";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { ITransaction } from "../../../models/data/transaction/transaction.response";
 import {
   itemIdentity,
@@ -15,70 +18,75 @@ import {
   mutedText,
   priceText,
 } from "../../../styles/inventory/inventory.styles";
-import { historyStatusTabs } from "../../../styles/transaction/transaction.styles";
 import { formatCount, formatDateTime, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
-import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
-import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import TransactionHistoryRow from "../lists/TransactionHistoryRow";
+import ContextSwitch from "../../common/view/ContextSwitch";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
 
-const column = dataTableColumns<ITransaction>();
-
 const columns: IDataTableColumn<ITransaction>[] = [
-  column.display({
-    id: "number",
-    header: "Transaction",
-    cell: ({ row }) => (
+  {
+    key: "number",
+    title: "Transaction",
+    render: (_, transaction) => (
       <span className={itemIdentity}>
-        <span className={itemName}>#{row.original.number}</span>
-        <span className={itemMeta}>{formatDateTime(row.original.created_at)}</span>
+        <span className={itemName}>#{transaction.number}</span>
+        <span className={itemMeta}>{formatDateTime(transaction.created_at)}</span>
       </span>
     ),
-  }),
-  column.display({
-    id: "by",
-    header: "By",
-    cell: ({ row }) => <span className={mutedText}>{row.original.created_by_name}</span>,
-  }),
-  column.display({
-    id: "items",
-    header: "Items",
-    cell: ({ row }) => (
+  },
+  {
+    key: "by",
+    title: "By",
+    render: (_, transaction) => (
+      <span className={mutedText}>{transaction.created_by_name}</span>
+    ),
+    listRender: (transaction) => transaction.created_by_name,
+  },
+  {
+    key: "items",
+    title: "Items",
+    listHidden: true,
+    render: (_, transaction) => (
       <span className={mutedText}>
-        {formatCount(row.original.line_count, "item")} · {formatCount(row.original.total_quantity, "pc")}
+        {formatCount(transaction.line_count, "item")} ·{" "}
+        {formatCount(transaction.total_quantity, "pc")}
       </span>
     ),
-  }),
-  column.display({
-    id: "total",
-    header: "Total",
-    cell: ({ row }) => (
+  },
+  {
+    key: "total",
+    title: "Total",
+    align: "right",
+    mobile: "amount",
+    render: (_, transaction) => (
       <span className={priceText}>
-        {row.original.total_amount === null ? "—" : formatPeso(row.original.total_amount)}
+        {transaction.total_amount === null ? "—" : formatPeso(transaction.total_amount)}
       </span>
     ),
-  }),
-  column.display({
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => <TransactionStatusBadge status={row.original.status} />,
-  }),
+  },
+  {
+    key: "status",
+    title: "Status",
+    mobile: "status",
+    render: (_, transaction) => <TransactionStatusBadge status={transaction.status} />,
+  },
 ];
 
 const allStatuses = "all";
 
-const statusOptions = [
-  { value: allStatuses, label: "All" },
-  { value: "completed", label: transactionStatusLabels.completed },
-  { value: "voided", label: transactionStatusLabels.voided },
+type IStatusChoice = TransactionStatus | typeof allStatuses;
+
+const statusOptions: ISegmentOption<IStatusChoice>[] = [
+  { key: allStatuses, label: "All" },
+  { key: "completed", label: transactionStatusLabels.completed },
+  { key: "voided", label: transactionStatusLabels.voided },
 ];
 
 const TransactionHistoryTable = () => {
   const query = useTransactionHistory();
+  const { pagination, goToPage } = usePagination(transactionHistoryTableKey);
   const { filters, setFilters } = useFilters<{ status?: TransactionStatus }>(
     transactionHistoryTableKey,
   );
@@ -88,41 +96,30 @@ const TransactionHistoryTable = () => {
   return (
     <TablePanel
       toolbar={
-        <SegmentedControl
+        <ContextSwitch
           label="Transaction status"
           value={filters.status ?? allStatuses}
-          onValueChange={(next) =>
-            setFilters({
-              status: next === allStatuses ? undefined : (next as TransactionStatus),
-            })
-          }
           options={statusOptions}
-          className={historyStatusTabs}
-        />
-      }
-      footer={
-        <TablePagination
-          paginationKey={transactionHistoryTableKey}
-          totalCount={page?.totalCount ?? 0}
-          isLoading={query.isLoading}
-          pageSizes={[8, 20, 50]}
+          onChange={(next) =>
+            setFilters({ status: next === allStatuses ? undefined : next })
+          }
         />
       }
     >
-      <DataTable
-        tableKey={transactionHistoryTableKey}
+      <DataTable<ITransaction>
         label="Transactions"
-        data={page?.data ?? []}
         columns={columns}
-        getRowId={(transaction) => transaction.id}
-        isLoading={query.isLoading}
-        isStale={isShowingPausedRows(query)}
-        isError={query.isError}
+        data={page?.data ?? []}
+        loading={query.isLoading}
+        refreshing={query.isFetching && !query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
+        isStale={isShowingPausedRows(query)}
+        pagination={pagination}
+        totalCount={page?.totalCount ?? 0}
+        onPageChange={goToPage}
         onRowClick={(transaction) => openModal(transaction)}
         emptyText="No transactions yet."
-        renderRow={(transaction) => <TransactionHistoryRow transaction={transaction} />}
       />
     </TablePanel>
   );

@@ -1,64 +1,61 @@
 import { effectiveRoleLabels } from "../../../enums/role.enum";
 import { useUserList } from "../../../hook/data/user/user.list.hook";
-import { userTableKey } from "../../../keys/table.keys";
+import type { ISegmentOption } from "../../../models/common/segment.model";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { UserView } from "../../../models/data/user/user.request";
 import type { IUser } from "../../../models/data/user/user.response";
 import { itemIdentity, itemMeta, itemName, mutedText } from "../../../styles/inventory/inventory.styles";
-import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
-import { userViewTabs } from "../../../styles/user/user.styles";
+import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatShortDate } from "../../../utils/format.utils";
-import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import UserRow from "../lists/UserRow";
+import ContextSwitch from "../../common/view/ContextSwitch";
 import UserRowActions from "../menus/UserRowActions";
 import UserStatusBadges from "../status/UserStatusBadges";
 
-const column = dataTableColumns<IUser>();
-
 const columns: IDataTableColumn<IUser>[] = [
-  column.display({
-    id: "user",
-    header: "Name",
-    cell: ({ row }) => (
+  {
+    key: "user",
+    title: "Name",
+    render: (_, user) => (
       <span className={itemIdentity}>
-        <span className={itemName}>{row.original.full_name}</span>
-        <span className={itemMeta}>{row.original.email}</span>
+        <span className={itemName}>{user.full_name}</span>
+        <span className={itemMeta}>{user.email}</span>
       </span>
     ),
-  }),
-  column.display({
-    id: "role",
-    header: "Role",
-    cell: ({ row }) => <span className={mutedText}>{effectiveRoleLabels[row.original.role]}</span>,
-  }),
-  column.display({
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => <UserStatusBadges user={row.original} />,
-  }),
-  column.display({
-    id: "joined",
-    header: "Joined",
-    cell: ({ row }) => <span className={mutedText}>{formatShortDate(row.original.created_at)}</span>,
-  }),
-  column.display({
-    id: "actions",
-    header: () => <span className={tableHeadHidden}>Actions</span>,
-    cell: ({ row }) => (
-      <div className={tableCellActions}>
-        <UserRowActions user={row.original} />
-      </div>
-    ),
-  }),
+  },
+  {
+    key: "role",
+    title: "Role",
+    render: (_, user) => <span className={mutedText}>{effectiveRoleLabels[user.role]}</span>,
+    listRender: (user) => effectiveRoleLabels[user.role],
+  },
+  {
+    key: "status",
+    title: "Status",
+    mobile: "status",
+    render: (_, user) => <UserStatusBadges user={user} />,
+  },
+  {
+    key: "joined",
+    title: "Joined",
+    listHidden: true,
+    render: (_, user) => <span className={mutedText}>{formatShortDate(user.created_at)}</span>,
+  },
+  {
+    key: "actions",
+    title: "Action",
+    align: "center",
+    className: nowrapCell,
+    render: (_, user) => <UserRowActions user={user} />,
+  },
 ];
 
-const viewOptions: { value: UserView; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Active" },
-  { value: "rejected", label: "Disabled" },
+const viewOptions: ISegmentOption<UserView>[] = [
+  { key: "all", label: "All" },
+  { key: "pending", label: "Pending" },
+  { key: "approved", label: "Active" },
+  { key: "rejected", label: "Disabled" },
 ];
 
 const UserTable = () => {
@@ -67,27 +64,22 @@ const UserTable = () => {
   return (
     <TablePanel
       toolbar={
-        <SegmentedControl
+        <ContextSwitch
           label="Account status"
           value={view}
-          onValueChange={(next) => setView(next as UserView)}
           options={viewOptions}
-          className={userViewTabs}
+          onChange={setView}
         />
       }
     >
-      <DataTable
-        tableKey={userTableKey}
+      <DataTable<IUser>
         label="Accounts"
-        data={query.data ?? []}
         columns={columns}
-        getRowId={(user) => user.id}
-        isLoading={query.isLoading}
-        isError={query.isError}
+        data={query.data ?? []}
+        loading={query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText={view === "pending" ? "No sign-ups waiting." : "No accounts here."}
-        renderRow={(user) => <UserRow user={user} />}
       />
     </TablePanel>
   );

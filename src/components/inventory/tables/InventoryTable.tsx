@@ -3,13 +3,17 @@ import {
   inventoryViewValues,
   type InventoryView,
 } from "../../../enums/stock.enum";
+import { useModal } from "../../../hook/common/modal.hook";
+import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useInventoryList } from "../../../hook/data/inventory/inventory.list.hook";
+import { itemDetailModalKey } from "../../../keys/modal.keys";
 import { inventoryTableKey } from "../../../keys/table.keys";
+import type { ISegmentOption } from "../../../models/common/segment.model";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import {
-  inventoryViewTabs,
   itemIdentity,
   itemMeta,
   itemName,
@@ -18,97 +22,89 @@ import {
   onHandValue,
   priceText,
 } from "../../../styles/inventory/inventory.styles";
-import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
+import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatNumber, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
+import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
-import SegmentedControl from "../../common/filter/SegmentedControl";
 import DataTable from "../../common/table/DataTable";
-import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import InventoryItemRow from "../lists/InventoryItemRow";
+import ContextSwitch from "../../common/view/ContextSwitch";
 import InventoryRowActions from "../menus/InventoryRowActions";
 import StockStatusBadge from "../status/StockStatusBadge";
 
-const column = dataTableColumns<IInventoryItem>();
-
 const columns: IDataTableColumn<IInventoryItem>[] = [
-  column.display({
-    id: "item",
-    header: "Item",
-    cell: ({ row }) => (
+  {
+    key: "item",
+    title: "Item",
+    render: (_, item) => (
       <span className={itemIdentity}>
-        <span className={itemName}>{row.original.name}</span>
+        <span className={itemName}>{item.name}</span>
         <span className={itemMeta}>
-          {[row.original.item_code, row.original.brand?.name]
-            .filter(Boolean)
-            .join(" · ")}
+          {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
         </span>
       </span>
     ),
-  }),
-  column.display({
-    id: "category",
-    header: "Category",
-    meta: { hideBelow: "xl" },
-    cell: ({ row }) => (
-      <span className={mutedText}>{row.original.category?.name ?? "—"}</span>
-    ),
-  }),
-  column.display({
-    id: "on_hand",
-    header: "On hand",
-    cell: ({ row }) => (
+  },
+  {
+    key: "category",
+    title: "Category",
+    collapse: "xl",
+    listHidden: true,
+    render: (_, item) => <span className={mutedText}>{item.category?.name ?? "—"}</span>,
+  },
+  {
+    key: "on_hand",
+    title: "On hand",
+    mobile: "amount",
+    render: (_, item) => (
       <span>
-        <span className={onHandValue({ status: row.original.stock_status })}>
-          {formatNumber(row.original.on_hand)}
+        <span className={onHandValue({ status: item.stock_status })}>
+          {formatNumber(item.on_hand)}
         </span>
-        <span className={onHandUnit}>{row.original.unit}</span>
+        <span className={onHandUnit}>{item.unit}</span>
       </span>
     ),
-  }),
-  column.display({
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <StockStatusBadge
-        status={row.original.stock_status}
-        archived={row.original.archived_at !== null}
-      />
+  },
+  {
+    key: "status",
+    title: "Status",
+    mobile: "status",
+    render: (_, item) => (
+      <StockStatusBadge status={item.stock_status} archived={item.archived_at !== null} />
     ),
-  }),
-  column.display({
-    id: "reorder",
-    header: "Warn at",
-    meta: { hideBelow: "xl" },
-    cell: ({ row }) => (
-      <span className={mutedText}>{formatNumber(row.original.reorder_level)}</span>
-    ),
-  }),
-  column.display({
-    id: "price",
-    header: "Price",
-    cell: ({ row }) => (
+  },
+  {
+    key: "reorder",
+    title: "Warn at",
+    collapse: "xl",
+    listHidden: true,
+    render: (_, item) => <span className={mutedText}>{formatNumber(item.reorder_level)}</span>,
+  },
+  {
+    key: "price",
+    title: "Price",
+    listHidden: true,
+    render: (_, item) => (
       <span className={priceText}>
-        {row.original.selling_price === null ? "—" : formatPeso(row.original.selling_price)}
+        {item.selling_price === null ? "—" : formatPeso(item.selling_price)}
       </span>
     ),
-  }),
-  column.display({
-    id: "actions",
-    header: () => <span className={tableHeadHidden}>Actions</span>,
-    cell: ({ row }) => (
-      <div className={tableCellActions}>
-        <InventoryRowActions item={row.original} />
-      </div>
-    ),
-  }),
+  },
+  {
+    key: "actions",
+    title: "Action",
+    align: "center",
+    className: nowrapCell,
+    // Compact opens the item sheet on tap, which carries the stock actions.
+    listHidden: true,
+    render: (_, item) => <InventoryRowActions item={item} />,
+  },
 ];
 
-const viewOptions = inventoryViewValues.map((value) => ({
-  value,
-  label: inventoryViewLabels[value],
+const viewOptions: ISegmentOption<InventoryView>[] = inventoryViewValues.map((key) => ({
+  key,
+  label: inventoryViewLabels[key],
 }));
 
 const emptyTextByView: Record<InventoryView, string> = {
@@ -120,63 +116,60 @@ const emptyTextByView: Record<InventoryView, string> = {
 
 const InventoryTable = () => {
   const { query, view, setView } = useInventoryList();
+  const { pagination, goToPage } = usePagination(inventoryTableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
+  const detailModal = useModal<IInventoryItem>(itemDetailModalKey);
   const page = query.data;
 
   return (
     <TablePanel
       toolbar={
-        <FilterToolbar
-          filterKey={inventoryTableKey}
-          searchKey={inventoryTableKey}
-          searchPlaceholder="Search name, item code or brand"
-          controls={[
-            {
-              key: "categoryId",
-              label: "Category",
-              placeholder: "All categories",
-              options: categoryOptions,
-            },
-            {
-              key: "brandId",
-              label: "Brand",
-              placeholder: "All brands",
-              options: brandOptions,
-            },
-          ]}
-        >
-          <SegmentedControl
+        <>
+          <ContextSwitch
             label="Stock status"
             value={view}
-            onValueChange={(next) => setView(next as InventoryView)}
             options={viewOptions}
-            className={inventoryViewTabs}
+            onChange={setView}
           />
-        </FilterToolbar>
-      }
-      footer={
-        <TablePagination
-          paginationKey={inventoryTableKey}
-          totalCount={page?.totalCount ?? 0}
-          isLoading={query.isLoading}
-          pageSizes={[8, 20, 50]}
-        />
+          <FilterToolbar>
+            <FilterBar
+              filterKey={inventoryTableKey}
+              searchKey={inventoryTableKey}
+              searchPlaceholder="Search name, item code or brand"
+              controls={[
+                {
+                  key: "categoryId",
+                  label: "Category",
+                  placeholder: "All categories",
+                  options: categoryOptions,
+                },
+                {
+                  key: "brandId",
+                  label: "Brand",
+                  placeholder: "All brands",
+                  options: brandOptions,
+                },
+              ]}
+            />
+          </FilterToolbar>
+        </>
       }
     >
-      <DataTable
-        tableKey={inventoryTableKey}
+      <DataTable<IInventoryItem>
         label="Inventory items"
-        data={page?.data ?? []}
         columns={columns}
-        getRowId={(item) => item.id}
-        isLoading={query.isLoading}
-        isStale={isShowingPausedRows(query)}
-        isError={query.isError}
+        data={page?.data ?? []}
+        loading={query.isLoading}
+        refreshing={query.isFetching && !query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
+        isStale={isShowingPausedRows(query)}
+        pagination={pagination}
+        totalCount={page?.totalCount ?? 0}
+        onPageChange={goToPage}
+        onRowClick={(item) => detailModal.openModal(item)}
         emptyText={emptyTextByView[view]}
-        renderRow={(item) => <InventoryItemRow item={item} />}
       />
     </TablePanel>
   );

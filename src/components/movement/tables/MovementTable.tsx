@@ -5,8 +5,11 @@ import {
   type MovementType,
 } from "../../../enums/stock.enum";
 import { useFilters } from "../../../hook/common/filter.hook";
+import { usePagination } from "../../../hook/common/pagination.hook";
 import { useMovementList } from "../../../hook/data/movement/movement.list.hook";
 import { movementTableKey } from "../../../keys/table.keys";
+import type { ISegmentOption } from "../../../models/common/segment.model";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
 import {
   historyQuantity,
@@ -15,123 +18,127 @@ import {
   itemName,
   mutedText,
 } from "../../../styles/inventory/inventory.styles";
-import { movementByCell, movementNote, movementTypeTabs } from "../../../styles/movement/movement.styles";
+import { movementByCell, movementNote } from "../../../styles/movement/movement.styles";
 import { formatDateTime, formatNumber, formatSignedQuantity } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
-import SegmentedControl from "../../common/filter/SegmentedControl";
 import StatusBadge from "../../common/status/StatusBadge";
 import DataTable from "../../common/table/DataTable";
-import TablePagination from "../../common/table/TablePagination";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import MovementRow from "../lists/MovementRow";
-
-const column = dataTableColumns<IStockMovement>();
+import ContextSwitch from "../../common/view/ContextSwitch";
 
 const columns: IDataTableColumn<IStockMovement>[] = [
-  column.display({
-    id: "date",
-    header: "When",
-    cell: ({ row }) => <span className={mutedText}>{formatDateTime(row.original.created_at)}</span>,
-  }),
-  column.display({
-    id: "item",
-    header: "Item",
-    cell: ({ row }) => (
+  {
+    key: "date",
+    title: "When",
+    mobile: "meta",
+    render: (_, movement) => (
+      <span className={mutedText}>{formatDateTime(movement.created_at)}</span>
+    ),
+    listRender: (movement) => formatDateTime(movement.created_at),
+  },
+  {
+    key: "item",
+    title: "Item",
+    mobile: "title",
+    render: (_, movement) => (
       <span className={itemIdentity}>
-        <span className={itemName}>{row.original.item?.name ?? "Deleted item"}</span>
-        <span className={itemMeta}>{row.original.item?.item_code ?? ""}</span>
+        <span className={itemName}>{movement.item?.name ?? "Deleted item"}</span>
+        <span className={itemMeta}>{movement.item?.item_code ?? ""}</span>
       </span>
     ),
-  }),
-  column.display({
-    id: "reason",
-    header: "Reason",
-    cell: ({ row }) => (
-      <StatusBadge tone={movementReasonTones[row.original.reason]}>
-        {movementReasonLabels[row.original.reason]}
+    listRender: (movement) => movement.item?.name ?? "Deleted item",
+  },
+  {
+    key: "reason",
+    title: "Reason",
+    mobile: "subtitle",
+    render: (_, movement) => (
+      <StatusBadge tone={movementReasonTones[movement.reason]}>
+        {movementReasonLabels[movement.reason]}
       </StatusBadge>
     ),
-  }),
-  column.display({
-    id: "quantity",
-    header: "Qty",
-    cell: ({ row }) => (
-      <span className={historyQuantity({ direction: row.original.quantity > 0 ? "in" : "out" })}>
-        {formatSignedQuantity(row.original.quantity)}
+    listRender: (movement) => movementReasonLabels[movement.reason],
+  },
+  {
+    key: "quantity",
+    title: "Qty",
+    align: "right",
+    mobile: "amount",
+    render: (_, movement) => (
+      <span className={historyQuantity({ direction: movement.quantity > 0 ? "in" : "out" })}>
+        {formatSignedQuantity(movement.quantity)}
       </span>
     ),
-  }),
-  column.display({
-    id: "balance",
-    header: "Left",
-    meta: { hideBelow: "xl" },
-    cell: ({ row }) => (
+  },
+  {
+    key: "balance",
+    title: "Left",
+    collapse: "xl",
+    mobile: "status",
+    render: (_, movement) => (
       <span className={mutedText}>
-        {formatNumber(row.original.balance_after)} {row.original.item?.unit ?? ""}
+        {formatNumber(movement.balance_after)} {movement.item?.unit ?? ""}
       </span>
     ),
-  }),
-  column.display({
-    id: "by",
-    header: "By",
-    cell: ({ row }) => (
+    listRender: (movement) => (
+      <span className={mutedText}>
+        {formatNumber(movement.balance_after)} {movement.item?.unit ?? ""} left
+      </span>
+    ),
+  },
+  {
+    key: "by",
+    title: "By",
+    render: (_, movement) => (
       <span className={movementByCell}>
-        <span>{row.original.created_by_name}</span>
-        {row.original.note && <span className={movementNote}>{row.original.note}</span>}
+        <span>{movement.created_by_name}</span>
+        {movement.note && <span className={movementNote}>{movement.note}</span>}
       </span>
     ),
-  }),
+    listRender: (movement) => movement.created_by_name,
+  },
 ];
 
 const allTypes = "all";
 
-const typeOptions = [
-  { value: allTypes, label: "All" },
-  { value: "stock_in", label: movementTypeLabels.stock_in },
-  { value: "stock_out", label: movementTypeLabels.stock_out },
+type ITypeChoice = MovementType | typeof allTypes;
+
+const typeOptions: ISegmentOption<ITypeChoice>[] = [
+  { key: allTypes, label: "All" },
+  { key: "stock_in", label: movementTypeLabels.stock_in },
+  { key: "stock_out", label: movementTypeLabels.stock_out },
 ];
 
 const MovementTable = () => {
   const query = useMovementList();
+  const { pagination, goToPage } = usePagination(movementTableKey);
   const { filters, setFilters } = useFilters<{ type?: MovementType }>(movementTableKey);
   const page = query.data;
 
   return (
     <TablePanel
       toolbar={
-        <SegmentedControl
+        <ContextSwitch
           label="Movement type"
           value={filters.type ?? allTypes}
-          onValueChange={(next) =>
-            setFilters({ type: next === allTypes ? undefined : (next as MovementType) })
-          }
           options={typeOptions}
-          className={movementTypeTabs}
-        />
-      }
-      footer={
-        <TablePagination
-          paginationKey={movementTableKey}
-          totalCount={page?.totalCount ?? 0}
-          isLoading={query.isLoading}
-          pageSizes={[8, 20, 50]}
+          onChange={(next) => setFilters({ type: next === allTypes ? undefined : next })}
         />
       }
     >
-      <DataTable
-        tableKey={movementTableKey}
+      <DataTable<IStockMovement>
         label="Stock movements"
-        data={page?.data ?? []}
         columns={columns}
-        getRowId={(movement) => movement.id}
-        isLoading={query.isLoading}
-        isStale={isShowingPausedRows(query)}
-        isError={query.isError}
+        data={page?.data ?? []}
+        loading={query.isLoading}
+        refreshing={query.isFetching && !query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
+        isStale={isShowingPausedRows(query)}
+        pagination={pagination}
+        totalCount={page?.totalCount ?? 0}
+        onPageChange={goToPage}
         emptyText="No stock movements yet."
-        renderRow={(movement) => <MovementRow movement={movement} />}
       />
     </TablePanel>
   );

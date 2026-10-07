@@ -3,18 +3,14 @@ import { useModal } from "../../../hook/common/modal.hook";
 import { useBrandDelete } from "../../../hook/data/brand/brand.form.hook";
 import { useBrandList } from "../../../hook/data/brand/brand.list.hook";
 import { brandFormModalKey } from "../../../keys/modal.keys";
-import { brandTableKey } from "../../../keys/table.keys";
+import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IBrand } from "../../../models/data/brand/brand.response";
 import { itemName, mutedText } from "../../../styles/inventory/inventory.styles";
-import { tableCellActions, tableHeadHidden } from "../../../styles/table/table.styles";
-import { formatNumber, formatShortDate } from "../../../utils/format.utils";
+import { nowrapCell } from "../../../styles/table/table.styles";
+import { formatCount, formatNumber, formatShortDate } from "../../../utils/format.utils";
 import DataTable from "../../common/table/DataTable";
 import RowActionMenu from "../../common/table/RowActionMenu";
 import TablePanel from "../../common/table/TablePanel";
-import { dataTableColumns, type IDataTableColumn } from "../../common/table/dataTable.config";
-import MasterfileRow from "../../masterfile/lists/MasterfileRow";
-
-const column = dataTableColumns<IBrand>();
 
 const itemCountOf = (brand: IBrand) => brand.inventory_items[0]?.count ?? 0;
 
@@ -24,7 +20,7 @@ const BrandActions = ({ brand }: { brand: IBrand }) => {
 
   return (
     <RowActionMenu
-      label={brand.name}
+      label={`Manage ${brand.name}`}
       actions={[
         { key: "rename", label: "Rename", icon: <Pencil />, onSelect: () => openModal(brand) },
         {
@@ -40,30 +36,32 @@ const BrandActions = ({ brand }: { brand: IBrand }) => {
 };
 
 const columns: IDataTableColumn<IBrand>[] = [
-  column.display({
-    id: "name",
-    header: "Brand",
-    cell: ({ row }) => <span className={itemName}>{row.original.name}</span>,
-  }),
-  column.display({
-    id: "items",
-    header: "Items",
-    cell: ({ row }) => <span className={mutedText}>{formatNumber(itemCountOf(row.original))}</span>,
-  }),
-  column.display({
-    id: "created",
-    header: "Added",
-    cell: ({ row }) => <span className={mutedText}>{formatShortDate(row.original.created_at)}</span>,
-  }),
-  column.display({
-    id: "actions",
-    header: () => <span className={tableHeadHidden}>Actions</span>,
-    cell: ({ row }) => (
-      <div className={tableCellActions}>
-        <BrandActions brand={row.original} />
-      </div>
-    ),
-  }),
+  {
+    key: "name",
+    title: "Brand",
+    render: (_, brand) => <span className={itemName}>{brand.name}</span>,
+    listRender: (brand) => brand.name,
+  },
+  {
+    key: "items",
+    title: "Items",
+    mobile: "status",
+    render: (_, brand) => <span className={mutedText}>{formatNumber(itemCountOf(brand))}</span>,
+    listRender: (brand) => <span className={mutedText}>{formatCount(itemCountOf(brand), "item")}</span>,
+  },
+  {
+    key: "created",
+    title: "Added",
+    render: (_, brand) => <span className={mutedText}>{formatShortDate(brand.created_at)}</span>,
+    listRender: (brand) => `Added ${formatShortDate(brand.created_at)}`,
+  },
+  {
+    key: "actions",
+    title: "Action",
+    align: "center",
+    className: nowrapCell,
+    render: (_, brand) => <BrandActions brand={brand} />,
+  },
 ];
 
 const BrandTable = () => {
@@ -71,25 +69,14 @@ const BrandTable = () => {
 
   return (
     <TablePanel>
-      <DataTable
-        tableKey={brandTableKey}
+      <DataTable<IBrand>
         label="Brands"
-        data={query.data ?? []}
         columns={columns}
-        getRowId={(brand) => brand.id}
-        isLoading={query.isLoading}
-        isError={query.isError}
+        data={query.data ?? []}
+        loading={query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No brands yet. Add one here or type a new brand on the item form."
-        renderRow={(brand) => (
-          <MasterfileRow
-            name={brand.name}
-            itemCount={itemCountOf(brand)}
-            createdAt={brand.created_at}
-            action={<BrandActions brand={brand} />}
-          />
-        )}
       />
     </TablePanel>
   );

@@ -78,7 +78,7 @@ const InventoryRowActions = ({ item }: IProps) => {
     );
   }
 
-  return <RowActionMenu label={item.name} actions={actions} />;
+  return <RowActionMenu label={`Manage ${item.name}`} actions={actions} />;
 };
 
 export default InventoryRowActions;

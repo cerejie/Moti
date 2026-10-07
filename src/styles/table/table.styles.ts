@@ -1,103 +1,145 @@
 import { cva } from "class-variance-authority";
 
-// DataTable is drawn as a stack of row-cards rather than a ruled grid: the rows
-// are separated, each one carries its own border and rounded ends, and the
-// header is a tinted bar above them. Ported from the TARTAR transaction table.
+// DataTable, ported from TARTAR: a ruled grid on wide screens, a native list on compact.
+export const dataTableRoot = "flex min-w-0 flex-col";
 
-// The rows are surface-coloured cards, so the tray behind them has to be the
-// canvas or they have nothing to sit on.
-export const dataTableTray = "bg-background pt-1 pb-3";
+export const dataTableGrid = "border-collapse";
 
-// Separated rows are what turn each one into its own card.
-export const dataTableGrid = "border-separate border-spacing-y-2";
+export const dataTableHeader = "[&_tr]:border-border";
 
-// The tinted bar replaces the rule shadcn draws under the header.
-export const dataTableHeader = "[&_tr]:border-b-0";
-
-export const dataTableHead =
-  "bg-primary-soft px-4 py-2.5 text-xs font-bold uppercase tracking-wider first:rounded-l-md last:rounded-r-md";
-
-// The cards are the cells; the row itself only carries the hover group.
-export const dataTableRow = "group/row border-b-0 hover:bg-transparent";
-
-// Hover lifts the whole card's outline rather than repainting its fill, so a
-// row with status colours in it does not change hue under the cursor.
-export const dataTableCell =
-  "border-y border-border bg-card px-4 py-3 transition-colors group-hover/row:border-primary";
-
-export const dataTableCellEnds =
-  "first:rounded-l-md first:border-l last:rounded-r-md last:border-r";
-
-// An expanded row keeps its outline lifted and drops its bottom rounding into
-// the panel below it.
-export const dataTableCellExpanded =
-  "border-primary first:rounded-tl-md first:border-l last:rounded-tr-md last:border-r";
-
-export const tableRowClickable = "cursor-pointer";
-
-export const tableHeadNumeric = "text-right";
-
-export const tableCellNumeric = "text-right tabular-nums";
-
-// No fixed width here: a width on this wrapper sizes the column to it and the
-// buttons spill past the table's edge.
-export const tableCellActions = "whitespace-nowrap text-right";
-
-// A low-priority column steps out below a breakpoint so the rest keep their room.
-export const tableColumnHidden = cva("", {
-  variants: {
-    below: {
-      lg: "max-lg:hidden",
-      xl: "max-xl:hidden",
-    },
-  },
-});
-
-// The expanded panel spans the full row beneath the record it belongs to, and
-// repeats the card shape so the pair reads as one record.
-export const tableExpansionCell =
-  "rounded-md border border-primary bg-card p-0 whitespace-normal";
-
-export const tableExpansionInner = "px-4 py-4";
-
-// Loading rows keep the column layout in place instead of a spinner.
-export const tableSkeletonBar = "h-4 w-full";
-
-// Error and empty states fill the row as a single card, wrapping like body text.
-export const tableStateCell =
-  "rounded-md border border-border bg-card whitespace-normal";
-
-// Announces the loading state to assistive tech without showing a second label.
-export const tableLoadingAnnounce = "sr-only";
-
-export const simpleTableHead = cva("", {
+export const dataTableHead = cva("h-11 px-3 text-label font-medium text-muted-foreground", {
   variants: {
     align: { left: "", center: "text-center", right: "text-right" },
   },
   defaultVariants: { align: "left" },
 });
 
-export const simpleTableCell = cva("", {
+export const dataTableCollapse = cva("", {
   variants: {
-    align: { left: "", center: "text-center", right: "text-right tabular-nums" },
-    wrap: { true: "whitespace-normal align-top", false: "" },
+    collapse: { xl: "hidden xl:table-cell", "2xl": "hidden 2xl:table-cell" },
   },
-  defaultVariants: { align: "left", wrap: false },
 });
 
-// shadcn wraps the table in its own horizontal scroller, which would become
-// the sticky header's scroll parent; releasing it lets the header stick to the
-// outer viewport instead, and the header gets the surface behind it.
-export const simpleTableSticky =
-  "[&>[data-slot=table-container]]:overflow-visible [&_[data-slot=table-head]]:sticky [&_[data-slot=table-head]]:top-0 [&_[data-slot=table-head]]:z-10 [&_[data-slot=table-head]]:bg-background";
+export const dataTableRow = "group/row border-b border-border hover:bg-muted/40";
 
-// Phone layout: the rows as one native list, straight on the page background.
-export const dataCardTray = "pt-1 pb-3";
+export const dataTableRowStatic = "hover:bg-transparent";
 
-// A header that names a column for screen readers only, e.g. row actions.
-export const tableHeadHidden = "sr-only";
+export const dataTableRowClickable = "cursor-pointer";
+
+export const dataTableCell = cva(
+  "h-14 px-3 py-2 text-sm whitespace-normal text-foreground pointer-coarse:h-16",
+  {
+    variants: {
+      align: { left: "", center: "text-center", right: "text-right tabular-nums" },
+    },
+    defaultVariants: { align: "left" },
+  },
+);
+
+export const dataTableStateCell = "whitespace-normal";
+
+export const dataTableSkeletonBar = cva("h-4", {
+  variants: {
+    align: { left: "w-4/5", center: "mx-auto w-3/5", right: "ml-auto w-3/5" },
+  },
+  defaultVariants: { align: "left" },
+});
+
+export const dataTableRefreshSpinner = "ml-2 inline-flex size-3.5 align-middle text-brand";
+
+export const dataTableEmpty = "py-8";
+
+export const dataTableLoadingAnnounce = "sr-only";
 
 // Rows kept from an earlier query that cannot be refreshed: a notice above, the rows dimmed.
-export const tableStaleNotice = "mb-2";
+export const dataTableStaleNotice = "mb-2";
 
-export const tableStaleRows = "opacity-60";
+export const dataTableStaleRows = "opacity-60";
+
+export const dataListFrame = "relative";
+
+export const dataList =
+  "flex flex-col divide-y divide-foreground/10 border-y border-foreground/10";
+
+export const dataListRow =
+  "relative flex min-h-14 items-center gap-3 px-1 py-3 text-sm transition-colors has-data-pressed:bg-muted/70 has-data-focus-visible:ring-2 has-data-focus-visible:ring-ring has-data-focus-visible:ring-inset";
+
+export const dataListMain = "flex min-w-0 flex-1 flex-col gap-0.5";
+
+export const dataListTitle = "min-w-0 truncate text-left font-semibold text-foreground";
+
+// The pseudo-element stretches the press area over the whole row.
+export const dataListTitlePress =
+  "min-w-0 truncate text-left font-semibold text-foreground outline-none after:absolute after:inset-0";
+
+export const dataListSecondary =
+  "flex min-w-0 items-center gap-1.5 overflow-hidden text-xs whitespace-nowrap text-muted-foreground";
+
+export const dataListSecondaryItem = "min-w-0 truncate first:shrink-0 first:max-w-3/5";
+
+export const dataListSeparator = "shrink-0 text-muted-foreground/60";
+
+export const dataListTrail = "flex max-w-2/5 shrink-0 flex-col items-end gap-1 text-right";
+
+export const dataListAmount = "flex flex-col items-end font-semibold tabular-nums";
+
+export const dataListTags = "flex items-center justify-end gap-1";
+
+// Controls sit above the row's stretched press area.
+export const dataListRaised = "relative z-10";
+
+export const dataListChevron = "size-4 shrink-0 text-muted-foreground/60";
+
+export const dataListSkeletonMain = "flex flex-1 flex-col gap-2";
+
+export const dataListSkeletonTitle = "h-4 w-2/5";
+
+export const dataListSkeletonAmount = "h-4 w-16";
+
+export const dataListSkeletonMeta = "h-3 w-3/5";
+
+export const tablePanel = "flex min-w-0 flex-col gap-3";
+
+export const tablePanelBody = "min-w-0";
+
+export const tablePanelTitle = "font-heading text-base font-semibold text-foreground";
+
+export const tableLoadMore =
+  "flex min-h-11 items-center justify-center gap-2 pt-2 text-xs text-muted-foreground tabular-nums";
+
+export const tablePagination =
+  "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-2";
+
+export const tablePaginationRange =
+  "text-sm whitespace-nowrap text-muted-foreground tabular-nums";
+
+export const tablePaginationControls = "flex items-center gap-2";
+
+export const tablePaginationStep = "rounded-full";
+
+export const tablePaginationNav = "mx-0 w-auto";
+
+export const tablePaginationPages = "flex items-center gap-1";
+
+export const tablePaginationPage = cva("size-8 rounded-full tabular-nums", {
+  variants: {
+    active: { true: "", false: "text-muted-foreground" },
+  },
+  defaultVariants: { active: false },
+});
+
+export const tablePaginationEllipsis = "size-8 text-muted-foreground";
+
+export const tablePaginationSize = "hidden wide:flex";
+
+export const tablePaginationSelect = "w-18";
+
+export const tablePaginationSelectTrigger = "rounded-full";
+
+export const nowrapCell = "whitespace-nowrap";
+
+export const rowActionTrigger = "compact:rounded-full";
+
+export const rowActionMenu = "w-auto min-w-48";
+
+export const rowActionItem = "whitespace-nowrap";

@@ -1,9 +1,10 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
   Select,
@@ -13,72 +14,115 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/utils/cn.utils";
-import { usePagination } from "../../../hook/common/pagination.hook";
-import { totalPages as countPages } from "../../../models/common/pagination.model";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import {
-  paginationControls,
-  paginationRoot,
-  paginationSizeGroup,
-  paginationSizeLabel,
-  paginationSinglePage,
-  paginationSizeTrigger,
-  paginationStep,
-  paginationStepDisabled,
-} from "../../../styles/table/pagination.styles";
+  pageItems,
+  type IPaginationRequest,
+} from "../../../models/common/pagination.model";
+import {
+  tablePagination,
+  tablePaginationControls,
+  tablePaginationEllipsis,
+  tablePaginationNav,
+  tablePaginationPage,
+  tablePaginationPages,
+  tablePaginationRange,
+  tablePaginationSelect,
+  tablePaginationSelectTrigger,
+  tablePaginationSize,
+  tablePaginationStep,
+} from "../../../styles/table/table.styles";
 
 type IProps = {
-  // Stable key for the pagination store; use the keys in keys/table.keys.ts.
-  paginationKey: string;
+  pagination: IPaginationRequest;
   totalCount: number;
-  // The first page is still loading, so totalCount is not known yet.
-  isLoading?: boolean;
-  // Offer a rows-per-page picker; left off, the store's page size is fixed.
-  pageSizes?: number[];
-  className?: string;
+  onPageChange: (pageNumber: number, pageSize: number) => void;
+  showSizeChanger?: boolean;
 };
 
+const pageSizes = [8, 16, 32, 64] as const;
+
+// Wide screens only; compact loads more rows as the list scrolls instead.
 const TablePagination = ({
-  paginationKey,
+  pagination,
   totalCount,
-  isLoading = false,
-  pageSizes = [],
-  className,
+  onPageChange,
+  showSizeChanger = true,
 }: IProps) => {
-  const { pagination, setPagination } = usePagination(paginationKey);
-  const showSizePicker = pageSizes.length > 1;
+  const isCompact = useIsCompact();
+  const { pageNumber, pageSize } = pagination;
+  const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
+  const firstItem = (pageNumber - 1) * pageSize + 1;
+  const lastItem = Math.min(pageNumber * pageSize, totalCount);
+  const rangeLabel =
+    totalCount === 0 ? "0 items" : `${firstItem}–${lastItem} of ${totalCount}`;
 
-  const pageCount = countPages(totalCount, pagination.pageSize);
-  const hasPrevious = !isLoading && pagination.pageNumber > 1;
-  const hasNext = !isLoading && pagination.pageNumber < pageCount;
+  const changeSize = (key: unknown) => {
+    const size = pageSizes.find((item) => String(item) === key);
+    if (size) onPageChange(1, size);
+  };
 
-  const firstRow = totalCount === 0 ? 0 : (pagination.pageNumber - 1) * pagination.pageSize + 1;
-  const lastRow = Math.min(pagination.pageNumber * pagination.pageSize, totalCount);
+  if (isCompact) return null;
 
   return (
-    <div className={cn(paginationRoot, className)}>
-      <p className={paginationSizeLabel}>
-        {isLoading
-          ? "Loading…"
-          : totalCount === 0
-            ? "No records"
-            : `Showing ${firstRow}–${lastRow} of ${totalCount}`}
-      </p>
+    <div className={tablePagination}>
+      <span className={tablePaginationRange}>{rangeLabel}</span>
 
-      <div className={cn(paginationControls, pageCount <= 1 && paginationSinglePage)}>
-        {showSizePicker && (
-          <div className={paginationSizeGroup}>
-            <span className={paginationSizeLabel}>Rows</span>
+      <div className={tablePaginationControls}>
+        <Button
+          variant="outline"
+          size="icon"
+          className={tablePaginationStep}
+          aria-label="Previous page"
+          isDisabled={pageNumber <= 1}
+          onPress={() => onPageChange(pageNumber - 1, pageSize)}
+        >
+          <ChevronLeft />
+        </Button>
+
+        <Pagination className={tablePaginationNav}>
+          <PaginationContent className={tablePaginationPages}>
+            {pageItems(pageNumber, lastPage).map((item) => (
+              <PaginationItem key={item}>
+                {typeof item === "number" ? (
+                  <Button
+                    variant={item === pageNumber ? "default" : "ghost"}
+                    size="icon-sm"
+                    className={tablePaginationPage({ active: item === pageNumber })}
+                    aria-label={`Page ${item}`}
+                    aria-current={item === pageNumber ? "page" : undefined}
+                    onPress={() => onPageChange(item, pageSize)}
+                  >
+                    {item}
+                  </Button>
+                ) : (
+                  <PaginationEllipsis className={tablePaginationEllipsis} />
+                )}
+              </PaginationItem>
+            ))}
+          </PaginationContent>
+        </Pagination>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className={tablePaginationStep}
+          aria-label="Next page"
+          isDisabled={pageNumber >= lastPage}
+          onPress={() => onPageChange(pageNumber + 1, pageSize)}
+        >
+          <ChevronRight />
+        </Button>
+
+        {showSizeChanger ? (
+          <div className={tablePaginationSize}>
             <Select
-              value={String(pagination.pageSize)}
-              // Changing page size invalidates the current offset, so go back to page one.
-              onChange={(key) =>
-                setPagination({ pageSize: Number(key), pageNumber: 1 })
-              }
-              aria-label="Rows per page"
-              className={paginationSizeTrigger}
+              aria-label="Items per page"
+              value={String(pageSize)}
+              onChange={changeSize}
+              className={tablePaginationSelect}
             >
-              <SelectTrigger>
+              <SelectTrigger size="sm" className={tablePaginationSelectTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -92,40 +136,7 @@ const TablePagination = ({
               </SelectContent>
             </Select>
           </div>
-        )}
-
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                isDisabled={!hasPrevious}
-                className={cn(
-                  paginationStep,
-                  !hasPrevious && paginationStepDisabled,
-                )}
-                onPress={() =>
-                  setPagination({ pageNumber: pagination.pageNumber - 1 })
-                }
-              />
-            </PaginationItem>
-
-            <PaginationItem>
-              <span className={paginationSizeLabel}>
-                Page {pagination.pageNumber} of {Math.max(pageCount, 1)}
-              </span>
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext
-                isDisabled={!hasNext}
-                className={cn(paginationStep, !hasNext && paginationStepDisabled)}
-                onPress={() =>
-                  setPagination({ pageNumber: pagination.pageNumber + 1 })
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        ) : null}
       </div>
     </div>
   );
