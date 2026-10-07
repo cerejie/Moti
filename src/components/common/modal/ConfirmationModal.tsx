@@ -1,4 +1,4 @@
-import { AlertTriangle, X } from "lucide-react";
+import { CircleAlert, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,35 +12,59 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/utils/cn.utils";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { useConfirmation } from "../../../hook/common/confirmation.hook";
 import { useSheetEntry } from "../../../hook/common/sheet.hook";
+import type { ConfirmKind } from "../../../models/common/modal.model";
 import {
   confirmBody,
-  confirmClose,
-  confirmCloseLabel,
-  confirmDescription,
+  confirmContent,
   confirmFooter,
   confirmItem,
-  confirmLead,
-  confirmLeadText,
   confirmMedia,
   confirmPhraseGroup,
-  confirmTitle,
+  confirmSheetBody,
+  confirmSheetFooter,
+  confirmSheetHeader,
+  confirmSheetMedia,
 } from "../../../styles/modal/confirmation.styles";
-import { modalCloseBar } from "../../../styles/modal/modal.styles";
+import { drawerContent } from "../../../styles/modal/modal.styles";
 import AppAlert from "../status/AppAlert";
 
 const phraseInputId = "confirm-phrase";
 
+const defaultTitles: Record<ConfirmKind, string> = {
+  confirm: "Please confirm",
+  delete: "Delete",
+};
+
+const defaultOkTexts: Record<ConfirmKind, string> = {
+  confirm: "Confirm",
+  delete: "Delete",
+};
+
+const defaultMessage = "This action cannot be undone. Do you want to continue?";
+
 // One instance is mounted in App.tsx. Everything else asks for a confirmation
 // through useConfirm() rather than rendering its own dialog.
 const ConfirmationModal = () => {
+  const isCompact = useIsCompact();
   const { confirm, running, phrase, setPhrase, closeConfirm, runConfirm } =
     useConfirmation();
 
   const kind = confirm.kind ?? "confirm";
-  const isDelete = kind === "delete";
+  const title = confirm.title ?? defaultTitles[kind];
+  const message = confirm.message ?? defaultMessage;
+  const icon = kind === "delete" ? <Trash2 /> : <CircleAlert />;
 
   // When a phrase is required the action stays disabled until it matches
   // exactly. This is what preserves DeleteAccountDialog's type-DELETE gate.
@@ -56,85 +80,106 @@ const ConfirmationModal = () => {
 
   useSheetEntry(confirm.visible, () => handleOpenChange(false));
 
+  const hasBody = Boolean(confirm.itemName) || kind === "delete" || phraseRequired;
+
+  const body = hasBody ? (
+    <div className={cn(confirmBody, isCompact && confirmSheetBody)}>
+      {confirm.itemName && (
+        <Item variant="muted" size="sm">
+          <ItemContent>
+            <ItemTitle className={confirmItem}>{confirm.itemName}</ItemTitle>
+          </ItemContent>
+        </Item>
+      )}
+
+      {kind === "delete" && (
+        <AppAlert tone="danger">
+          This cannot be undone. Anything linked to this record stops being
+          available to you.
+        </AppAlert>
+      )}
+
+      {phraseRequired && (
+        <div className={confirmPhraseGroup}>
+          <Label htmlFor={phraseInputId}>
+            Type <strong>{confirm.confirmPhrase}</strong> to confirm
+          </Label>
+          <Input
+            id={phraseInputId}
+            value={phrase}
+            placeholder={confirm.confirmPhrase}
+            autoComplete="off"
+            onChange={(event) => setPhrase(event.target.value)}
+          />
+        </div>
+      )}
+    </div>
+  ) : null;
+
+  // Not AlertDialogAction: its close slot would dismiss the dialog before the
+  // action settles. runConfirm closes it afterwards.
+  const okButton = (
+    <Button
+      variant={kind === "delete" ? "destructive" : "default"}
+      isDisabled={running || !phraseMatches}
+      onPress={() => void runConfirm()}
+    >
+      {running && <Spinner />}
+      {confirm.okText ?? defaultOkTexts[kind]}
+    </Button>
+  );
+
+  if (isCompact) {
+    return (
+      <Sheet
+        side="bottom"
+        isOpen={confirm.visible}
+        onOpenChange={handleOpenChange}
+        isDismissable={!running}
+        showCloseButton={false}
+        className={drawerContent}
+      >
+        <SheetHeader className={confirmSheetHeader}>
+          <span className={cn(confirmSheetMedia, confirmMedia({ kind }))} aria-hidden="true">
+            {icon}
+          </span>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>{message}</SheetDescription>
+        </SheetHeader>
+
+        {body}
+
+        <SheetFooter className={confirmSheetFooter}>
+          {okButton}
+          <Button variant="outline" isDisabled={running} onPress={closeConfirm}>
+            {confirm.cancelText ?? "Cancel"}
+          </Button>
+        </SheetFooter>
+      </Sheet>
+    );
+  }
+
   return (
-    <AlertDialog isOpen={confirm.visible} onOpenChange={handleOpenChange}>
-      {/* The same ruled ✕ row AppModal draws when the body brings its own heading. */}
-      <div className={modalCloseBar}>
-        <Button
-          slot="close"
-          variant="ghost"
-          size="icon-sm"
-          className={confirmClose}
-          isDisabled={running}
-        >
-          <X />
-          <span className={confirmCloseLabel}>Close</span>
-        </Button>
-      </div>
+    <AlertDialog
+      isOpen={confirm.visible}
+      onOpenChange={handleOpenChange}
+      className={confirmContent}
+    >
+      <AlertDialogHeader>
+        <AlertDialogMedia className={confirmMedia({ kind })} aria-hidden>
+          {icon}
+        </AlertDialogMedia>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{message}</AlertDialogDescription>
+      </AlertDialogHeader>
 
-      <div className={confirmLead}>
-        <AlertDialogHeader className={confirmLeadText}>
-          {isDelete && (
-            <AlertDialogMedia className={confirmMedia} aria-hidden>
-              <AlertTriangle />
-            </AlertDialogMedia>
-          )}
-          <AlertDialogTitle className={confirmTitle}>
-            {confirm.title ?? (isDelete ? "Delete" : "Please confirm")}
-          </AlertDialogTitle>
-          <AlertDialogDescription className={confirmDescription}>
-            {confirm.message ??
-              "This action cannot be undone. Do you want to continue?"}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-      </div>
-
-      <div className={confirmBody}>
-        {confirm.itemName && (
-          <Item variant="muted" size="sm">
-            <ItemContent>
-              <ItemTitle className={confirmItem}>{confirm.itemName}</ItemTitle>
-            </ItemContent>
-          </Item>
-        )}
-
-        {isDelete && (
-          <AppAlert tone="danger">
-            This cannot be undone. Anything linked to this record stops being
-            available to you.
-          </AppAlert>
-        )}
-
-        {phraseRequired && (
-          <div className={confirmPhraseGroup}>
-            <Label htmlFor={phraseInputId}>
-              Type <strong>{confirm.confirmPhrase}</strong> to confirm
-            </Label>
-            <Input
-              id={phraseInputId}
-              value={phrase}
-              placeholder={confirm.confirmPhrase}
-              autoComplete="off"
-              onChange={(event) => setPhrase(event.target.value)}
-            />
-          </div>
-        )}
-      </div>
+      {body}
 
       <AlertDialogFooter className={confirmFooter}>
         <AlertDialogCancel isDisabled={running}>
           {confirm.cancelText ?? "Cancel"}
         </AlertDialogCancel>
-        {/* Not AlertDialogAction: its close slot would dismiss the dialog
-            before the action settles. runConfirm closes it afterwards. */}
-        <Button
-          variant={isDelete ? "destructive" : "default"}
-          isDisabled={running || !phraseMatches}
-          onPress={() => void runConfirm()}
-        >
-          {running && <Spinner />}
-          {confirm.okText ?? (isDelete ? "Delete" : "Confirm")}
-        </Button>
+        {okButton}
       </AlertDialogFooter>
     </AlertDialog>
   );

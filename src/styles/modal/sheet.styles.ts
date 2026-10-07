@@ -4,7 +4,7 @@ export const appSheetContent = "bg-panel";
 
 export const appSheetBottom = "rounded-t-sheet";
 
-export const appSheetSide = "w-full rounded-l-panel sm:max-w-md";
+export const appSheetSide = "w-full rounded-l-panel wide:max-w-md";
 
 export const appSheetBody = "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-1";
 

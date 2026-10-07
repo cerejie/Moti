@@ -6,4 +6,6 @@ export type CardTone = "surface" | "ink" | "accent";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl";
 
+export type SheetKind = "action" | "detail" | "form" | "flow";
+
 export type DeviceClass = "phone" | "tabletPortrait" | "tabletLandscape" | "desktop";

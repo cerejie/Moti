@@ -66,7 +66,7 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 | Page-level switch (segmented ≤ 4 options, chips beyond) | `view/ContextSwitch` in ContentView `tabs` or a toolbar |
 | Tabs inside a page (being replaced by ContextSwitch in phases 4 and 7) | `view/ViewTabs` / `view/SegmentTabs` |
 | Content panel / metric tile / action tiles | `card/SectionCard` / `card/StatCard` / `card/ActionCards` |
-| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination` |
+| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`; compact rows with more than `cardMetaLimit` metas (or `detailSections` / `detailActions`) open `table/RecordDetailSheet` |
 | Toolbar above a list | `filter/FilterToolbar` (+ `filter/SegmentedControl`) |
 | Row actions | `table/RowActionMenu` |
 | Any modal | `modal/AppModal`; forms `form/EntityFormModal`; read-only `modal/DetailModal`; done `modal/SuccessModal` |
@@ -115,8 +115,9 @@ Dates, money and numbers go through `utils/format.utils.ts` — never format at 
 ## 6. Modals — one frame, never rebuilt
 
 - Every overlay is `AppModal` (or `EntityFormModal` / `DetailModal` / `SuccessModal`, which sit
-  on it) or `useConfirm`. `AppModal` is an aria `dialog` on `md+` and an aria `sheet` from the
-  bottom on phones, and it draws the whole frame: ruled header, scrolling body, ruled footer.
+  on it) or `useConfirm`. `AppModal` is an aria `dialog` on `wide` and an aria `sheet` from the
+  bottom on `compact`, and it draws TARTAR's frame: ruled header, scrolling body, optional
+  `pinned` row, tinted ruled footer. `kind` (`action` / `detail` / `form` / `flow`) sets the sheet height.
 - A new modal supplies `title`, `size` (`ModalSize`), `footer` and children — nothing else styles
   the frame, and `className` never overrides it.
 - Footer = action buttons only: secondary first (`variant="secondary"`), primary last, default size.

@@ -3,8 +3,8 @@
 // long value from widening its grid cell.
 export const fieldRoot = "min-w-0";
 
-// Touch target on a phone; the desktop height comes from the shadcn default.
-export const fieldInput = "min-h-touch md:min-h-9";
+// Touch target on compact screens; the wide height comes from the shadcn default.
+export const fieldInput = "min-h-touch wide:min-h-9";
 
 // A select fills its field like the text inputs beside it.
 export const fieldSelect = "w-full";

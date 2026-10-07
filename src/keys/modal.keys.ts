@@ -13,3 +13,4 @@ export const userPasswordModalKey = "user-password";
 export const syncQueueModalKey = "sync-queue";
 export const filterSheetModalKey = "filter-sheet";
 export const accountSheetModalKey = "account-sheet";
+export const rowDetailSheetModalKey = (scope: string) => `${scope}-detail`;

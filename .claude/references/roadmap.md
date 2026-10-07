@@ -61,7 +61,16 @@ Decisions (user, 2026-10-07):
       table/filter styles on `compact:` / `wide:`. Not ported: selection, sort, row focus, pending-sync
       rows, `RecordDetailSheet` (phase 5). No ContentView `toolbar` slot needed.
       `SegmentedControl` stays for AccountDeviceCard only
-- [ ] Phase 5: form / modal / detail kit
+- [x] Phase 5 (2026-10-07): form / modal / detail kit — TARTAR's modal frame (panel, `rounded-sheet`,
+      tinted footer) with `kind` sheet heights + `pinned` row on `AppModal` / `AppSheet` (Moti's
+      `onOpenChange`, `description`, `hideHeader`, `dismissible` and back gesture kept);
+      `ConfirmationModal` is a centred bottom sheet on compact (phrase gate kept); `DetailGrid` +
+      `detail.utils` (empty / `hidden` items drop); `RecordDetailSheet`, `RecordDetailSection`,
+      `DetailRows`, `SheetActions` wired into `DataTableList` (`cardMetaLimit` 2, `detailSections`,
+      `detailTitle`, `detailActions`); `EntityFormModal` uses card `FormSection`s that fold on compact
+      (`useSectionDisclosure`), `kind="form"`, `submitKind`; `fieldSpan` cva; modal/form styles on
+      `wide:`. Not ported: `FormSummary(Bar)`, `deriveValues`, `intro`, `DetailPanel`, `RowDetailPanel`.
+      Screens pass `detailSections` / `detailActions` in phase 7
 - [ ] Phase 6: cards and states
 - [ ] Phase 7: migrate screens (Inventory, Transaction, Movements, Users, Masterfile, Dashboard,
       Account, Auth); retire Moti `text-sm/md/lg` overrides and `shadow-card-*`

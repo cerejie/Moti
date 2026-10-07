@@ -1,21 +1,15 @@
 import type { ReactNode } from "react";
-import { cn } from "@/utils/cn.utils";
 import type { IDetailSection } from "../../../models/common/detail.model";
 import type { ModalSize } from "../../../models/common/view.model";
+import { sectionTitle } from "../../../styles/common/typography.styles";
 import {
-  detailGrid,
-  detailItem,
-  detailItemWide,
   detailSection,
   detailSectionHeader,
   detailSections,
 } from "../../../styles/modal/detail.styles";
-import {
-  detailLabel,
-  detailValue,
-  sectionTitle,
-} from "../../../styles/common/typography.styles";
+import { visibleDetailSections } from "../../../utils/detail.utils";
 import AppModal from "./AppModal";
+import DetailGrid from "./DetailGrid";
 
 type IProps<TRecord> = {
   open: boolean;
@@ -51,33 +45,21 @@ const DetailModal = <TRecord,>({
       title={title}
       description={description}
       size={size}
+      kind="detail"
       footer={footer}
     >
       {record && (
         <div className={detailSections}>
           {header}
 
-          {sections.map((section) => (
+          {visibleDetailSections(sections, record).map((section) => (
             <section key={section.key} className={detailSection}>
               <div className={detailSectionHeader}>
                 {section.icon}
                 <h3 className={sectionTitle}>{section.title}</h3>
               </div>
 
-              <dl className={detailGrid}>
-                {section.items.map((item) => (
-                  <div
-                    key={item.key}
-                    className={cn(
-                      detailItem,
-                      (item.span ?? 1) > 1 && detailItemWide,
-                    )}
-                  >
-                    <dt className={detailLabel}>{item.label}</dt>
-                    <dd className={detailValue}>{item.render(record)}</dd>
-                  </div>
-                ))}
-              </dl>
+              <DetailGrid record={record} items={section.items} />
             </section>
           ))}
 

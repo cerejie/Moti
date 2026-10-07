@@ -37,10 +37,7 @@ import {
   fieldRoot,
   fieldSelect,
 } from "../../../styles/form/field.styles";
-import {
-  formFieldFull,
-  formFieldHalf,
-} from "../../../styles/form/formSection.styles";
+import { fieldSpan } from "../../../styles/form/formSection.styles";
 import { requiredMark } from "../../../styles/common/typography.styles";
 import {
   formatPhMobileInput,
@@ -99,7 +96,7 @@ const FormField = <TValues extends FieldValues>({
   } = config;
 
   const fieldId = String(config.name);
-  const spanClass = config.span === "full" ? formFieldFull : formFieldHalf;
+  const spanClass = fieldSpan({ span: config.span });
 
   const renderControl = (
     bound: ControllerRenderProps<TValues, Path<TValues>>,

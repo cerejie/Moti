@@ -1,9 +1,10 @@
 import { cva } from "class-variance-authority";
 
-// AppModal sits on shadcn's Dialog (md+) and a bottom Sheet (phones) and uses
-// their header and footer as generated. Only the height cap and the scrolling
-// body are added, so a long form scrolls inside the frame instead of past it.
-export const modalContent = "max-h-[calc(100dvh-2rem)]";
+// TARTAR's modal frame: AppModal is shadcn's Dialog on wide screens and a bottom
+// Sheet on compact ones, drawn on the panel surface with a ruled header, a
+// scrolling body and a ruled, tinted action row.
+export const modalContent =
+  "max-h-[calc(100dvh-2rem)] rounded-sheet bg-panel ring-border shadow-overlay";
 
 // sm is the Dialog's own default width; the larger sizes widen it for tables
 // and side-by-side detail.
@@ -19,56 +20,90 @@ export const modalSize = cva("", {
   defaultVariants: { size: "md" },
 });
 
-// The body bleeds to the dialog's edges so its scrollbar sits at the border.
-export const modalBody = "-mx-6 max-h-[70dvh] overflow-y-auto px-6";
+// The title's line box matches the ✕ (44 px on touch screens) so the two centre on one line.
+export const modalHeaderRuled =
+  "-mx-6 -mt-6 border-b border-border px-6 py-4 pr-16 [&_[data-slot=dialog-title]]:text-base [&_[data-slot=dialog-title]]:font-semibold [&_[data-slot=dialog-title]]:leading-8 pointer-coarse:[&_[data-slot=dialog-title]]:leading-11";
 
 // Keeps the title for screen readers while the modal draws its own heading.
 export const modalHeaderHidden = "sr-only";
 
-// Every modal shares one frame: a ruled header row (the title, or just the ✕
-// when the body draws its own heading), the scrolling body, and a ruled footer
-// holding the actions. Nothing opts out, so no modal has to remember it.
-
-// A visible title header, ruled off from the body. Bleeds to the dialog's
-// edges (p-6) and keeps room on the right for the ✕; the title's line box
-// matches the ✕ button's height (44 px on touch screens) so the two centre on one line.
-export const modalHeaderRuled =
-  "-mx-6 -mt-6 border-b border-border px-6 py-4 pr-16 [&_[data-slot=dialog-title]]:leading-8 pointer-coarse:[&_[data-slot=dialog-title]]:leading-11";
-
-// A hidden header that still gives the close button a ruled row of its own,
-// so the ✕ never sits over the body.
+// A hidden header still gives the ✕ a ruled row of its own, so it never sits over the body.
 export const modalCloseBar = "-mx-6 -mt-6 h-14 border-b border-border";
 
-// The sheet's own header padding (p-4) already frames the title and the ✕; the
-// title's line box matches the ✕ as in the dialog header.
-export const drawerHeaderRuled =
-  "border-b border-border pr-16 [&_[data-slot=sheet-title]]:leading-8 pointer-coarse:[&_[data-slot=sheet-title]]:leading-11";
+// The body bleeds to the dialog's edges so its scrollbar sits at the border.
+export const modalBody = "-mx-6 -my-1 max-h-[70dvh] overflow-y-auto px-6 py-1";
 
-export const drawerCloseBar = "h-14 border-b border-border";
-
-// Footer buttons keep the default type size but take roomier padding.
 export const modalActionSize =
   "[&_[data-slot=button]]:h-11 [&_[data-slot=button]]:px-6";
 
-// The ruled action row, matching the header. Bleeds to the dialog's edges.
-export const modalFooter = `-mx-6 -mb-6 border-t border-border px-6 py-4 ${modalActionSize}`;
+// A row that stays put between the scrolling body and the actions, such as a running total.
+export const modalPinned = "-mx-6 border-t border-border px-6";
 
-// Keeps the sheet's 1rem bottom and grows it to clear the home indicator on an installed app.
-export const drawerFooter = `border-t border-border pb-safe ${modalActionSize}`;
+export const modalFooter = `flex-wrap -mx-6 -mb-6 rounded-b-sheet border-t border-border bg-muted/50 px-6 py-4 ${modalActionSize}`;
 
 // While an iOS keyboard is open the sheet rides on top of it and fits the space left.
 export const drawerContent =
-  "max-h-[min(92dvh,calc(var(--visible-height)-2rem))] data-[side=bottom]:bottom-(--keyboard-inset)";
+  "max-h-[min(92dvh,calc(var(--visible-height)-2rem))] rounded-t-sheet bg-panel data-[side=bottom]:bottom-(--keyboard-inset)";
 
-export const drawerBody = "overflow-y-auto px-4";
+// How much of the phone a sheet claims: an action list hugs its content, a record
+// starts at 60%, a form takes the screen below the status bar, a flow all of it.
+export const drawerKind = cva("", {
+  variants: {
+    kind: {
+      action: "",
+      detail: "data-[side=bottom]:min-h-[60dvh]",
+      form: "data-[side=bottom]:h-[calc(var(--visible-height)-max(env(safe-area-inset-top),0.75rem))] max-h-none",
+      flow: "data-[side=bottom]:h-(--visible-height) max-h-none rounded-t-none",
+    },
+  },
+  defaultVariants: { kind: "action" },
+});
 
-// A form inside a modal owns the footer, so it must fill the sheet height;
-// the API error and the fields stack under one gap.
-export const modalForm = "flex min-h-0 flex-col gap-4";
+export const drawerHeaderRuled =
+  "border-b border-border pr-16 [&_[data-slot=sheet-title]]:text-base [&_[data-slot=sheet-title]]:font-semibold [&_[data-slot=sheet-title]]:leading-8 pointer-coarse:[&_[data-slot=sheet-title]]:leading-11";
+
+export const drawerCloseBar = "h-14 border-b border-border";
+
+export const drawerBody =
+  "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-1 [&_:is(input,textarea)]:scroll-mt-14 [&_:is(input,textarea)]:scroll-mb-4";
+
+export const drawerPinned = "border-t border-border px-4";
+
+// Keeps the sheet's 1rem bottom and grows it to clear the home indicator on an installed app.
+export const drawerFooter = `border-t border-border bg-muted/50 pb-safe ${modalActionSize} [&_[data-slot=button][data-variant=default]]:h-12`;
+
+// A form inside a modal owns the footer; the API error and the fields stack under one gap.
+export const modalForm = "flex min-h-0 flex-col gap-6";
 
 // A body that brings its own padding (tabs, a print sheet) edge to edge.
 export const modalBodyFlush = "mx-0 px-0";
 
-// A body that opens with a tab list pulls it up under the header rule; the
-// list's own height is the breathing room.
+// A body that opens with a tab list pulls it up under the header rule.
 export const modalBodyTabs = "-mt-4";
+
+// The submit button of a destructive form takes the danger fill.
+export const confirmAction = cva("", {
+  variants: {
+    kind: {
+      confirm: "",
+      delete: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    },
+  },
+  defaultVariants: { kind: "confirm" },
+});
+
+export const detailGrid = "grid grid-cols-1 gap-x-6 gap-y-4 wide:grid-cols-2";
+
+export const detailItem = cva("flex min-w-0 flex-col gap-1", {
+  variants: {
+    wide: {
+      true: "wide:col-span-2",
+      false: "",
+    },
+  },
+  defaultVariants: { wide: false },
+});
+
+export const detailLabel = "text-xs font-medium text-muted-foreground";
+
+export const detailValue = "min-w-0 text-sm font-medium text-foreground";

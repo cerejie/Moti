@@ -47,7 +47,7 @@ const SuccessModal = ({
       size="sm"
       hideHeader
       footer={
-        <AppButton type="button" onClick={close}>
+        <AppButton onPress={close}>
           {okText}
         </AppButton>
       }
