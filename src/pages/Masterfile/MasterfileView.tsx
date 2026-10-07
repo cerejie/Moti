@@ -5,7 +5,7 @@ import MasterfilePanel from "../../components/masterfile/panels/MasterfilePanel"
 import { ROUTES } from "../../routes/route.paths";
 
 const MasterfileView = () => (
-  <ContentView back={{ label: "Inventory", path: ROUTES.inventory }}>
+  <ContentView title="Masterfile" back={{ label: "Inventory", path: ROUTES.inventory }}>
     <MasterfilePanel />
     <CategoryFormModal />
     <BrandFormModal />

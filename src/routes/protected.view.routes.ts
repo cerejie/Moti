@@ -13,7 +13,7 @@ import { ROUTES } from "./route.paths";
 // The one sidebar heading; every nav route falls under it unless it names a group.
 export const menuGroup = "Menu";
 
-// The sidebar, the bottom tab bar and the topbar title all map over this array;
+// The sidebar, the bottom tab bar and the app bar / header title all map over this array;
 // order here is the order they render in. `can` hides a route from roles without
 // that permission, and its loader turns a typed URL away the same way.
 // Every role can transact, so Transaction is where a refused URL lands.

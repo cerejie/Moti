@@ -96,7 +96,7 @@ to answer a behaviour question.
 | Offline write queue | `src/store/common/sync.store.ts`, `src/utils/write.utils.ts` |
 | Env vars | `src/utils/env.utils.ts` (the only reader of `import.meta.env`) |
 | Auth / session | `src/services/data/auth.services.ts`, `store/data/auth/`, `routes/route.guard.tsx` |
-| Navigation (sidebar, tab bar, topbar) | `src/routes/protected.view.routes.ts` |
+| Navigation (sidebar, tab bar, app bar / header) | `src/routes/protected.view.routes.ts` |
 | App shell | `src/layouts/AppLayout.tsx`, `components/common/layout/` |
 | Design tokens | `src/styles/common/theme.css` |
 | PWA manifest + service worker | `vite.config.ts` (`VitePWA`), `index.html`, `public/` |

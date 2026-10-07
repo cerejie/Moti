@@ -89,8 +89,10 @@ workbox: {
 ```
 
 `viewport-fit=cover` is what exposes `env(safe-area-inset-*)`; pinch-zoom stays enabled for
-accessibility. Safe-area utilities (`pt-safe`, `pb-safe`, `px-safe`, `pb-tabbar`, `h-dvh-safe`)
-are defined once in `styles/common/theme.css` and used by the shell (`ui-design-conventions` § 8).
+accessibility. Safe-area utilities (`pt-safe`, `pb-safe` = max(1rem, inset), `px-safe`, `p-safe-*`, `h-dvh-safe`)
+are defined once in `styles/common/theme.css` and used by the shell: `AppBar` carries `pt-safe`,
+the floating `TabBar` carries `pb-safe` as the last row of `PhoneShell`, so content never reserves
+room for it (`ui-design-conventions` § 8).
 
 ## 4. Online / offline state
 

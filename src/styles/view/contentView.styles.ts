@@ -1,46 +1,37 @@
 import { cva } from "class-variance-authority";
 import { cn } from "../../utils/cn.utils";
-import { appShellGutterBleed } from "../layout/appShell.styles";
+import { pageTitle } from "../common/typography.styles";
 
-// Page shell. Replaces common/PageHeader.tsx plus the per-page wrapper each
-// screen declared for itself.
-export const contentViewRoot = "flex flex-col gap-6";
+// TARTAR's page header: the large title is visible at every width; the app
+// bar picks the title up once it scrolls away on compact screens.
+export const contentViewRoot = "flex min-w-0 flex-col gap-6";
 
-export const contentViewHeader =
-  "flex flex-col gap-4 wide:flex-row wide:items-start wide:justify-between";
+export const contentViewHead = "flex flex-wrap items-center gap-3";
 
-// On phones the topbar already carries the title, so the h1 stays for screen readers only.
-export const contentViewHeading = "flex flex-col gap-1 compact:sr-only";
+export const contentViewHeading = "flex min-w-0 flex-1 flex-col gap-1 wide:min-w-fit";
 
-// A header holding only the title leaves the phone layout entirely, gap included.
-export const contentViewHeaderTitleOnly = "compact:sr-only";
+export const contentViewTitle = cn(pageTitle, "truncate");
 
-// A sub-page's back link stands in for the heading. It is pulled out of the
-// column's gutter toward the rail so it reads as navigation, not as part of
-// the table below it, and drops a little under the topbar.
+// A sub-page's link back to its section, above the title and pulled into the gutter.
 export const contentViewBack =
   "-ml-3 self-start text-base font-medium [&_svg:not([class*='size-'])]:size-5";
 
-export const contentViewActions = "flex flex-wrap items-center gap-2";
+// On compact the slot dissolves so tabs and actions each take their own row.
+export const contentViewHeadActions =
+  "flex min-w-0 flex-wrap items-center gap-2 compact:contents wide:flex-nowrap";
 
-// On a phone the actions row goes full width so buttons keep a 44px target.
-export const contentViewActionsMobile = "w-full [&>*]:flex-1";
+export const contentViewTabs =
+  "-mx-1 min-w-0 basis-full overflow-x-auto overscroll-x-contain px-1 py-0.5 [scrollbar-width:none] empty:hidden compact:order-last wide:basis-auto";
 
-// The card surface: the frame cancels the shell's gutters and lays down its
-// own 10px on every side, so the card sits that far from the rail, the topbar,
-// the panel edge and the bottom, and grows to fill the scroll box. Inside, the
-// header and body keep the plain shell's 24px rhythm (CardContent ships gap-3).
-export const contentViewCardFrame = cn(
-  appShellGutterBleed,
-  "flex flex-1 flex-col p-4 wide:p-6",
-);
+export const contentViewHeadDivider =
+  "mx-1 hidden h-6 self-center! wide:block [[data-slot=view-tabs]:empty+&]:hidden";
 
-// No ring and no shadow so the frame reads as a plain white surface.
-export const contentViewCard = "w-full flex-1 shadow-none ring-0";
+// Moti keeps actions on their own full-width row on compact (TARTAR inlines
+// them), so the title never truncates beside two buttons at 360px.
+export const contentViewActions =
+  "flex flex-wrap items-center gap-2 compact:basis-full compact:[&>*]:flex-1";
 
-export const contentViewCardBody = "gap-6";
-
-export const contentViewBody = cva("flex flex-col", {
+export const contentViewBody = cva("flex min-w-0 flex-col", {
   variants: {
     layout: {
       stack: "gap-6",

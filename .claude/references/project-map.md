@@ -15,7 +15,7 @@ UI          src/components/inventory/tables/InventoryTable.tsx   TablePanel, Fil
             src/components/inventory/modal/ItemFormModal.tsx     EntityFormModal + IFieldSection[]
             src/components/inventory/modal/StockMovementModal.tsx sale / add / deduct with preview
             src/components/inventory/modal/ItemDetailModal.tsx   DetailModal + movement history
-            src/components/inventory/menus/StockAlertsBell.tsx   owner bell in the topbar
+            src/components/inventory/menus/StockAlertsBell.tsx   owner bell in the app bar / header
 Data        src/hook/data/inventory/inventory.list.hook.ts       list, summary, alerts queries
 Form        src/hook/data/inventory/inventory.form.hook.ts       item form + archive
             src/hook/data/movement/movement.form.hook.ts         stock movement form

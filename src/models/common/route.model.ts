@@ -18,7 +18,7 @@ export type IRoute = {
   children?: IRoute[];
 } & RouteObject;
 
-// A back action a screen puts in the topbar, e.g. a wizard's previous step.
+// A back action a screen puts in the app bar / header, e.g. a wizard's previous step.
 export type IHeaderBack = {
   label: string;
   onPress: () => void;

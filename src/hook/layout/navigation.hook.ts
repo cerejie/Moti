@@ -80,7 +80,7 @@ export const useBackRoute = () => {
   return section;
 };
 
-// Puts "Back to <label>" in the topbar while the caller is mounted. `onPress` must
+// Puts "Back to <label>" in the app bar / header while the caller is mounted. `onPress` must
 // be stable, or the store is rewritten on every render.
 export const useHeaderBack = (back: IHeaderBack | null) => {
   const setHeaderBack = useLayoutStore((state) => state.setHeaderBack);

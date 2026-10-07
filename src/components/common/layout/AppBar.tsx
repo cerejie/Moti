@@ -18,15 +18,14 @@ type IProps = {
   actions?: ReactNode;
 };
 
-// The bar is ruled off once the content has scrolled this far beneath it.
-const scrolledOffset = 4;
+// Roughly the height of ContentView's large title: once it scrolls away, the bar takes over.
+const compactTitleOffset = 44;
 
-// TARTAR's compact app bar. ContentView hides its h1 on compact screens, so the
-// bar always carries the page title.
+// TARTAR's compact app bar: ruled off and titled only after the page title scrolls beneath it.
 const AppBar = ({ actions }: IProps) => {
   const { current } = useBreadcrumbTrail();
   const headerBack = useLayoutStore(selectHeaderBack);
-  const scrolled = useScrolledPast(scrolledOffset);
+  const scrolled = useScrolledPast(compactTitleOffset);
 
   return (
     <header className={appBar({ scrolled })}>
@@ -46,7 +45,7 @@ const AppBar = ({ actions }: IProps) => {
         )}
       </div>
 
-      <span className={appBarTitle}>{current}</span>
+      {scrolled && <span className={appBarTitle}>{current}</span>}
 
       <div className={appBarActions}>
         <SyncIndicator />

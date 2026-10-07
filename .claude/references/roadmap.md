@@ -44,7 +44,12 @@ Decisions (user, 2026-10-07):
       navigate) with the compact account sheet; `pb-safe` = max(1rem, inset), `pb-safe-4` /
       `pb-tabbar` / `--spacing-tabbar` and `Topbar` removed; shell styles on `compact:` / `wide:`;
       Google Fonts runtime caching dropped. `AppBar` always shows the title (ContentView hides its h1)
-- [ ] Phase 3: ContentView + ContextSwitch
+- [x] Phase 3 (2026-10-07): `ContentView` ports TARTAR's head (large `h1` at every width, `back`
+      above the title, `tabs` slot + divider; actions keep a full-width row on compact),
+      `surface="card"` dropped; `ContextSwitch` + `ISegmentOption` ported but not yet used;
+      `AppBar` fades the title in past 44 px; bento on `wide:`; `media.hook.ts` and
+      `--spacing-topbar` deleted; skills say AppBar/AppHeader. `ViewTabs` / `SegmentTabs` stay
+      until their screens move to ContextSwitch (phases 4 and 7)
 - [ ] Phase 4: table / filter system
 - [ ] Phase 5: form / modal / detail kit
 - [ ] Phase 6: cards and states

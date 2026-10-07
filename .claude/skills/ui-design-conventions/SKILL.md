@@ -61,9 +61,10 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 
 | Need | Use |
 |---|---|
-| Page frame: title, subtitle, back link, actions | `view/ContentView` — every page opens with it |
+| Page frame: large title, subtitle, back link, `tabs`, actions | `view/ContentView` — every page opens with it |
 | Bento / dashboard layout | `view/BentoGrid` + `view/BentoCell` |
-| Tabs inside a page | `view/ViewTabs` / `view/SegmentTabs` |
+| Page-level switch (segmented ≤ 4 options, chips beyond) | `view/ContextSwitch` in ContentView `tabs` or a toolbar |
+| Tabs inside a page (being replaced by ContextSwitch in phases 4 and 7) | `view/ViewTabs` / `view/SegmentTabs` |
 | Content panel / metric tile / action tiles | `card/SectionCard` / `card/StatCard` / `card/ActionCards` |
 | Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination` |
 | Toolbar above a list | `filter/FilterToolbar` (+ `filter/SegmentedControl`) |
@@ -74,7 +75,7 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 | Status pill | `status/StatusBadge` fed by an enum label + tone map |
 | Loading / empty / error | `status/StateBox`, `status/LoadingBar`, `status/ErrorState` |
 | Buttons and links | `button/AppButton` (`href` for navigation) |
-| Shell: sidebar, bottom tab bar, topbar | `layout/AppShell`, `AppSidebar`, `TabBar`, `Topbar` |
+| Shell: compact `PhoneShell` (AppBar + floating TabBar), wide AppHeader + sidebar, bottom sheet | `layout/AppShell`, `PhoneShell`, `AppBar`, `TabBar`, `AppHeader`, `AppSidebar`, `modal/AppSheet` |
 
 If a component exists, use it. If it *almost* fits, **add a prop or `cva` variant** with the
 current behaviour as default — never fork a copy. If it does not exist and a second screen will
@@ -140,12 +141,16 @@ Dates, money and numbers go through `utils/format.utils.ts` — never format at 
 
 Design at **360 px first**, then widen. Clean dashboard on desktop, native-app feel on phones.
 
-- Navigation: bottom `TabBar` below `md`, `AppSidebar` from `md` up — both render from
+- Navigation: `PhoneShell` on `compact` (AppBar on top, floating `TabBar` as the last row),
+  `AppHeader` + `AppSidebar` on `wide` — all render from
   `routes/protected.view.routes.ts`. Adding a page never touches the nav components.
+- Page title: `ContentView` shows the large `h1` at every width; on compact the `AppBar` fades the
+  title in once the page has scrolled 44 px (`useScrolledPast`). Every page passes a `title`.
+- Layout breakpoints are the `compact:` / `wide:` variants (and `useIsCompact`), not `md:`.
 - Touch targets ≥ 44 px; primary actions reachable by the thumb (bottom of the screen on phones).
-- Respect safe areas: shell uses `pt-safe` / `pb-safe` / `pb-tabbar`; full-height screens use
+- Respect safe areas: `AppBar` uses `pt-safe`, `TabBar` uses `pb-safe`; full-height screens use
   `h-dvh-safe`, never `100vh`.
-- Tables collapse to card rows below `md` (`DataTable` handles this — do not build a second list).
+- Tables collapse to card rows on `compact` (`DataTable` handles this — do not build a second list).
 - No hover-only affordances; everything reachable by touch and keyboard (React Aria gives focus
   and keyboard handling for free — do not break it with custom handlers).
 - Motion comes from `tw-animate-css` via the registry; respect `prefers-reduced-motion`.
