@@ -2,12 +2,14 @@ import { clsx } from "clsx";
 import type { ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
-// tailwind-merge only knows Tailwind's stock scales. TARTAR's shadow and radius
-// tokens in theme.css must be registered here, or a wrapper's shadow-card
+// tailwind-merge only knows Tailwind's stock scales. TARTAR's text, shadow and radius
+// tokens in theme.css must be registered here: an unknown text-section reads as a
+// colour and drops the component's own text colour, and a wrapper's shadow-card
 // would never override the shadow-sm a generated shadcn component ships with.
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
+      text: ["micro", "caption", "label", "body", "emphasis", "section", "page-title", "money-lg", "hero"],
       shadow: ["panel", "card", "menu", "overlay"],
       radius: ["control", "card", "surface", "sheet", "panel", "pill"],
     },

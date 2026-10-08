@@ -59,6 +59,9 @@ const SCREENS = {
   ],
 };
 
+// A page's ContextSwitch tabs, drawn in ContentView's `tabs` slot.
+const PAGE_TABS = "main [data-slot=view-tabs] [data-slot=toggle-group-item]";
+
 // Overlays opened on top of a screen; each closes with Escape.
 const SHEETS = {
   owner: [
@@ -82,7 +85,7 @@ async function openCart(page) {
 }
 
 async function openTransaction(page) {
-  await page.getByRole("tab", { name: "History" }).click();
+  await page.locator(PAGE_TABS).filter({ hasText: /^History$/ }).click();
   await settle(page);
   const card = page.locator("main button").filter({ hasText: /^#\d+/ });
   if (await card.count()) await card.first().click();
@@ -197,7 +200,7 @@ const run = async (page, ctx) => {
       await page.goto(BASE + screen.path);
       await capture(page, ctx, screen.name, { expect: screen.expect ?? screen.path });
       if (screen.expect) return;
-      const tabs = page.locator("main").getByRole("tab");
+      const tabs = page.locator(PAGE_TABS);
       const count = await tabs.count();
       for (let i = 1; i < count; i += 1) {
         const label = (await tabs.nth(i).innerText()).trim().toLowerCase().replace(/\W+/g, "-") || `tab${i}`;

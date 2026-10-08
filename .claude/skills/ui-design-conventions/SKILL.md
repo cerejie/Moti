@@ -77,7 +77,7 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 | Row actions | `table/RowActionMenu` |
 | Any modal | `modal/AppModal`; forms `form/EntityFormModal`; read-only `modal/DetailModal`; done `modal/SuccessModal` |
 | Confirm / delete | `useConfirm()` + the single `modal/ConfirmationModal` in `App.tsx` |
-| Form building blocks | `form/FormRoot`, `FormField`, `FormSection`, `TextInput`, `SelectInput`, `TextArea`, `PasswordInput`, `OtpField`, `FileDropzone` |
+| Form building blocks | `form/FormRoot`, `FormField` (textarea, checkbox, select… by `type`), `FormSection`, `FormFieldGrid`, `TextInput`, `SelectInput`, `PasswordInput` |
 | Status pill | `status/StatusBadge` fed by an enum label + tone map |
 | Loading / empty / error | `status/EmptyState` (`loading`, `compact`), `status/ErrorState` (`compact`), `status/RefreshBar` (DataTable draws it) |
 | Buttons and links | `button/AppButton` (`href` for navigation) |

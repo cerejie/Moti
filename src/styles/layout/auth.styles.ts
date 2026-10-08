@@ -50,7 +50,7 @@ export const authPanel =
 export const authBrand = "mb-10 min-[60rem]:mb-7";
 
 export const authTitle =
-  "font-heading text-[2.125rem] leading-tight font-bold tracking-tight text-foreground min-[60rem]:text-hero";
+  "font-heading text-[2.125rem] leading-tight font-bold tracking-tight text-foreground min-[60rem]:text-[2rem]";
 
 export const authSubtitle =
   "mt-2 block max-w-[34ch] text-section leading-relaxed text-muted-foreground min-[60rem]:max-w-none min-[60rem]:text-emphasis";
@@ -61,6 +61,8 @@ export const authForm = [
   "[&_[data-slot=input-group]]:h-13.5 min-[60rem]:[&_[data-slot=input-group]]:h-12.5 [&_[data-slot=input-group]]:rounded-lg [&_[data-slot=input-group]]:bg-panel [&_[data-slot=input-group]]:px-2 [&_[data-slot=input-group]]:shadow-none",
   "[&_[data-slot=input-group]]:transition-[border-color,box-shadow] [&_[data-slot=input-group]]:duration-150",
   "[&_[data-slot=input-group-addon]_svg]:size-5 [&_[data-slot=input-group-control]]:text-base",
+  // Plain inputs (email, name) match the password group beside them.
+  "[&_[data-slot=input]]:h-13.5 min-[60rem]:[&_[data-slot=input]]:h-12.5 [&_[data-slot=input]]:rounded-lg [&_[data-slot=input]]:bg-panel [&_[data-slot=input]]:px-3.5 [&_[data-slot=input]]:text-base [&_[data-slot=input]]:shadow-none",
 ].join(" ");
 
 export const authMeta = "-mt-4 flex justify-end";
