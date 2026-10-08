@@ -15,7 +15,6 @@ import {
 import { formatDateTime, formatSignedQuantity } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
-import ErrorState from "../../common/status/ErrorState";
 import EmptyState from "../../common/status/EmptyState";
 
 const RecentMovementsPanel = () => {
@@ -23,10 +22,6 @@ const RecentMovementsPanel = () => {
   const movements = recent.data ?? [];
 
   const renderBody = () => {
-    if (recent.isLoading) return <EmptyState loading description="Loading activity…" />;
-    if (recent.isError) {
-      return <ErrorState error={recent.error} onRetry={() => void recent.refetch()} />;
-    }
     if (movements.length === 0) {
       return (
         <EmptyState
@@ -70,6 +65,9 @@ const RecentMovementsPanel = () => {
           Full history
         </AppButton>
       }
+      loading={recent.isLoading}
+      error={recent.error}
+      onRetry={() => void recent.refetch()}
     >
       {renderBody()}
     </SectionCard>

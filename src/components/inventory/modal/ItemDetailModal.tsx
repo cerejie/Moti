@@ -30,6 +30,7 @@ import {
   itemName,
   onHandUnit,
   onHandValue,
+  priceText,
 } from "../../../styles/inventory/inventory.styles";
 import {
   formatDateTime,
@@ -83,7 +84,10 @@ const sections: IDetailSection<IInventoryItem>[] = [
       {
         key: "price",
         label: "Selling price",
-        render: (item) => (item.selling_price === null ? "—" : formatPeso(item.selling_price)),
+        render: (item) =>
+          item.selling_price === null ? "—" : (
+            <span className={priceText}>{formatPeso(item.selling_price)}</span>
+          ),
       },
       { key: "updated", label: "Last updated", render: (item) => formatDateTime(item.updated_at) },
     ],

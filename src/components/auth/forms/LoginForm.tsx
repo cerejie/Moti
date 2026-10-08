@@ -6,6 +6,7 @@ import { ROUTES } from "../../../routes/route.paths";
 import {
   authAlt,
   authAltLink,
+  authDivider,
   authForm,
   authHint,
   authMeta,
@@ -60,6 +61,10 @@ const LoginForm = () => {
           Sign in
         </AppButton>
       </FormRoot>
+
+      <p className={authDivider} aria-hidden="true">
+        or
+      </p>
 
       <p className={authAlt}>
         New employee?

@@ -17,7 +17,6 @@ import {
 import { formatNumber } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
-import ErrorState from "../../common/status/ErrorState";
 import EmptyState from "../../common/status/EmptyState";
 
 const visibleRows = 6;
@@ -30,10 +29,6 @@ const AttentionPanel = () => {
   const count = items.length;
 
   const renderBody = () => {
-    if (alerts.isLoading) return <EmptyState loading description="Checking stock…" />;
-    if (alerts.isError) {
-      return <ErrorState error={alerts.error} onRetry={() => void alerts.refetch()} />;
-    }
     if (count === 0) {
       return <EmptyState compact icon={<PackageCheck aria-hidden />} title="All stocked up" />;
     }
@@ -81,6 +76,9 @@ const AttentionPanel = () => {
           </AppButton>
         )
       }
+      loading={alerts.isLoading}
+      error={alerts.error}
+      onRetry={() => void alerts.refetch()}
     >
       {renderBody()}
     </SectionCard>

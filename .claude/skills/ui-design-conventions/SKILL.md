@@ -31,7 +31,12 @@ Also load the official **`shadcn`** skill for any UI work, and run
 - **`src/styles/common/theme.css` is the single token source**: Tailwind v4 `@import`, the shadcn
   variable set (`--background`, `--foreground`, `--primary`, `--muted`, `--border`, `--ring`, …),
   Moti extras (`--success`, `--warning`, …), the type scale, and the safe-area utilities
-  (`pt-safe`, `pb-safe`, `px-safe`, `pb-tabbar`, `h-dvh-safe`).
+  (`pt-safe`, `pb-safe`, `px-safe`, `p-safe-*`, `h-dvh-safe`).
+- **Type, shadow and radius are TARTAR's names.** Text: the semantic sizes (`text-caption`,
+  `text-label`, `text-body`, `text-emphasis`, `text-section`, `text-page-title`, `text-hero`) or
+  Tailwind's stock `text-xs` / `text-sm` / `text-lg`; there is no `text-md`. Shadows:
+  `shadow-card` / `shadow-panel` / `shadow-menu` / `shadow-overlay`. New shadow or radius names
+  are also registered in `utils/cn.utils.ts` so `cn()` merges them.
 - **shadcn's default design, Moti colours.** Components render as the registry ships them; the
   only global override is colour, through the tokens. `className` on a shadcn component is for
   layout only.
@@ -63,17 +68,18 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 |---|---|
 | Page frame: large title, subtitle, back link, `tabs`, actions | `view/ContentView` — every page opens with it |
 | Bento / dashboard layout | `view/BentoGrid` + `view/BentoCell` |
-| Page-level switch (segmented ≤ 4 options, chips beyond) | `view/ContextSwitch` in ContentView `tabs` or a toolbar |
-| Tabs inside a page (being replaced by ContextSwitch in phases 4 and 7) | `view/ViewTabs` / `view/SegmentTabs` |
-| Content panel / metric tile / action tiles | `card/SectionCard` / `card/StatCard` / `card/ActionCards` |
-| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`; compact rows with more than `cardMetaLimit` metas (or `detailSections` / `detailActions`) open `table/RecordDetailSheet` |
+| Page-level switch or tabs (segmented ≤ 4 options, chips beyond) | `view/ContextSwitch` — page tabs go in ContentView `tabs` (a small `menus/<Domain>TabSwitch` reading a keyed filter), list switches in `TablePanel` `toolbar` |
+| Content panel | `card/SectionCard` — `subtitle`, `extra`, `flush`, `dense`, and `loading` / `error` / `onRetry` instead of hand-rolled states |
+| Metric tile | `card/StatCard` — `variant` tone, `icon`, `caption`, `href`; pesos by default (`raw` for counts); `loading` / `error` per tile |
+| Money | `moneyLevel({ level })` from `styles/common/money.styles.ts` (`primary` / `amount` / `supporting` / `meta`) — never a hand-sized amount class |
+| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`; compact rows with more than `cardMetaLimit` metas (or `detailSections` / `detailActions`) open `table/RecordDetailSheet`. Row actions are one `actionsOf(row)` in the table, fed to both `RowActionMenu` and `detailActions` |
 | Toolbar above a list | `filter/FilterToolbar` (+ `filter/SegmentedControl`) |
 | Row actions | `table/RowActionMenu` |
 | Any modal | `modal/AppModal`; forms `form/EntityFormModal`; read-only `modal/DetailModal`; done `modal/SuccessModal` |
 | Confirm / delete | `useConfirm()` + the single `modal/ConfirmationModal` in `App.tsx` |
 | Form building blocks | `form/FormRoot`, `FormField`, `FormSection`, `TextInput`, `SelectInput`, `TextArea`, `PasswordInput`, `OtpField`, `FileDropzone` |
 | Status pill | `status/StatusBadge` fed by an enum label + tone map |
-| Loading / empty / error | `status/StateBox`, `status/LoadingBar`, `status/ErrorState` |
+| Loading / empty / error | `status/EmptyState` (`loading`, `compact`), `status/ErrorState` (`compact`), `status/RefreshBar` (DataTable draws it) |
 | Buttons and links | `button/AppButton` (`href` for navigation) |
 | Shell: compact `PhoneShell` (AppBar + floating TabBar), wide AppHeader + sidebar, bottom sheet | `layout/AppShell`, `PhoneShell`, `AppBar`, `TabBar`, `AppHeader`, `AppSidebar`, `modal/AppSheet` |
 
@@ -105,8 +111,8 @@ it is the maximum.
 
 Every data view renders **loading, empty, error and success**:
 
-- Loading: `StateBox loading` or `LoadingBar`; `DataTable` carries its own skeleton rows.
-- Empty: `StateBox` with a title and, where it makes sense, the primary action.
+- Loading: `SectionCard` / `StatCard` `loading`, or `EmptyState loading`; `DataTable` carries its own skeleton rows.
+- Empty: `EmptyState` with a title and, where it makes sense, the primary action.
 - Error: `ErrorState` with a retry (`onRetry={refetch}`).
 - Offline with cached data: show the data plus the offline indicator (`pwa-conventions` § 4).
 

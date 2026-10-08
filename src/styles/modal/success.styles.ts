@@ -6,4 +6,4 @@ export const successBadge =
 
 export const successTitle = "text-xl font-bold text-foreground";
 
-export const successText = "text-md leading-relaxed text-muted-foreground";
+export const successText = "text-body leading-relaxed text-muted-foreground";

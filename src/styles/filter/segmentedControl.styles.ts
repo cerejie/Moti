@@ -17,7 +17,7 @@ export const segmentedControlItem = cva("", {
   variants: {
     size: {
       sm: "compact:min-w-0 compact:flex-1",
-      lg: "h-11 rounded-pill border-transparent px-3 text-sm font-semibold text-muted-foreground data-selected:bg-primary data-selected:text-primary-foreground data-selected:shadow-card-sm wide:px-4 wide:text-md",
+      lg: "h-11 rounded-pill border-transparent px-3 text-sm font-semibold text-muted-foreground data-selected:bg-primary data-selected:text-primary-foreground data-selected:shadow-card wide:px-4 wide:text-body",
     },
   },
   defaultVariants: { size: "sm" },

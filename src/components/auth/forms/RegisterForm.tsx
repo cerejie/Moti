@@ -6,6 +6,7 @@ import { ROUTES } from "../../../routes/route.paths";
 import {
   authAlt,
   authAltLink,
+  authDivider,
   authForm,
   authSubmit,
 } from "../../../styles/layout/auth.styles";
@@ -83,6 +84,10 @@ const RegisterForm = () => {
           Create account
         </AppButton>
       </FormRoot>
+
+      <p className={authDivider} aria-hidden="true">
+        or
+      </p>
 
       <p className={authAlt}>
         Already have an account?

@@ -13,6 +13,7 @@ import {
   historyText,
   itemMeta,
   itemName,
+  priceText,
 } from "../../../styles/inventory/inventory.styles";
 import { detailSection, detailSectionHeader } from "../../../styles/modal/detail.styles";
 import {
@@ -44,7 +45,10 @@ const sections: IDetailSection<ITransaction>[] = [
       {
         key: "total",
         label: "Total",
-        render: (tx) => (tx.total_amount === null ? "—" : formatPeso(tx.total_amount)),
+        render: (tx) =>
+          tx.total_amount === null ? "—" : (
+            <span className={priceText}>{formatPeso(tx.total_amount)}</span>
+          ),
       },
       { key: "note", label: "Note", render: (tx) => tx.note ?? "—" },
     ],

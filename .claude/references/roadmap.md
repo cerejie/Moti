@@ -23,7 +23,7 @@ SaaS build, which comes later.
       nothing left to fix (2026-10-03: converged after round 2; 4 questions wait in
       `.claude/state/autopilot/USER-DECISIONS.md`)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
-- [ ] TARTAR redesign (phases below), one conversation per phase
+- [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 
 ## TARTAR redesign
 
@@ -81,8 +81,18 @@ Decisions (user, 2026-10-07):
       no `md:` left in card/status styles. `StateBox.tsx`, `LoadingBar.tsx` and
       `styles/state/state.styles.ts` are unused, waiting for the user to delete them. Not ported:
       `InfoCard`, `StatDelta`, `ProgressRow`, `StatusTag` (StatusBadge stays)
-- [ ] Phase 7: migrate screens (Inventory, Transaction, Movements, Users, Masterfile, Dashboard,
-      Account, Auth); retire Moti `text-sm/md/lg` overrides and `shadow-card-*`
+- [x] Phase 7 (2026-10-07): screens migrated — `moneyLevel` for prices and totals (inventory,
+      cart, receipt, transaction detail); Transaction (New / History) and Masterfile (Categories /
+      Brands) switch through `ContextSwitch` in ContentView `tabs` (`*TabSwitch`, Masterfile's add
+      button in `actions`); Movements, Users, Brands, Categories pass `detailSections` (+ `detailTitle`)
+      and Users / Brands / Categories one `actionsOf(row)` to both `RowActionMenu` and `detailActions`
+      (Inventory and Transaction History keep their own detail modals); Dashboard panels use
+      `SectionCard` `loading` / `error`, stat tiles carry the error per tile; Auth is TARTAR's framed
+      card (wave-cut brand hero, `AuthGlassStack`, "or" divider, `bg-auth-hero`); no `md:` left;
+      `--text-sm/md/lg` and `--shadow-card-*` removed (`text-md` → `text-body`, `shadow-card-sm` →
+      `shadow-card`, `cn.utils` registers TARTAR's shadow/radius names); `ViewTabs`, `SegmentTabs`,
+      their styles, `StateBox`, `LoadingBar` and `state.styles` deleted; ui-design-conventions updated.
+      `UserRowActions.tsx` is unused, waiting for the user to delete it
 
 ## V1.4: Autopilot loop
 

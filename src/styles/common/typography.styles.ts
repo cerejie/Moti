@@ -4,11 +4,11 @@
 
 export const pageTitle = "font-heading text-page-title font-semibold tracking-tight text-foreground";
 
-export const pageSubtitle = "text-md text-muted-foreground";
+export const pageSubtitle = "text-body text-muted-foreground";
 
 export const sectionTitle = "font-heading text-section font-semibold text-foreground";
 
-export const cardTitle = "text-md font-semibold text-foreground";
+export const cardTitle = "text-body font-semibold text-foreground";
 
 export const fieldLabel = "text-sm font-medium text-foreground";
 

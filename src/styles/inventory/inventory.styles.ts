@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority";
+import { moneyLevel } from "../common/money.styles";
 
 // Item name over its item code / brand line, in table cells and cards alike.
 export const itemIdentity = "flex min-w-0 flex-col gap-0.5";
@@ -16,7 +17,7 @@ export const onHandValue = cva("font-bold tabular-nums", {
       out: "text-danger",
     },
     size: {
-      md: "text-md",
+      md: "text-body",
       lg: "text-2xl",
     },
   },
@@ -25,7 +26,7 @@ export const onHandValue = cva("font-bold tabular-nums", {
 
 export const onHandUnit = "ml-1 text-xs font-medium text-muted-foreground";
 
-export const priceText = "tabular-nums text-foreground";
+export const priceText = moneyLevel({ level: "supporting" });
 
 export const mutedText = "text-muted-foreground";
 

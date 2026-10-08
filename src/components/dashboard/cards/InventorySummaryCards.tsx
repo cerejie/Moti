@@ -3,18 +3,18 @@ import { useInventorySummary } from "../../../hook/data/inventory/inventory.list
 import { summaryGrid } from "../../../styles/dashboard/dashboard.styles";
 import { formatNumber } from "../../../utils/format.utils";
 import StatCard from "../../common/card/StatCard";
-import ErrorState from "../../common/status/ErrorState";
 
 // Counts come from inventory_summary, the same rule the inventory status tabs use.
 const InventorySummaryCards = () => {
   const summary = useInventorySummary();
 
-  if (summary.isError) {
-    return <ErrorState error={summary.error} onRetry={() => void summary.refetch()} />;
-  }
-
   const data = summary.data;
-  const loading = summary.isLoading;
+  // Each tile carries the error so the grid keeps its shape.
+  const state = {
+    loading: summary.isLoading,
+    error: summary.error,
+    onRetry: () => void summary.refetch(),
+  };
   const count = (value: number | undefined) =>
     value === undefined ? undefined : formatNumber(value);
 
@@ -24,7 +24,7 @@ const InventorySummaryCards = () => {
         title="Items tracked"
         value={count(data?.item_count)}
         raw
-        loading={loading}
+        {...state}
         icon={<Boxes />}
         variant="brand"
       />
@@ -32,7 +32,7 @@ const InventorySummaryCards = () => {
         title="Units on hand"
         value={count(data?.units_on_hand)}
         raw
-        loading={loading}
+        {...state}
         icon={<Layers />}
         variant="info"
       />
@@ -40,7 +40,7 @@ const InventorySummaryCards = () => {
         title="Low stock"
         value={count(data?.low_count)}
         raw
-        loading={loading}
+        {...state}
         caption="At or below its warning quantity"
         icon={<TriangleAlert />}
         variant="warning"
@@ -49,7 +49,7 @@ const InventorySummaryCards = () => {
         title="Out of stock"
         value={count(data?.out_count)}
         raw
-        loading={loading}
+        {...state}
         caption="Nothing left on the shelf"
         icon={<PackageX />}
         variant="danger"

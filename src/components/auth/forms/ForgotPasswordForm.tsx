@@ -6,6 +6,7 @@ import { ROUTES } from "../../../routes/route.paths";
 import {
   authAlt,
   authAltLink,
+  authDivider,
   authForm,
   authSubmit,
 } from "../../../styles/layout/auth.styles";
@@ -55,6 +56,10 @@ const ForgotPasswordForm = () => {
           Ask the owner for a new password
         </AppButton>
       </FormRoot>
+
+      <p className={authDivider} aria-hidden="true">
+        or
+      </p>
 
       <p className={authAlt}>
         Remembered it?

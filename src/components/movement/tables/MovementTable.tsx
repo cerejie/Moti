@@ -1,3 +1,4 @@
+import { ArrowLeftRight } from "lucide-react";
 import {
   movementReasonLabels,
   movementReasonTones,
@@ -8,6 +9,7 @@ import { useFilters } from "../../../hook/common/filter.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useMovementList } from "../../../hook/data/movement/movement.list.hook";
 import { movementTableKey } from "../../../keys/table.keys";
+import type { IDetailSection } from "../../../models/common/detail.model";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
@@ -99,6 +101,43 @@ const columns: IDataTableColumn<IStockMovement>[] = [
   },
 ];
 
+// Phone rows show item, reason and quantity; the sheet carries the rest, note included.
+const detailSections: IDetailSection<IStockMovement>[] = [
+  {
+    key: "movement",
+    title: "Movement",
+    icon: <ArrowLeftRight />,
+    items: [
+      { key: "code", label: "Item code", render: (movement) => movement.item?.item_code ?? "—" },
+      { key: "reason", label: "Reason", render: (movement) => movementReasonLabels[movement.reason] },
+      {
+        key: "quantity",
+        label: "Quantity",
+        render: (movement) => (
+          <span className={historyQuantity({ direction: movement.quantity > 0 ? "in" : "out" })}>
+            {formatSignedQuantity(movement.quantity)}
+          </span>
+        ),
+      },
+      {
+        key: "balance",
+        label: "Left after",
+        render: (movement) =>
+          `${formatNumber(movement.balance_after)} ${movement.item?.unit ?? ""}`.trim(),
+      },
+      { key: "by", label: "By", render: (movement) => movement.created_by_name },
+      { key: "date", label: "When", render: (movement) => formatDateTime(movement.created_at) },
+      {
+        key: "note",
+        label: "Note",
+        span: 2,
+        hidden: (movement) => !movement.note,
+        render: (movement) => movement.note,
+      },
+    ],
+  },
+];
+
 const allTypes = "all";
 
 type ITypeChoice = MovementType | typeof allTypes;
@@ -139,6 +178,8 @@ const MovementTable = () => {
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
         emptyText="No stock movements yet."
+        detailSections={detailSections}
+        detailTitle={(movement) => movement.item?.name ?? "Deleted item"}
       />
     </TablePanel>
   );

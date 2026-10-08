@@ -308,10 +308,6 @@
   --radius-lg: calc(var(--radius-control) + 2px);
   --radius-xl: var(--radius-card);
 
-  /* Named *-card-* to avoid colliding with Tailwind's own shadow scale. Retire in phase 7. */
-  --shadow-card-sm: 0 1px 2px color-mix(in oklab, var(--shadow-color) 6%, transparent);
-  --shadow-card-md: 0 6px 24px color-mix(in oklab, var(--shadow-color) 8%, transparent);
-  --shadow-card-lg: 0 20px 55px color-mix(in oklab, var(--shadow-color) 18%, transparent);
   --shadow-panel: 0 1px 2px color-mix(in oklab, var(--shadow-color) 5%, transparent),
     0 8px 24px color-mix(in oklab, var(--shadow-color) 5%, transparent);
   --shadow-card: 0 1px 2px color-mix(in oklab, var(--shadow-color) 4%, transparent);
@@ -328,7 +324,7 @@
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* TARTAR's semantic sizes. The Moti xs…3xl overrides below retire screen by screen. */
+  /* TARTAR's semantic sizes. */
   --text-micro: 0.6875rem;
   --text-micro--line-height: 1rem;
   --text-caption: 0.75rem;
@@ -349,9 +345,6 @@
   --text-hero--line-height: 2.5rem;
 
   --text-xs: 0.75rem;
-  --text-sm: 0.85rem;
-  --text-md: 0.92rem;
-  --text-lg: 1.05rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.9rem;
@@ -582,6 +575,13 @@
     radial-gradient(80% 45% at 105% -8%, var(--backdrop-apricot), transparent 70%),
     linear-gradient(180deg, var(--brand-mist), transparent 60%),
     var(--backdrop);
+}
+
+/* The sign-in hero: the brand gradient with a carbon corner, as TARTAR's but in orange. */
+@utility bg-auth-hero {
+  background:
+    radial-gradient(110% 90% at -25% 110%, color-mix(in oklab, var(--hero) 30%, transparent), transparent 60%),
+    linear-gradient(160deg, var(--color-brand) 0%, var(--color-brand-deep) 100%);
 }
 
 /* Safe-area helpers. env() only reports non-zero once index.html sets viewport-fit=cover,
