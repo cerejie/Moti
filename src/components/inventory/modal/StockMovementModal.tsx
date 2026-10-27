@@ -45,11 +45,7 @@ const StockMovementModal = () => {
     { name: "note", label: "Note", type: "textarea", span: "full", placeholder: "Optional" },
   ];
 
-  const previewTone = preview.insufficient
-    ? "danger"
-    : preview.after <= item.reorder_level
-      ? "warning"
-      : "default";
+  const previewTone = preview.after <= item.reorder_level ? "warning" : "default";
 
   return (
     <AppModal
@@ -90,24 +86,26 @@ const StockMovementModal = () => {
             <FormField key={field.name} config={field} />
           ))}
 
-        <div className={stockPreview({ tone: previewTone })} aria-live="polite">
-          <span>
-            <span className={onHandValue({ status: item.stock_status })}>
-              {formatNumber(preview.before)}
-            </span>
-            <span className={onHandUnit}>{item.unit}</span>
-          </span>
-          <ArrowRight className={stockPreviewArrow} aria-label="becomes" />
-          <span>
-            {formatNumber(Math.max(preview.after, 0))}
-            <span className={onHandUnit}>{item.unit}</span>
-          </span>
-        </div>
-
-        {preview.insufficient && (
+        {/* A deduction past zero has no "after" worth showing, only the shortfall. */}
+        {preview.insufficient ? (
           <AppAlert tone="danger">
-            Only {formatNumber(preview.before)} {item.unit} on hand.
+            Only {formatNumber(preview.before)} {item.unit} on hand —{" "}
+            {formatNumber(-preview.after)} {item.unit} short.
           </AppAlert>
+        ) : (
+          <div className={stockPreview({ tone: previewTone })} aria-live="polite">
+            <span>
+              <span className={onHandValue({ status: item.stock_status })}>
+                {formatNumber(preview.before)}
+              </span>
+              <span className={onHandUnit}>{item.unit}</span>
+            </span>
+            <ArrowRight className={stockPreviewArrow} aria-label="becomes" />
+            <span>
+              {formatNumber(preview.after)}
+              <span className={onHandUnit}>{item.unit}</span>
+            </span>
+          </div>
         )}
       </FormRoot>
     </AppModal>

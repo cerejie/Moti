@@ -188,9 +188,15 @@ Questions for the user (not bugs): items with no price can be sold and are left 
       × aligns with the title; handle stays only on swipeable AppSheets. Re-check at 360 px, light
       + dark: category, brand, team member, movement, account menu — × centred on the title in all
       10, no repeated fields, 0 page errors)
-- [ ] Batch C: destructive and stock forms — F-05, F-06 — `ConfirmationModal.tsx`,
+- [x] Batch C: destructive and stock forms — F-05, F-06 — `ConfirmationModal.tsx`,
       `VoidTransactionModal.tsx`, the archive confirm in the inventory hooks,
       `movement.form.hook.ts` + its modal, form-sheet sizing in `AppModal.tsx`
+      (2026-10-27: new confirm kind `danger` — red, reversible, no cannot-be-undone warning —
+      used by Archive; Void submits red. `EntityFormModal` gives `size="sm"` forms the hugging
+      `action` sheet, so category, brand, Void and Set password no longer fill the phone. Deduct
+      over on-hand hides the before → after row and says the shortfall. Re-check at 360 px,
+      light + dark: Archive confirm, Void (411 px), Add category (325 px), Set password (443 px),
+      Deduct over / within stock, Add item still full height — 14/14 pass, 0 page errors)
 - [ ] Batch D: polish — F-07, F-08, F-09, F-11, F-12 — `CartBar.tsx`, `CartQuantityControl.tsx`,
       `AppToaster.tsx`, `styles/dashboard/dashboard.styles.ts`, the search placeholders
 - [ ] Batch E: sweep tooling — T-01, T-02 — `.claude/skills/visual-test/scripts/sweep.mjs`

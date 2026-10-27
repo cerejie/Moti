@@ -10,6 +10,7 @@ export const confirmMedia = cva("", {
   variants: {
     kind: {
       confirm: "bg-brand-soft text-brand",
+      danger: "bg-danger-bg text-danger",
       delete: "bg-danger-bg text-danger",
     },
   },

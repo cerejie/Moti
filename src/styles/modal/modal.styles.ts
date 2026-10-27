@@ -86,6 +86,7 @@ export const confirmAction = cva("", {
   variants: {
     kind: {
       confirm: "",
+      danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
       delete: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
     },
   },

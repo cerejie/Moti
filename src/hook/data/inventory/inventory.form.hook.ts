@@ -106,6 +106,7 @@ export const useItemArchive = () => {
   return {
     archive: (item: IInventoryItem) =>
       confirm({
+        kind: "danger",
         title: `Archive ${item.name}?`,
         message:
           "It disappears from the stock list and alerts. Its history is kept and you can restore it from the Archived tab.",

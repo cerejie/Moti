@@ -44,11 +44,13 @@ const phraseInputId = "confirm-phrase";
 
 const defaultTitles: Record<ConfirmKind, string> = {
   confirm: "Please confirm",
+  danger: "Are you sure?",
   delete: "Delete",
 };
 
 const defaultOkTexts: Record<ConfirmKind, string> = {
   confirm: "Confirm",
+  danger: "Continue",
   delete: "Delete",
 };
 
@@ -120,7 +122,7 @@ const ConfirmationModal = () => {
   // action settles. runConfirm closes it afterwards.
   const okButton = (
     <Button
-      variant={kind === "delete" ? "destructive" : "default"}
+      variant={kind === "confirm" ? "default" : "destructive"}
       isDisabled={running || !phraseMatches}
       onPress={() => void runConfirm()}
     >

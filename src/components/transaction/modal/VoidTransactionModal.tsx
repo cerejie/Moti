@@ -29,6 +29,7 @@ const VoidTransactionModal = () => {
       onSubmit={onSubmit}
       submitting={mutation.isPending}
       submitLabel="Void transaction"
+      submitKind="danger"
       error={mutation.error?.message}
     />
   );

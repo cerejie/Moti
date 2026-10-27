@@ -100,7 +100,8 @@ const EntityFormModal = <TValues extends FieldValues>({
       title={title}
       description={description}
       size={size}
-      kind="form"
+      // A small form (one or two fields) hugs its content on phones instead of filling the screen.
+      kind={size === "sm" ? "action" : "form"}
       footer={
         <>
           <AppButton
