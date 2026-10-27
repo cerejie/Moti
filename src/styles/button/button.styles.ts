@@ -22,3 +22,7 @@ export const buttonTone = cva("", {
 });
 
 export type IButtonTone = NonNullable<VariantProps<typeof buttonTone>["tone"]>;
+
+// A pushed screen's back control: a quiet round chip pulled into the gutter.
+export const backButton =
+  "-ml-1 size-11 self-start rounded-full border bg-card text-foreground shadow-card [&_svg:not([class*='size-'])]:size-5";

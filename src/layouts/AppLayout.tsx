@@ -16,14 +16,7 @@ const AppLayout = () => {
   useScrollReset();
 
   return (
-    <AppShell
-      actions={
-        <>
-          <InboxBell />
-          <UserMenu />
-        </>
-      }
-    >
+    <AppShell actions={<InboxBell />} accountMenu={<UserMenu />}>
       {/* Keyed by route so navigating away clears a contained error. */}
       <ErrorBoundary
         key={location.pathname}

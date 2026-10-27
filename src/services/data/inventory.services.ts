@@ -70,6 +70,17 @@ const inventoryServices = {
     return toPage((data ?? []) as unknown as IInventoryItem[], count ?? 0, pagination);
   },
 
+  getById: async (id: string, signal?: AbortSignal): Promise<IInventoryItem> => {
+    let query = supabase.from(table).select(columns).eq("id", id);
+    if (signal) query = query.abortSignal(signal);
+    const { data, error } = await query.maybeSingle();
+    if (error) throw toError(error);
+    // RLS hides another shop's item exactly like a missing id.
+    if (!data) throw new Error("This item doesn't exist or was removed.");
+
+    return data as unknown as IInventoryItem;
+  },
+
   getSummary: async (signal?: AbortSignal): Promise<IInventorySummary> => {
     let query = supabase.rpc("inventory_summary");
     if (signal) query = query.abortSignal(signal);

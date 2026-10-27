@@ -1,5 +1,4 @@
 export const itemFormModalKey = "item-form";
-export const itemDetailModalKey = "item-detail";
 export const stockMovementModalKey = "stock-movement";
 export const notificationCenterModalKey = "notification-center";
 export const categoryFormModalKey = "category-form";

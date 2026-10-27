@@ -1,3 +1,5 @@
+import { cva } from "class-variance-authority";
+
 // TARTAR's shell. Wide screens: the header, the sidebar and the content are three
 // floating panels on the app backdrop. Compact screens (PhoneShell): an app bar,
 // the content straight on the backdrop and the floating tab bar as the last row.
@@ -21,8 +23,20 @@ export const appShellContentInner =
 export const appShellGutterBleed =
   "-mx-4 -mt-4 -mb-6 wide:-mx-6 wide:-mt-6 wide:-mb-10 lg:-mx-8";
 
-export const phoneShell =
-  "fixed inset-0 flex flex-col overflow-hidden bg-app text-foreground";
+// A pushed screen has no app bar or tab bar, so the shell itself clears the notch and
+// the home indicator.
+export const phoneShell = cva(
+  "fixed inset-0 flex flex-col overflow-hidden bg-app text-foreground",
+  {
+    variants: {
+      pushed: {
+        true: "pt-safe pb-safe",
+        false: "",
+      },
+    },
+    defaultVariants: { pushed: false },
+  },
+);
 
 export const phoneContent =
   "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain";

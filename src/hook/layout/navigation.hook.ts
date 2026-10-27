@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import type { IHeaderBack, IRoute } from "../../models/common/route.model";
+import { useLocation, useMatches, useNavigate } from "react-router-dom";
+import type { IHeaderBack, IRoute, IRouteHandle } from "../../models/common/route.model";
 import { useLayoutStore } from "../../store/common/layout.store";
 import {
   menuGroup,
   protectedViewRoutes,
 } from "../../routes/protected.view.routes";
+import { ROUTES } from "../../routes/route.paths";
 import { isRouteActive } from "../../utils/route.utils";
 import { usePermissions } from "../data/account/account.permission.hook";
 
@@ -78,6 +79,26 @@ export const useBackRoute = () => {
   if (!page?.isNotNav || !section || section.path === pathname) return null;
 
   return section;
+};
+
+const isRouteHandle = (handle: unknown): handle is IRouteHandle =>
+  typeof handle === "object" && handle !== null;
+
+// A pushed screen pops back the way it came; a deep link has no in-app history to pop,
+// so it falls back to its nav section.
+export const usePushedRoute = () => {
+  const matches = useMatches();
+  const navigate = useNavigate();
+  const { key } = useLocation();
+  const section = useActiveNavRoute();
+  const pushed = matches.some(({ handle }) => isRouteHandle(handle) && handle.pushed === true);
+
+  const goBack = () => {
+    if (key === "default") void navigate(section?.path ?? ROUTES.home);
+    else void navigate(-1);
+  };
+
+  return { pushed, goBack };
 };
 
 // Puts "Back to <label>" in the app bar / header while the caller is mounted. `onPress` must

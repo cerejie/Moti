@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/utils/cn.utils";
 import { useScrollTracker } from "../../../hook/common/scroll.hook";
+import { usePushedRoute } from "../../../hook/layout/navigation.hook";
 import {
   appShellContentInner,
   phoneColumnEnter,
@@ -17,12 +18,14 @@ type IProps = {
 
 // TARTAR's PhoneShell: app bar, one scroll box, then the floating tab bar as the
 // last row of the column, so nothing has to reserve room beneath the content.
+// A pushed screen drops both bars and carries its own back button.
 const PhoneShell = ({ actions, children }: IProps) => {
   const { pathname, handleScroll } = useScrollTracker();
+  const { pushed } = usePushedRoute();
 
   return (
-    <div className={phoneShell}>
-      <AppBar actions={actions} />
+    <div className={phoneShell({ pushed })}>
+      {!pushed && <AppBar actions={actions} />}
 
       <main id="main-content" onScroll={handleScroll} className={phoneContent}>
         <div key={pathname} className={cn(appShellContentInner, phoneColumnEnter)}>
@@ -30,7 +33,7 @@ const PhoneShell = ({ actions, children }: IProps) => {
         </div>
       </main>
 
-      <TabBar />
+      {!pushed && <TabBar />}
     </div>
   );
 };

@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/utils/cn.utils";
+import { useIsCompact } from "../../../hook/common/breakpoint.hook";
+import { usePushedRoute } from "../../../hook/layout/navigation.hook";
 import type { ViewLayout } from "../../../models/common/view.model";
 import {
   contentViewActions,
@@ -17,6 +19,7 @@ import {
 } from "../../../styles/view/contentView.styles";
 import { pageSubtitle } from "../../../styles/common/typography.styles";
 import AppButton from "../button/AppButton";
+import BackButton from "../button/BackButton";
 
 type IBackLink = {
   label: string;
@@ -47,13 +50,17 @@ const ContentView = ({
   children,
 }: IProps) => {
   const hasHeader = Boolean(title || back || tabs || actions);
+  const isCompact = useIsCompact();
+  const { pushed, goBack } = usePushedRoute();
 
   return (
     <div className={cn(contentViewRoot, className)}>
       {hasHeader && (
         <header className={contentViewHead}>
           <div className={contentViewHeading}>
-            {back && (
+            {/* A pushed phone screen has no app bar, so its back is a native-style pop. */}
+            {back && pushed && isCompact && <BackButton label={back.label} onPress={goBack} />}
+            {back && !(pushed && isCompact) && (
               <AppButton href={back.path} variant="ghost" size="lg" className={contentViewBack}>
                 <ArrowLeft />
                 Back to {back.label}

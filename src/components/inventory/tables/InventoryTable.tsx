@@ -1,14 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import {
   inventoryViewLabels,
   inventoryViewValues,
   type InventoryView,
 } from "../../../enums/stock.enum";
-import { useModal } from "../../../hook/common/modal.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useInventoryList } from "../../../hook/data/inventory/inventory.list.hook";
-import { itemDetailModalKey } from "../../../keys/modal.keys";
 import { inventoryTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
@@ -25,6 +24,7 @@ import {
 import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatNumber, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
+import { itemPath } from "../../../utils/route.utils";
 import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
 import DataTable from "../../common/table/DataTable";
@@ -96,7 +96,7 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
     title: "Action",
     align: "center",
     className: nowrapCell,
-    // Compact opens the item sheet on tap, which carries the stock actions.
+    // Compact opens the item page on tap, which carries the stock actions.
     listHidden: true,
     render: (_, item) => <InventoryRowActions item={item} />,
   },
@@ -119,7 +119,7 @@ const InventoryTable = () => {
   const { pagination, goToPage } = usePagination(inventoryTableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
-  const detailModal = useModal<IInventoryItem>(itemDetailModalKey);
+  const navigate = useNavigate();
   const page = query.data;
 
   return (
@@ -168,7 +168,7 @@ const InventoryTable = () => {
         pagination={pagination}
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
-        onRowClick={(item) => detailModal.openModal(item)}
+        onRowClick={(item) => void navigate(itemPath(item.id))}
         emptyText={emptyTextByView[view]}
       />
     </TablePanel>

@@ -24,6 +24,92 @@ SaaS build, which comes later.
       `.claude/state/autopilot/USER-DECISIONS.md`)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
+- [ ] V1.5: Pushed detail pages for every list (below), one conversation per phase —
+      next up: Phase 1 (Sell)
+
+## V1.5: Pushed detail pages for every list (no drawers)
+
+Decided with the user on 2026-10-27: tapping any list row opens a **new page**, never a drawer, sheet
+or detail modal. On phones the page hides the app bar and tab bar and shows only the round back
+button; on desktop it sits in the normal shell with "Back to <section>". One phase per conversation.
+
+### Reference implementation: Inventory item page (done 2026-10-27, v1.44)
+
+Copy these; do not invent a second way:
+- Route: `ROUTES.item` + `itemPath()` in `utils/route.utils.ts`; entry in `protected.view.routes.ts`
+  with `isNotNav`, `can` + `permissionLoader`, `handle: { pushed: true } satisfies IRouteHandle`.
+- Shell: `usePushedRoute()` (navigation.hook) → PhoneShell drops AppBar + TabBar and adds safe areas;
+  ContentView swaps "Back to…" for `BackButton` on compact. No per-page shell work needed.
+- Data: `inventoryServices.getById` (explicit columns, `.maybeSingle()`, not-found error);
+  `useInventoryItem(id)` keyed `[listKey, "item", id]` so existing invalidations reach it, with
+  `placeholderData` from the cached list row (instant paint).
+- Page: `pages/ItemDetail/ItemDetailView.tsx` = `ContentView back` + panel + the modals it opens.
+- Panel layout (ui-ux-pro-max checked): heading (name, then code · meta) → hero `SectionCard`
+  (the key number + primary actions) → "Details" grouped `DetailRows` → related list
+  (direction icon + sign, never colour alone) → "Manage" at the bottom (edit first, destructive
+  last, soft red, confirmed, with a one-line explanation). No sticky bars over content.
+- Entry points: row tap and the row menu's "View details" both `navigate(<path>(id))`.
+
+### Checklist for every page (a phase is not done until each holds)
+
+- [ ] Route + path helper + `handle: { pushed: true }` + same permission as the list
+- [ ] `getById` service + `use<Thing>(id)` hook under the list key prefix, placeholder from list cache
+- [ ] Page is layout only; panel splits into hero / list / manage components
+- [ ] Loading, not-found/error with retry, empty related list
+- [ ] Deep link and refresh work; back pops history, falls back to the section
+- [ ] Old modal/sheet + its modal key deleted (confirm with the user first)
+- [ ] `yarn build` + `yarn lint` clean; `visual-test` at 360 px light and dark; commit (TARTAR format)
+
+### Phase 1: Sell — transaction detail page
+
+- [ ] Promote the shared pieces now that a second page needs them:
+      `itemDetailSection/SectionTitle/Surface/Page` styles → `styles/view/detailPage.styles.ts`, a
+      `common/view/DetailPageSection` (title + children), and `findCachedRow(queryClient, listKey, id)`
+      in `utils/query.utils.ts`; switch the item page to them.
+- [ ] `/transaction/:transactionId` (`can: "viewTransactions"`), `transactionServices.getById`,
+      `useTransaction(id)`; lines keep using `getLines`.
+- [ ] Panel: heading "Transaction #N" + date · seller → hero (total, status Completed/Voided) →
+      Lines list → Voided details (when voided) → Manage: "Void transaction" (owner,
+      `voidTransaction`), still opens the existing void form modal.
+- [ ] `TransactionHistoryTable` row tap navigates; delete `TransactionDetailModal` +
+      `transactionDetailModalKey`.
+- Stays as is: `TransactionItemTable` (the sell picker — a tap adds to the cart, it is not a
+  detail), the cart sheet and the checkout success modal (flows, not record details).
+
+### Phase 2: Stock — movement detail page
+
+- [ ] `/movements/:movementId` (`can: "viewMovements"`), `movementServices.getById`, `useMovement(id)`.
+- [ ] Panel: heading = reason + item name → hero (signed quantity with direction icon, "Left after")
+      → Details (item code, by, when, note) → an "Open item" row linking to `itemPath(item_id)`.
+      No Manage section (movements are a ledger, never edited).
+- [ ] `MovementTable` row tap navigates; drop its `detailSections`.
+- [ ] Dashboard: `RecentMovementsPanel` rows open the movement page; `AttentionPanel` /
+      `StockAlertsList` rows open the item page (their stock-in button stays).
+
+### Phase 3: Masterfile and Team
+
+Decide at the start (`codebase-engineering` § F), recommendation first:
+1. Brands / Categories have only name, item count and date.
+   - A (recommended): no detail page — the compact row shows all three, Rename/Delete stay in the
+     row's ⋯ menu.
+   - B: a page per brand/category listing its items.
+2. Team users: `/users/:userId` (`can: "manageUsers"`) — Details (role, status, joined, email) →
+   Manage (approve / set temporary password / dismiss / disable, same actions as `actionsOf`).
+
+- [ ] Build what was chosen; drop `detailSections` / `detailActions` from those tables.
+
+### Phase 4: Retire the drawer
+
+- [ ] `DataTableList`: remove the `RecordDetailSheet` path (`detailSections`, `detailActions`,
+      `cardMetaLimit` overflow); compact rows either fit or navigate.
+- [ ] Delete `RecordDetailSheet`, `RecordDetailSection`, `SheetActions`, `rowDetailSheetModalKey`,
+      and `DetailModal` + `DetailSections` if nothing uses them (confirm each with the user).
+- [ ] Update `ui-design-conventions` (§ 3 table rows for RecordDetailSheet / DetailModal) and
+      `CLAUDE.md`: "a list row opens a pushed page; never a drawer". Add `ui-ux-pro-max` to the
+      skill router for screen work.
+- [ ] Full `visual-test` sweep, both roles, phone + desktop, light + dark.
+
+Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 1 (Sell)."
 
 ## TARTAR redesign
 

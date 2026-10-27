@@ -1,6 +1,5 @@
 import ContentView from "../../components/common/view/ContentView";
 import InventoryHeaderActions from "../../components/inventory/menus/InventoryHeaderActions";
-import ItemDetailModal from "../../components/inventory/modal/ItemDetailModal";
 import ItemFormModal from "../../components/inventory/modal/ItemFormModal";
 import StockMovementModal from "../../components/inventory/modal/StockMovementModal";
 import InventoryTable from "../../components/inventory/tables/InventoryTable";
@@ -14,7 +13,6 @@ const InventoryView = () => (
     <InventoryTable />
 
     <ItemFormModal />
-    <ItemDetailModal />
     <StockMovementModal />
   </ContentView>
 );

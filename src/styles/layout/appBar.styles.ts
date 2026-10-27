@@ -3,7 +3,7 @@ import { cva } from "class-variance-authority";
 // TARTAR's compact app bar: under the status bar, ruled off and titled only once
 // the page title scrolls beneath it.
 export const appBar = cva(
-  "box-content flex h-14 shrink-0 items-center gap-2 border-b bg-panel px-3 pt-safe transition-[border-color,box-shadow] select-none touch-callout-none [view-transition-name:app-bar] motion-reduce:transition-none",
+  "box-content flex h-16 shrink-0 items-center gap-2 border-b bg-panel px-3 pt-safe transition-[border-color,box-shadow] select-none touch-callout-none [view-transition-name:app-bar] motion-reduce:transition-none",
   {
     variants: {
       scrolled: {

@@ -1,3 +1,8 @@
+import { generatePath } from "react-router-dom";
+import { ROUTES } from "../routes/route.paths";
+
+export const itemPath = (itemId: string) => generatePath(ROUTES.item, { itemId });
+
 // Mirrors NavLink's own matching: the root path matches exactly, every other
 // path also matches its subpaths, so a subpage keeps its module highlighted.
 export const isRouteActive = (path: string, pathname: string) =>

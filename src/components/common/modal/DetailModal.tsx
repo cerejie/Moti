@@ -1,15 +1,9 @@
 import type { ReactNode } from "react";
 import type { IDetailSection } from "../../../models/common/detail.model";
 import type { ModalSize } from "../../../models/common/view.model";
-import { sectionTitle } from "../../../styles/common/typography.styles";
-import {
-  detailSection,
-  detailSectionHeader,
-  detailSections,
-} from "../../../styles/modal/detail.styles";
-import { visibleDetailSections } from "../../../utils/detail.utils";
+import { detailSections } from "../../../styles/modal/detail.styles";
 import AppModal from "./AppModal";
-import DetailGrid from "./DetailGrid";
+import DetailSections from "./DetailSections";
 
 type IProps<TRecord> = {
   open: boolean;
@@ -52,16 +46,7 @@ const DetailModal = <TRecord,>({
         <div className={detailSections}>
           {header}
 
-          {visibleDetailSections(sections, record).map((section) => (
-            <section key={section.key} className={detailSection}>
-              <div className={detailSectionHeader}>
-                {section.icon}
-                <h3 className={sectionTitle}>{section.title}</h3>
-              </div>
-
-              <DetailGrid record={record} items={section.items} />
-            </section>
-          ))}
+          <DetailSections record={record} sections={sections} />
 
           {children}
         </div>

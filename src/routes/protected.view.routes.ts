@@ -6,7 +6,7 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-import type { IRoute } from "../models/common/route.model";
+import type { IRoute, IRouteHandle } from "../models/common/route.model";
 import { permissionLoader } from "./route.loader";
 import { ROUTES } from "./route.paths";
 
@@ -56,6 +56,16 @@ export const protectedViewRoutes: IRoute[] = [
     can: "manageInventory",
     loader: permissionLoader("manageInventory", ROUTES.transaction),
     lazy: { Component: async () => (await import("../pages/Masterfile/MasterfileView")).default },
+  },
+  {
+    key: "item",
+    label: "Item",
+    path: ROUTES.item,
+    isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
+    can: "browseInventory",
+    loader: permissionLoader("browseInventory", ROUTES.transaction),
+    lazy: { Component: async () => (await import("../pages/ItemDetail/ItemDetailView")).default },
   },
   {
     key: "movements",

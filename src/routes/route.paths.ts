@@ -7,6 +7,7 @@ export const ROUTES = {
   transaction: "/transaction",
   inventory: "/inventory",
   masterfile: "/inventory/masterfile",
+  item: "/inventory/:itemId",
   movements: "/movements",
   users: "/users",
   account: "/account",
