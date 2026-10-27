@@ -22,6 +22,9 @@ export const filterSearch = cva("w-full", {
 
 export const filterSelect = "w-full wide:w-40";
 
+// Compact selects kept in view: a full-width row under the search, split evenly.
+export const filterInlineRow = "grid w-full basis-full grid-cols-2 gap-2";
+
 export const filterReset = "rounded-full";
 
 // The compact Filters button: its label hides while the search is in use, the count stays.

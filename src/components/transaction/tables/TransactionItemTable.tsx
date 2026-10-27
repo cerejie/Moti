@@ -106,6 +106,7 @@ const TransactionItemTable = () => {
             filterKey={transactionPickTableKey}
             searchKey={transactionPickTableKey}
             searchPlaceholder="Name, code or brand"
+            inlineOnCompact
             controls={[
               {
                 key: "categoryId",

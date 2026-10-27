@@ -6,7 +6,11 @@ import {
   hasActiveFilter,
   type IFilterControl,
 } from "../../../models/common/filter.model";
-import { filterReset, filterSelect } from "../../../styles/filter/filter.styles";
+import {
+  filterInlineRow,
+  filterReset,
+  filterSelect,
+} from "../../../styles/filter/filter.styles";
 import AppButton from "../button/AppButton";
 import FilterSelect from "./FilterSelect";
 import FilterSheet from "./FilterSheet";
@@ -18,6 +22,8 @@ type IProps = {
   searchKey?: string;
   searchPlaceholder?: string;
   controls?: IFilterControl[];
+  // Compact shows the selects under the search instead of behind a Filters sheet.
+  inlineOnCompact?: boolean;
 };
 
 // The keyed search and selects that go inside a FilterToolbar. Compact keeps the
@@ -27,6 +33,7 @@ const FilterBar = ({
   searchKey,
   searchPlaceholder = "Search",
   controls = [],
+  inlineOnCompact = false,
 }: IProps) => {
   const isCompact = useIsCompact();
   const { filters, setFilters, resetFilters } = useFilters(filterKey);
@@ -48,11 +55,25 @@ const FilterBar = ({
     />
   ) : null;
 
+  const selects = controls.map((control) => (
+    <FilterSelect
+      key={control.key}
+      control={control}
+      value={filters[control.key]}
+      onChange={(value) => setFilters({ [control.key]: value })}
+      className={filterSelect}
+    />
+  ));
+
   if (isCompact) {
     return (
       <>
         {searchInput}
-        {controls.length > 0 ? <FilterSheet filterKey={filterKey} controls={controls} /> : null}
+        {controls.length === 0 ? null : inlineOnCompact ? (
+          <div className={filterInlineRow}>{selects}</div>
+        ) : (
+          <FilterSheet filterKey={filterKey} controls={controls} />
+        )}
       </>
     );
   }
@@ -61,15 +82,7 @@ const FilterBar = ({
     <>
       {searchInput}
 
-      {controls.map((control) => (
-        <FilterSelect
-          key={control.key}
-          control={control}
-          value={filters[control.key]}
-          onChange={(value) => setFilters({ [control.key]: value })}
-          className={filterSelect}
-        />
-      ))}
+      {selects}
 
       {dirty ? (
         <AppButton variant="ghost" className={filterReset} onPress={handleReset}>
