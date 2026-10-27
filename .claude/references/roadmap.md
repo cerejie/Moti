@@ -206,8 +206,14 @@ Questions for the user (not bugs): items with no price can be sold and are left 
       placeholder "Name, code or brand" fits at 360 px. Re-check: phone light + dark, desktop
       light + dark — 16/16 pass, 0 page errors. Not covered: a priced cart (test items have no
       price); toasts at 600–768 px still use the desktop offset)
-- [ ] Batch E: sweep tooling — T-01, T-02 — `.claude/skills/visual-test/scripts/sweep.mjs`
-      (T-03 only if the user says delete)
+- [x] Batch E: sweep tooling — T-01, T-02 — `.claude/skills/visual-test/scripts/sweep.mjs`
+      (2026-10-27: the touch-target check also measures a drawn absolute `::after`, so stretched
+      list rows count at full row size. txn-detail waits up to 15 s for the first history card or
+      table row instead of guessing before the list loads. Signed-out captures settle 1.6 s.
+      Re-sweep: all roles at phone, light + dark — 56 captures, 0 failed steps, 0 console errors,
+      0 list-row flags. What remains flagged is the known 36 px inputs (search, auth password,
+      account, item-form selects). Owner txn-detail at tablet + desktop, light + dark: 4/4 pass.
+      T-03 left in place — the user has not decided)
 
 ## V1.4: Autopilot loop
 

@@ -86,11 +86,15 @@ async function openCart(page) {
 
 async function openTransaction(page) {
   await page.locator(PAGE_TABS).filter({ hasText: /^History$/ }).click();
-  await settle(page);
-  const card = page.locator("main button").filter({ hasText: /^#\d+/ });
-  if (await card.count()) await card.first().click();
-  else await page.locator("main [role=row]").nth(1).click();
+  // Phone draws cards, wider screens a table; wait for whichever arrives instead of guessing early.
+  const card = page.locator("main button").filter({ hasText: /^#\d+/ }).first();
+  const row = page.locator("main [role=row]").nth(1);
+  await card.or(row).first().waitFor({ timeout: 15000 });
+  await card.or(row).first().click();
 }
+
+// Auth screens fade in over ~1.5 s, so a signed-out capture waits longer.
+const AUTH_SETTLE = 1600;
 
 const settle = async (page, ms = 700) => {
   await page.waitForLoadState("networkidle").catch(() => {});
@@ -129,7 +133,12 @@ const measure = (page, touch) =>
       for (const el of document.querySelectorAll(interactive)) {
         if (!visible(el)) continue;
         const r = el.getBoundingClientRect();
-        if (Math.min(r.width, r.height) < 44) small.add(`${describe(el)} ${Math.round(r.width)}×${Math.round(r.height)}`);
+        // A drawn absolute ::after widens the hit area (list rows stretch their title button over the row).
+        const after = getComputedStyle(el, "::after");
+        const stretched = after.position === "absolute" && after.content !== "none";
+        const width = Math.max(r.width, stretched ? parseFloat(after.width) || 0 : 0);
+        const height = Math.max(r.height, stretched ? parseFloat(after.height) || 0 : 0);
+        if (Math.min(width, height) < 44) small.add(`${describe(el)} ${Math.round(width)}×${Math.round(height)}`);
       }
     }
     return {
@@ -163,7 +172,7 @@ const report = [];
 const errors = [];
 
 const capture = async (page, ctx, name, { tall = true, expect } = {}) => {
-  await settle(page);
+  await settle(page, ctx.role === "signed-out" ? AUTH_SETTLE : undefined);
   const dir = path.join(OUT, ctx.role);
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `${name}-${ctx.size}-${ctx.theme}.jpg`);
