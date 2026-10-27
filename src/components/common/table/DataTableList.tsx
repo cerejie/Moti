@@ -131,18 +131,19 @@ const DataTableList = <T,>({
   if (rows.length === 0) return <TableEmptyState text={emptyText} hint={emptyHint} />;
 
   // The sheet asks for labelled metas: every column, its full render, no card prefix.
+  // Its status tags keep the list face: "3 items", not the column's bare "3".
   const cardFieldsOf = (row: T, rowIndex: number, labelledMetas = false): ICardFields => {
     const fieldsOf = (role: IColumnMobileRole): ICardField[] =>
       columns.flatMap((column, index) => {
         if (mobileRoleOf(column, index) !== role) return [];
         if (!labelledMetas && column.listHidden) return [];
+        const listFace = !labelledMetas || role === "status";
         const content =
-          !labelledMetas && column.listRender
+          listFace && column.listRender
             ? column.listRender(row)
             : renderContent(column, row, rowIndex);
         if (isEmptyContent(content)) return [];
-        const showsPrefix =
-          column.cardPrefix !== undefined && !(labelledMetas && role === "meta");
+        const showsPrefix = column.cardPrefix !== undefined && listFace;
         return [
           {
             id: columnId(column, index),

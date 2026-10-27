@@ -55,7 +55,6 @@ const detailSections: IDetailSection<ICategory>[] = [
     title: "Category",
     icon: <Shapes />,
     items: [
-      { key: "items", label: "Items", render: (category) => formatCount(itemCountOf(category), "item") },
       { key: "created", label: "Added", render: (category) => formatShortDate(category.created_at) },
     ],
   },

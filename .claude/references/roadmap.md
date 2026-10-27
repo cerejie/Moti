@@ -178,9 +178,16 @@ Questions for the user (not bugs): items with no price can be sold and are left 
       (2026-10-27: `resetSections` made stable so the reset-on-open effect no longer undoes a
       fold; folded sections show their description. Re-check at 360 px, light + dark: Add item
       and Edit item, both sections fold and reopen with content, 8/8 pass)
-- [ ] Batch B: detail sheets — F-03, F-04, F-10 — `components/common/table/DataTableList.tsx`,
+- [x] Batch B: detail sheets — F-03, F-04, F-10 — `components/common/table/DataTableList.tsx`,
       `components/common/modal/DetailModal.tsx` / `AppSheet.tsx`, `CategoryTable.tsx`,
       `BrandTable.tsx`, `UserTable.tsx`
+      (2026-10-27: given sections replace the sheet's auto labelled rows and status tags use the
+      list face ("5 items"); category/brand/user sections trimmed to what the hero lacks. New
+      `priority: "menu"` keeps a danger action in ⋮ — team sheet shows Set password + Disable,
+      Delete in ⋮, a reset request is the primary. Grab handle floats in the header padding so the
+      × aligns with the title; handle stays only on swipeable AppSheets. Re-check at 360 px, light
+      + dark: category, brand, team member, movement, account menu — × centred on the title in all
+      10, no repeated fields, 0 page errors)
 - [ ] Batch C: destructive and stock forms — F-05, F-06 — `ConfirmationModal.tsx`,
       `VoidTransactionModal.tsx`, the archive confirm in the inventory hooks,
       `movement.form.hook.ts` + its modal, form-sheet sizing in `AppModal.tsx`

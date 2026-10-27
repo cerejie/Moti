@@ -79,15 +79,8 @@ const detailSections: IDetailSection<IUser>[] = [
     title: "Account",
     icon: <UserRound />,
     items: [
-      { key: "email", label: "Email", span: 2, render: (user) => user.email },
       { key: "role", label: "Role", render: (user) => effectiveRoleLabels[user.role] },
       { key: "joined", label: "Joined", render: (user) => formatShortDate(user.created_at) },
-      {
-        key: "status",
-        label: "Status",
-        span: 2,
-        render: (user) => <UserStatusBadges user={user} />,
-      },
     ],
   },
 ];
@@ -120,6 +113,7 @@ const UserTable = () => {
           key: "reset-set",
           label: "Set temporary password",
           icon: <ShieldCheck />,
+          priority: "primary",
           onSelect: () => passwordModal.openModal(user),
         },
         {
@@ -142,9 +136,16 @@ const UserTable = () => {
           key: "password",
           label: "Set password",
           icon: <KeyRound />,
+          priority: "secondary",
           onSelect: () => passwordModal.openModal(user),
         },
-        { key: "disable", label: "Disable", icon: <UserX />, onSelect: () => userActions.disable(user) },
+        {
+          key: "disable",
+          label: "Disable",
+          icon: <UserX />,
+          priority: "secondary",
+          onSelect: () => userActions.disable(user),
+        },
       );
     } else {
       items.push({
@@ -155,11 +156,13 @@ const UserTable = () => {
       });
     }
 
+    // Disable is reversible and comes first; the permanent Delete waits in the menu.
     items.push({
       key: "delete",
       label: "Delete",
       icon: <Trash2 />,
       danger: true,
+      priority: "menu",
       onSelect: () => userActions.remove(user),
     });
 

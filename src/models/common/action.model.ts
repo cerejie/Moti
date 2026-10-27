@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-export type IActionPriority = "primary" | "secondary";
+// "menu" keeps an action in the sheet's ⋮ menu, even a danger one.
+export type IActionPriority = "primary" | "secondary" | "menu";
 
 export interface IRowAction {
   key: string;

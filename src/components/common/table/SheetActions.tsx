@@ -34,11 +34,13 @@ const SheetActions = ({ actions }: IProps) => {
   const rest = actions.filter(
     (action) => action !== primary && !secondary.includes(action)
   );
-  const dangers = rest.filter((action) => action.danger && !action.disabled);
+  const dangers = rest.filter(
+    (action) => action.danger && !action.disabled && action.priority !== "menu"
+  );
   const overflow = rest.filter((action) => !dangers.includes(action));
   const lead =
     primary === undefined && secondary.length === 0
-      ? overflow.find((action) => !action.disabled)
+      ? overflow.find((action) => !action.disabled && action.priority !== "menu")
       : undefined;
   const menuActions = overflow.filter((action) => action !== lead);
   const primaryButton = primary ? (

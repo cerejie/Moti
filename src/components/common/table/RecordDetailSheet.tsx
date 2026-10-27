@@ -42,6 +42,8 @@ const RecordDetailSheet = <T,>({
   onClose,
 }: IProps<T>) => {
   const footer = hasEnabledAction(actions) ? <SheetActions actions={actions} /> : undefined;
+  // Sections, when given, own the body; the labelled columns would repeat them.
+  const showsMetas = (fields?.metas.length ?? 0) > 0 && sections.length === 0;
 
   return (
     <AppSheet
@@ -80,7 +82,7 @@ const RecordDetailSheet = <T,>({
             ) : null}
           </div>
 
-          {fields.metas.length > 0 ? (
+          {showsMetas ? (
             <dl className={detailRows}>
               {fields.metas.map((field) => (
                 <div key={field.id} className={detailRow}>

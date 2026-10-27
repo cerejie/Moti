@@ -55,7 +55,6 @@ const detailSections: IDetailSection<IBrand>[] = [
     title: "Brand",
     icon: <Tag />,
     items: [
-      { key: "items", label: "Items", render: (brand) => formatCount(itemCountOf(brand), "item") },
       { key: "created", label: "Added", render: (brand) => formatShortDate(brand.created_at) },
     ],
   },
