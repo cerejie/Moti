@@ -21,6 +21,7 @@ import {
   formSectionPanelBody,
   formSectionTitle,
   formSectionToggle,
+  formSectionToggleDescription,
 } from "../../../styles/form/formSection.styles";
 
 type IProps = {
@@ -71,6 +72,11 @@ const FormSection = ({
             <span className={formSectionTitle}>{title}</span>
             <ChevronDown className={formSectionChevron} />
           </CollapsibleTrigger>
+          {description && (
+            <CardDescription className={formSectionToggleDescription}>
+              {description}
+            </CardDescription>
+          )}
         </CardHeader>
         <CollapsibleContent>{body}</CollapsibleContent>
       </Collapsible>

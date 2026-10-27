@@ -109,15 +109,85 @@ Done so far:
 - The sweep's 700 ms settle is shorter than the auth fade-in (~1.5 s): a faint first capture of
   /login is timing, not a bug; lengthen the settle for auth screens.
 
-Still to do:
-- [ ] Owner and employee sweeps (blocked: the test password is not in Claude's memory — the
-      user supplies it; save it as the local `test-accounts` memory, never in the repo)
-- [ ] Known bug (user, 2026-10-08): Add item on mobile — a form section folded closed in the
-      sheet cannot be opened again (`EntityFormModal` / `FormSection` / `useSectionDisclosure`)
-- [ ] Walk every flow by hand per role: add/edit/archive item, stock in/out, cart and checkout,
-      void, history, masterfile CRUD, users approve/disable/password, account, inbox, offline queue
-- [ ] Check every remaining `text-*` / `shadow-*` class on a shadcn component now merges right
-- [ ] Write the findings as a fix roadmap here (one batch per conversation), then wait for approval
+Audit done (2026-10-08):
+- [x] Owner and employee sweeps — 144 captures, 0 sideways scroll, 0 clipping, 0 guard failures;
+      2 failed steps (owner txn-detail, dark phone + tablet: passes when run alone — T-02);
+      6 console errors, all one DNS blip in one capture. Writes faked throughout.
+- [x] Known bug reproduced — F-01 below.
+- [x] Every flow walked by hand at phone width (writes faked): add/edit/archive item, stock in/out,
+      cart and checkout, void, history, masterfile add/rename/delete, team detail/disable/set
+      password/add/pending, account password, inbox mark-all-read, offline queue (owner + employee).
+- [x] `text-*` / `shadow-*` merge check — passes. All TARTAR sizes, shadows and radii are registered
+      in `cn.utils`; `shadow-card/panel/overlay` share names with colour tokens but the build emits
+      no colour override, so shadows render as designed.
+
+Verified working, no action: validation messages, success/queued toasts, offline queue + header
+"Offline · n" indicator + replay on reconnect, creatable category/brand, deduct over on-hand
+blocked, password mismatch, empty Pending state, route guards, list rows tappable across the whole
+row (stretched `::after`).
+
+### Findings
+High
+- F-01 Phone form sections cannot reopen (Add item **and** Edit item). Folding a section changes
+  `collapsedSections`, so `useSectionDisclosure`'s `useMemo` hands back a new `resetSections`; the
+  `[open, resetSections]` effect in `EntityFormModal` re-runs and unfolds it in the same tick.
+  React Aria's panel is left `hidden="until-found"` while `aria-expanded` stays `true` — the
+  section looks open (chevron up), shows nothing, and every tap repeats the cycle.
+  Direction: reset only when the sheet opens (depend on the stable store action / `formId`).
+
+Medium
+- F-02 Folded sections drop their description on phone (`FormSection` collapsible branch never
+  renders `description`; desktop shows "You get a low-stock alert…").
+- F-03 Row detail sheets repeat fields: category shows a bare "3" under the name, then "Added"
+  twice; team member shows Role and Joined twice (`DataTableList` row sheet + the table's column
+  roles in `CategoryTable` / `BrandTable` / `UserTable`).
+- F-04 Team member sheet: Delete is a full-width red button while the safer, reversible Disable
+  is hidden in the ⋮ menu (`UserTable` actions). Swap: Disable visible, Delete in the menu.
+- F-05 Destructive tone is inconsistent: item Archive is red in the detail sheet but its confirm
+  button is orange; Void transaction's submit is orange (`ConfirmationModal` tone,
+  `VoidTransactionModal`). The one-field Void and Add category forms open as full-height sheets
+  with most of the screen empty.
+- F-06 Deduct over on-hand previews "27 pc → 0 pc" (clamped) beside "Only 27 pc on hand" — the
+  preview should show the shortfall or hide (`movement.form.hook.ts` preview + its modal).
+
+Low
+- F-07 Cart bar reads "2 items · 3 total"; the receipt says "3 pcs" (`CartBar.tsx`).
+- F-08 A tooltip ("One more Brake pad set") appears and stays after a tap on touch
+  (`CartQuantityControl.tsx`).
+- F-09 Phone toasts (top-center) cover the bell, avatar and the Offline pill; the close × sits
+  over the logo (`AppToaster.tsx`).
+- F-10 Sheet chrome differs: detail and account-menu sheets have a drag handle with the × above
+  the title line; form sheets have no handle and an aligned × (`AppSheet` / `DetailModal` /
+  `AppModal`).
+- F-11 Desktop dashboard: Needs attention stretches to Recent activity's height, mostly empty.
+- F-12 Phone search placeholder truncates to "Search name, item code" (Inventory, Transaction).
+
+Tooling and data
+- T-01 `sweep.mjs` flags list rows as small targets (it measures the title button, not the
+  stretched row) — hit-test the row instead. ~80 of the 83 flagged captures are this.
+- T-02 `sweep.mjs` txn-detail step times out intermittently in dark — wait for the history list.
+- T-03 Leftover real test data: "Visual Employee muqu8jcr", "Push Employee muqtwncm", "Push test
+  item muqtwncm" — the user decides whether to delete them.
+
+Questions for the user (not bugs): items with no price can be sold and are left out of the total
+— intended? Employees have no History tab — matches V1 scope ("owner history and void").
+
+### Fix batches (one per conversation, each ends with yarn build + yarn lint + a re-sweep)
+- [x] Batch A: form sections — F-01, F-02 — `components/common/form/EntityFormModal.tsx`,
+      `components/common/form/FormSection.tsx`, `hook/common/disclosure.hook.ts`
+      (2026-10-27: `resetSections` made stable so the reset-on-open effect no longer undoes a
+      fold; folded sections show their description. Re-check at 360 px, light + dark: Add item
+      and Edit item, both sections fold and reopen with content, 8/8 pass)
+- [ ] Batch B: detail sheets — F-03, F-04, F-10 — `components/common/table/DataTableList.tsx`,
+      `components/common/modal/DetailModal.tsx` / `AppSheet.tsx`, `CategoryTable.tsx`,
+      `BrandTable.tsx`, `UserTable.tsx`
+- [ ] Batch C: destructive and stock forms — F-05, F-06 — `ConfirmationModal.tsx`,
+      `VoidTransactionModal.tsx`, the archive confirm in the inventory hooks,
+      `movement.form.hook.ts` + its modal, form-sheet sizing in `AppModal.tsx`
+- [ ] Batch D: polish — F-07, F-08, F-09, F-11, F-12 — `CartBar.tsx`, `CartQuantityControl.tsx`,
+      `AppToaster.tsx`, `styles/dashboard/dashboard.styles.ts`, the search placeholders
+- [ ] Batch E: sweep tooling — T-01, T-02 — `.claude/skills/visual-test/scripts/sweep.mjs`
+      (T-03 only if the user says delete)
 
 ## V1.4: Autopilot loop
 

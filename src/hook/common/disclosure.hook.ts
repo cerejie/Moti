@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   selectDisclosure,
   useViewStore,
@@ -28,14 +28,19 @@ export const useSectionDisclosure = (scope: string) => {
   const collapsedSections = useDisclosureStore(selectCollapsedSections(scope));
   const setSectionCollapsedAt = useDisclosureStore((state) => state.setSectionCollapsed);
   const resetSectionsAt = useDisclosureStore((state) => state.resetSections);
+  // Stable across folds, so a caller's reset-on-open effect does not undo a fold.
+  const resetSections = useCallback(
+    () => resetSectionsAt(scope),
+    [scope, resetSectionsAt],
+  );
 
   return useMemo(
     () => ({
       isCollapsed: (section: string) => collapsedSections.includes(section),
       setExpanded: (section: string, expanded: boolean) =>
         setSectionCollapsedAt(scope, section, !expanded),
-      resetSections: () => resetSectionsAt(scope),
+      resetSections,
     }),
-    [collapsedSections, scope, setSectionCollapsedAt, resetSectionsAt],
+    [collapsedSections, scope, setSectionCollapsedAt, resetSections],
   );
 };

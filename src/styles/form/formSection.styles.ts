@@ -30,5 +30,8 @@ export const formSectionHeaderToggle =
 export const formSectionToggle =
   "group/form-section-toggle -my-2 flex min-h-11 w-full items-center gap-2 rounded-control text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
 
+// Clears the toggle's -my-2 so the hint does not touch the title.
+export const formSectionToggleDescription = "pt-2 pb-2";
+
 export const formSectionChevron =
   "ml-auto size-4 text-muted-foreground transition-transform group-aria-expanded/form-section-toggle:rotate-180";
