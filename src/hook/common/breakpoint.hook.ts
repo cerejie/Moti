@@ -7,6 +7,7 @@ const phoneMediaQuery = "(width < 48rem), (width < 64rem) and (height < 30rem)";
 const tabletPortraitMediaQuery = "(width < 64rem) and (orientation: portrait)";
 const desktopMediaQuery = "(width >= 64rem)";
 const coarsePointerQuery = "(pointer: coarse)";
+const hoverQuery = "(hover: hover)";
 
 const deviceMediaQueries = [phoneMediaQuery, tabletPortraitMediaQuery, desktopMediaQuery] as const;
 
@@ -48,3 +49,12 @@ export const useIsCompact = () => {
 };
 
 export const useIsDesktop = () => useDeviceClass() === "desktop";
+
+const subscribeHover = (onChange: () => void) => {
+  const media = window.matchMedia(hoverQuery);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+};
+
+export const useCanHover = () =>
+  useSyncExternalStore(subscribeHover, () => matches(hoverQuery), () => true);

@@ -8,7 +8,7 @@ import {
   cartBarText,
   cartBarTotal,
 } from "../../../styles/transaction/transaction.styles";
-import { formatCount, formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatPeso } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 
 // Shows once something is picked; checkout happens in the cart review.
@@ -25,8 +25,10 @@ const CartBar = () => {
           {totalAmount === null ? formatCount(totalQuantity, "pc") : formatPeso(totalAmount)}
         </span>
         <span className={itemMeta}>
-          {formatCount(itemCount, "item")} ·{" "}
-          {formatNumber(totalQuantity)} total
+          {/* Without a peso total the pieces are already the headline; do not repeat them. */}
+          {totalAmount === null
+            ? formatCount(itemCount, "item")
+            : `${formatCount(itemCount, "item")} · ${formatCount(totalQuantity, "pc")}`}
         </span>
       </span>
       <AppButton size="lg" onPress={() => openModal()}>

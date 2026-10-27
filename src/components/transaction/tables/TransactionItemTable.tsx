@@ -105,7 +105,7 @@ const TransactionItemTable = () => {
           <FilterBar
             filterKey={transactionPickTableKey}
             searchKey={transactionPickTableKey}
-            searchPlaceholder="Search name, item code or brand"
+            searchPlaceholder="Name, code or brand"
             controls={[
               {
                 key: "categoryId",

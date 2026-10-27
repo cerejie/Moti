@@ -197,8 +197,15 @@ Questions for the user (not bugs): items with no price can be sold and are left 
       over on-hand hides the before → after row and says the shortfall. Re-check at 360 px,
       light + dark: Archive confirm, Void (411 px), Add category (325 px), Set password (443 px),
       Deduct over / within stock, Add item still full height — 14/14 pass, 0 page errors)
-- [ ] Batch D: polish — F-07, F-08, F-09, F-11, F-12 — `CartBar.tsx`, `CartQuantityControl.tsx`,
+- [x] Batch D: polish — F-07, F-08, F-09, F-11, F-12 — `CartBar.tsx`, `CartQuantityControl.tsx`,
       `AppToaster.tsx`, `styles/dashboard/dashboard.styles.ts`, the search placeholders
+      (2026-10-27: cart bar reads "7 items · 8 pcs", or just "1 item" when the headline is
+      already pieces. `AppTooltip` is off on no-hover screens (`useCanHover`), so a tap never
+      leaves a tooltip up; mouse hover still shows one. Phone toasts start under the app bar
+      (`toastMobileOffset`). Dashboard panels keep their own height (`wide:items-start`). Search
+      placeholder "Name, code or brand" fits at 360 px. Re-check: phone light + dark, desktop
+      light + dark — 16/16 pass, 0 page errors. Not covered: a priced cart (test items have no
+      price); toasts at 600–768 px still use the desktop offset)
 - [ ] Batch E: sweep tooling — T-01, T-02 — `.claude/skills/visual-test/scripts/sweep.mjs`
       (T-03 only if the user says delete)
 

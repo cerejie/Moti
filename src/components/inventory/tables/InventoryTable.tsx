@@ -136,7 +136,7 @@ const InventoryTable = () => {
             <FilterBar
               filterKey={inventoryTableKey}
               searchKey={inventoryTableKey}
-              searchPlaceholder="Search name, item code or brand"
+              searchPlaceholder="Name, code or brand"
               controls={[
                 {
                   key: "categoryId",

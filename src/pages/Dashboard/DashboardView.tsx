@@ -6,13 +6,14 @@ import InventorySummaryCards from "../../components/dashboard/cards/InventorySum
 import AttentionPanel from "../../components/dashboard/panels/AttentionPanel";
 import RecentMovementsPanel from "../../components/dashboard/panels/RecentMovementsPanel";
 import StockMovementModal from "../../components/inventory/modal/StockMovementModal";
+import { dashboardPanels } from "../../styles/dashboard/dashboard.styles";
 
 const DashboardView = () => (
   <ContentView title="Dashboard" subtitle="Stock levels at a glance" layout="bento">
     <PushPromptNotice />
     <InventorySummaryCards />
 
-    <BentoGrid>
+    <BentoGrid className={dashboardPanels}>
       <BentoCell span="half">
         <AttentionPanel />
       </BentoCell>
