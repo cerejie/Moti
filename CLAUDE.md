@@ -31,7 +31,7 @@ fix all count.
 | **Anything at all — the fallback when nothing below fits** | `codebase-engineering` |
 | Any request that will read or search more than one file | `token-efficiency` (alongside) |
 | Any code change, feature, bug fix, refactor | `codebase-engineering` |
-| A new screen, table, modal, card, form, filter bar — anything the user sees | `ui-design-conventions` + `shadcn` |
+| A new screen, table, modal, card, form, filter bar — anything the user sees | `ui-design-conventions` + `shadcn` + `ui-ux-pro-max` |
 | Adding or composing a shadcn component, `npx shadcn` CLI | `shadcn` (official skill) |
 | Supabase: table, migration, RLS, RPC, storage, auth, service file | `supabase-backend` |
 | Manifest, service worker, install/update, offline, safe areas, icons | `pwa-conventions` |
@@ -52,6 +52,8 @@ The `shadcn` skill is the official one from `shadcn/ui`, pinned in `skills-lock.
 - **Copy the nearest existing sibling**; never invent a second way to do something that already
   has one. Reuse → extend → new file (last resort).
 - **Smallest correct change**, componentized and readable in the style already around it.
+- **A list row opens a pushed page; never a drawer**, sheet or detail modal — copy the item page
+  (`roadmap.md` V1.5 reference implementation).
 - **Infer the path before searching it** — the folder law below is strict enough to predict a
   path (`architecture-navigation`).
 - **Supabase is touched only in `src/services/data/`**, through the one client in

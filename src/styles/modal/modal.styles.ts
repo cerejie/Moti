@@ -51,7 +51,6 @@ export const drawerKind = cva("", {
   variants: {
     kind: {
       action: "",
-      detail: "data-[side=bottom]:min-h-[60dvh]",
       form: "data-[side=bottom]:h-[calc(var(--visible-height)-max(env(safe-area-inset-top),0.75rem))] max-h-none",
       flow: "data-[side=bottom]:h-(--visible-height) max-h-none rounded-t-none",
     },
@@ -92,19 +91,3 @@ export const confirmAction = cva("", {
   },
   defaultVariants: { kind: "confirm" },
 });
-
-export const detailGrid = "grid grid-cols-1 gap-x-6 gap-y-4 wide:grid-cols-2";
-
-export const detailItem = cva("flex min-w-0 flex-col gap-1", {
-  variants: {
-    wide: {
-      true: "wide:col-span-2",
-      false: "",
-    },
-  },
-  defaultVariants: { wide: false },
-});
-
-export const detailLabel = "text-xs font-medium text-muted-foreground";
-
-export const detailValue = "min-w-0 text-sm font-medium text-foreground";

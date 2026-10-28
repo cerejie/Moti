@@ -14,7 +14,8 @@ UI          src/components/inventory/tables/InventoryTable.tsx   TablePanel, Fil
             src/components/inventory/menus/InventoryRowActions.tsx  role-aware RowActionMenu
             src/components/inventory/modal/ItemFormModal.tsx     EntityFormModal + IFieldSection[]
             src/components/inventory/modal/StockMovementModal.tsx sale / add / deduct with preview
-            src/components/inventory/modal/ItemDetailModal.tsx   DetailModal + movement history
+Detail      src/pages/ItemDetail/ItemDetailView.tsx              pushed page: ContentView back + panel
+            src/components/inventory/panels/ItemDetailPanel.tsx  hero, DetailRows, movements, manage
             src/components/inventory/menus/StockAlertsBell.tsx   owner bell in the app bar / header
 Data        src/hook/data/inventory/inventory.list.hook.ts       list, summary, alerts queries
 Form        src/hook/data/inventory/inventory.form.hook.ts       item form + archive
@@ -36,13 +37,14 @@ Other modules: `category`, `brand`, `masterfile`, `movement`, `transaction`, `da
 ## Transaction (multi-item checkout)
 
 ```
-Screen      src/pages/Transaction/TransactionView.tsx            panel + cart, success, detail, void modals
+Screen      src/pages/Transaction/TransactionView.tsx            panel + cart and success modals
 UI          src/components/transaction/panels/TransactionPanel.tsx  New / History tabs (History owner-only)
             src/components/transaction/tables/TransactionItemTable.tsx  picker: search, category, brand, stock left
             src/components/transaction/menus/CartQuantityControl.tsx    Add, then − qty +
             src/components/transaction/panels/CartBar.tsx         sticky total → cart review
             src/components/transaction/modal/CartModal.tsx         lines, total, note, checkout
-            src/components/transaction/tables/TransactionHistoryTable.tsx + modal/TransactionDetailModal.tsx
+            src/components/transaction/tables/TransactionHistoryTable.tsx  row tap → /transaction/:id
+Detail      src/pages/TransactionDetail/TransactionDetailView.tsx + panels/TransactionDetailPanel.tsx
 Hooks       src/hook/data/transaction/transaction.list.hook.ts   picker list, history, lines
             src/hook/data/transaction/transaction.form.hook.ts   useCart, checkout, void
 Cart        src/store/data/transaction/transaction.store.ts      in-memory, reset on sign-out

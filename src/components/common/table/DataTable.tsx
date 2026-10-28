@@ -17,9 +17,6 @@ import {
   grownPageSize,
   type IPaginationRequest,
 } from "../../../models/common/pagination.model";
-import { rowDetailSheetModalKey } from "../../../keys/modal.keys";
-import type { IRowAction } from "../../../models/common/action.model";
-import type { IDetailSection } from "../../../models/common/detail.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import {
   dataTableCell,
@@ -69,12 +66,6 @@ type IProps<T> = {
   onRowClick?: (row: T) => void;
   emptyText?: string;
   emptyHint?: string;
-  // Compact rows: metas shown before the rest move into RecordDetailSheet.
-  cardMetaLimit?: number;
-  detailSections?: IDetailSection<T>[];
-  detailTitle?: (row: T) => string;
-  // Given, the row's actions leave the compact row for the detail sheet's footer.
-  detailActions?: (row: T) => readonly IRowAction[];
 };
 
 const toCellContent = (value: unknown): ReactNode =>
@@ -100,10 +91,6 @@ const DataTable = <T extends object>({
   onRowClick,
   emptyText = "Nothing to show yet.",
   emptyHint,
-  cardMetaLimit,
-  detailSections,
-  detailTitle,
-  detailActions,
 }: IProps<T>) => {
   const tableId = useId();
   const isCompact = useIsCompact();
@@ -254,11 +241,6 @@ const DataTable = <T extends object>({
           columnId={columnId}
           onRowClick={onRowClick}
           className={cn(showStale && dataTableStaleRows)}
-          cardMetaLimit={cardMetaLimit}
-          detailSheetKey={rowDetailSheetModalKey(tableId)}
-          detailSections={detailSections}
-          detailTitle={detailTitle}
-          detailActions={detailActions}
         />
       ) : (
         renderTable()

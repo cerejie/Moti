@@ -30,7 +30,6 @@ export interface IDataTableColumn<T> {
 
 export interface ICardField {
   id: string;
-  title: ReactNode;
   content: ReactNode;
 }
 

@@ -3,9 +3,6 @@ import { ChevronRight } from "lucide-react";
 import { Button as PressArea } from "react-aria-components";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/cn.utils";
-import { useModal } from "../../../hook/common/modal.hook";
-import type { IRowAction } from "../../../models/common/action.model";
-import type { IDetailSection } from "../../../models/common/detail.model";
 import type {
   ICardField,
   ICardFields,
@@ -34,11 +31,9 @@ import {
 } from "../../../styles/table/table.styles";
 import ErrorState from "../status/ErrorState";
 import RefreshBar from "../status/RefreshBar";
-import RecordDetailSheet from "./RecordDetailSheet";
 import TableEmptyState from "./TableEmptyState";
 
 const skeletonRows = 5;
-const defaultCardMetaLimit = 2;
 const emptyMark = "—";
 const secondarySeparator = "·";
 
@@ -55,17 +50,12 @@ type IProps<T> = {
   onRetry?: () => void;
   emptyText: string;
   emptyHint?: string;
-  // A row shows this many metas; one with more opens RecordDetailSheet for the rest.
-  cardMetaLimit?: number;
   resolveRowKey: (row: T) => string;
   renderContent: (column: IDataTableColumn<T>, row: T, rowIndex: number) => ReactNode;
   columnId: (column: IDataTableColumn<T>, index: number) => string;
+  // Opens the row's pushed page; without it the row is read in place.
   onRowClick?: (row: T) => void;
   className?: string;
-  detailSheetKey: string;
-  detailSections?: IDetailSection<T>[];
-  detailTitle?: (row: T) => string;
-  detailActions?: (row: T) => readonly IRowAction[];
 };
 
 const mobileRoleOf = <T,>(column: IDataTableColumn<T>, index: number): IColumnMobileRole => {
@@ -95,27 +85,12 @@ const DataTableList = <T,>({
   onRetry,
   emptyText,
   emptyHint,
-  cardMetaLimit = defaultCardMetaLimit,
   resolveRowKey,
   renderContent,
   columnId,
   onRowClick,
   className,
-  detailSheetKey,
-  detailSections,
-  detailTitle,
-  detailActions,
 }: IProps<T>) => {
-  const detailSheet = useModal<string>(detailSheetKey);
-  const sections = detailSections ?? [];
-  const metaCount = columns.filter(
-    (column, index) => mobileRoleOf(column, index) === "meta",
-  ).length;
-  // A row with its own onRowClick keeps it; otherwise a row with more than fits opens the sheet.
-  const opensDetail =
-    !onRowClick &&
-    (sections.length > 0 || metaCount > cardMetaLimit || detailActions !== undefined);
-
   if (loading) {
     return (
       <ul className={dataList} aria-label={label} aria-busy>
@@ -130,25 +105,18 @@ const DataTableList = <T,>({
 
   if (rows.length === 0) return <TableEmptyState text={emptyText} hint={emptyHint} />;
 
-  // The sheet asks for labelled metas: every column, its full render, no card prefix.
-  // Its status tags keep the list face: "3 items", not the column's bare "3".
-  const cardFieldsOf = (row: T, rowIndex: number, labelledMetas = false): ICardFields => {
+  const cardFieldsOf = (row: T, rowIndex: number): ICardFields => {
     const fieldsOf = (role: IColumnMobileRole): ICardField[] =>
       columns.flatMap((column, index) => {
-        if (mobileRoleOf(column, index) !== role) return [];
-        if (!labelledMetas && column.listHidden) return [];
-        const listFace = !labelledMetas || role === "status";
-        const content =
-          listFace && column.listRender
-            ? column.listRender(row)
-            : renderContent(column, row, rowIndex);
+        if (mobileRoleOf(column, index) !== role || column.listHidden) return [];
+        const content = column.listRender
+          ? column.listRender(row)
+          : renderContent(column, row, rowIndex);
         if (isEmptyContent(content)) return [];
-        const showsPrefix = column.cardPrefix !== undefined && listFace;
         return [
           {
             id: columnId(column, index),
-            title: column.title,
-            content: showsPrefix ? (
+            content: column.cardPrefix !== undefined ? (
               <>
                 {column.cardPrefix} {content}
               </>
@@ -169,19 +137,11 @@ const DataTableList = <T,>({
     };
   };
 
-  const pressOf = (row: T, key: string) => {
-    if (onRowClick) return () => onRowClick(row);
-    if (opensDetail) return () => detailSheet.openModal(key);
-    return undefined;
-  };
-
   const renderRow = (row: T, rowIndex: number) => {
     const key = resolveRowKey(row);
     const { titles, subtitles, amounts, statuses, metas, actions } = cardFieldsOf(row, rowIndex);
-    const rowMetas = opensDetail ? metas.slice(0, cardMetaLimit) : metas;
-    const rowActions = opensDetail && detailActions ? [] : actions;
-    const secondaries = [...subtitles, ...rowMetas];
-    const pressTitle = pressOf(row, key);
+    const secondaries = [...subtitles, ...metas];
+    const pressTitle = onRowClick ? () => onRowClick(row) : undefined;
     const titleContent = titles.map((field) => <span key={field.id}>{field.content}</span>);
 
     return (
@@ -229,7 +189,7 @@ const DataTableList = <T,>({
           </div>
         ) : null}
 
-        {rowActions.map((field) => (
+        {actions.map((field) => (
           <span key={field.id} className={dataListRaised}>
             {field.content}
           </span>
@@ -240,30 +200,13 @@ const DataTableList = <T,>({
     );
   };
 
-  const detailIndex = rows.findIndex((row) => resolveRowKey(row) === detailSheet.modal.data);
-  const detailRow = detailIndex === -1 ? undefined : rows[detailIndex];
-
   return (
-    <>
-      <div className={cn(dataListFrame, className)}>
-        {refreshing ? <RefreshBar placement="above" /> : null}
-        <ul className={dataList} aria-label={label} aria-busy={refreshing}>
-          {rows.map(renderRow)}
-        </ul>
-      </div>
-
-      {opensDetail && (
-        <RecordDetailSheet<T>
-          open={detailSheet.modal.visible}
-          title={detailRow && detailTitle ? detailTitle(detailRow) : "Details"}
-          record={detailRow}
-          fields={detailRow ? cardFieldsOf(detailRow, detailIndex, true) : undefined}
-          sections={sections}
-          actions={detailRow && detailActions ? detailActions(detailRow) : []}
-          onClose={detailSheet.closeModal}
-        />
-      )}
-    </>
+    <div className={cn(dataListFrame, className)}>
+      {refreshing ? <RefreshBar placement="above" /> : null}
+      <ul className={dataList} aria-label={label} aria-busy={refreshing}>
+        {rows.map(renderRow)}
+      </ul>
+    </div>
   );
 };
 

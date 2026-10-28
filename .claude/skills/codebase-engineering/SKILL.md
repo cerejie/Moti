@@ -49,7 +49,8 @@ Until Moti has its first module, the reference shapes are the ones in
 | Request model | `models/data/<domain>/<domain>.request.ts` — zod schema + `z.infer` type |
 | Response model | `models/data/<domain>/<domain>.response.ts` — `I`-prefixed interfaces |
 | Store | `store/data/<domain>/<domain>.store.ts` — `States` + `Actions` + `initialValues`, reset-aware `create` |
-| Modal | compose `AppModal` / `EntityFormModal` / `DetailModal`; state via `useModal(key)` |
+| Modal | compose `AppModal` / `EntityFormModal`; state via `useModal(key)` |
+| Record detail | a pushed page, never a modal or drawer — copy the item page (roadmap V1.5 reference) |
 | Table | `DataTable` in a `TablePanel` with `FilterToolbar` + `TablePagination` |
 | Route | one entry in `routes/protected.view.routes.ts` + its path in `route.paths.ts` |
 | UI primitive | `npx shadcn@latest add <x>` into `components/ui/`, wrapped once in `components/common/<kind>/` |

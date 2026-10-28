@@ -72,10 +72,11 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 | Content panel | `card/SectionCard` — `subtitle`, `extra`, `flush`, `dense`, and `loading` / `error` / `onRetry` instead of hand-rolled states |
 | Metric tile | `card/StatCard` — `variant` tone, `icon`, `caption`, `href`; pesos by default (`raw` for counts); `loading` / `error` per tile |
 | Money | `moneyLevel({ level })` from `styles/common/money.styles.ts` (`primary` / `amount` / `supporting` / `meta`) — never a hand-sized amount class |
-| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`; compact rows with more than `cardMetaLimit` metas (or `detailSections` / `detailActions`) open `table/RecordDetailSheet`. Row actions are one `actionsOf(row)` in the table, fed to both `RowActionMenu` and `detailActions` |
+| Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`. **A list row opens a pushed page; never a drawer, sheet or detail modal** — `onRowClick` navigates to `<thing>Path(id)` (roadmap V1.5 reference: the item page). A row without a page shows what fits (`mobile` roles, `listRender`, `listHidden`) and keeps its actions in `RowActionMenu` |
+| Record detail page | `pages/<Thing>Detail/` = `ContentView back` + a panel of `view/DetailPageSection`s, `table/DetailRows` for labelled facts, `view/RowLink` for rows that open another page |
 | Toolbar above a list | `filter/FilterToolbar` (+ `filter/SegmentedControl`) |
 | Row actions | `table/RowActionMenu` |
-| Any modal | `modal/AppModal`; forms `form/EntityFormModal`; read-only `modal/DetailModal`; done `modal/SuccessModal` |
+| Any modal | `modal/AppModal`; forms `form/EntityFormModal`; done `modal/SuccessModal`. A read-only record is a pushed page, not a modal |
 | Confirm / delete | `useConfirm()` + the single `modal/ConfirmationModal` in `App.tsx` |
 | Form building blocks | `form/FormRoot`, `FormField` (textarea, checkbox, select… by `type`), `FormSection`, `FormFieldGrid`, `TextInput`, `SelectInput`, `PasswordInput` |
 | Status pill | `status/StatusBadge` fed by an enum label + tone map |
@@ -120,10 +121,11 @@ Dates, money and numbers go through `utils/format.utils.ts` — never format at 
 
 ## 6. Modals — one frame, never rebuilt
 
-- Every overlay is `AppModal` (or `EntityFormModal` / `DetailModal` / `SuccessModal`, which sit
+- Every overlay is `AppModal` (or `EntityFormModal` / `SuccessModal`, which sit
   on it) or `useConfirm`. `AppModal` is an aria `dialog` on `wide` and an aria `sheet` from the
   bottom on `compact`, and it draws TARTAR's frame: ruled header, scrolling body, optional
-  `pinned` row, tinted ruled footer. `kind` (`action` / `detail` / `form` / `flow`) sets the sheet height.
+  `pinned` row, tinted ruled footer. `kind` (`action` / `form` / `flow`) sets the sheet height.
+  Overlays are for actions and flows; a record's details are never an overlay.
 - A new modal supplies `title`, `size` (`ModalSize`), `footer` and children — nothing else styles
   the frame, and `className` never overrides it.
 - Footer = action buttons only: secondary first (`variant="secondary"`), primary last, default size.

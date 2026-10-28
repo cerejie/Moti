@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { IDetailItem, IDetailSection } from "../models/common/detail.model";
+import type { IDetailItem } from "../models/common/detail.model";
 
 const emptyValuePlaceholder = "—";
 
@@ -18,9 +18,3 @@ export const visibleDetailItems = <TRecord>(
   items.filter(
     (item) => !item.hidden?.(record) && !isEmptyDetailValue(item.render(record))
   );
-
-export const visibleDetailSections = <TRecord>(
-  sections: readonly IDetailSection<TRecord>[],
-  record: TRecord
-): IDetailSection<TRecord>[] =>
-  sections.filter((section) => visibleDetailItems(section.items, record).length > 0);

@@ -24,9 +24,9 @@ SaaS build, which comes later.
       `.claude/state/autopilot/USER-DECISIONS.md`)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
-- [ ] V1.5: Pushed detail pages for every list (below), one conversation per phase —
+- [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
-      (v1.47); next up: Phase 4 (Retire the drawer)
+      (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -127,20 +127,29 @@ Decided with the user: brands/categories get **no** page (1A); Team gets one.
       page (tab bar hidden), password modal, disable confirm, back → Team, refresh + deep link,
       own account read-only, unknown id → not found, Delete (faked) → Team; Masterfile rows open
       no sheet and their ⋯ menu works; employee's typed URL lands on `/transaction`; 0 console
-      errors.
+     ### Phase 4: Retire the drawer (done 2026-10-28, v1.48)
 
-### Phase 4: Retire the drawer
+- [x] `DataTableList`: the `RecordDetailSheet` path is gone (`detailSections`, `detailTitle`,
+      `detailActions`, `cardMetaLimit`, `detailSheetKey`); a compact row's title is pressable only
+      with `onRowClick` (navigates, chevron), otherwise the row shows its visible columns.
+- [x] Deleted (user-approved): `RecordDetailSheet`, `RecordDetailSection`, `SheetActions`,
+      `rowDetailSheetModalKey`, `DetailModal`, `DetailSections`, `DetailGrid`,
+      `styles/modal/detail.styles.ts`, `utils/action.utils.ts`; also dropped `visibleDetailSections`,
+      `IDetailSection`, `ICardField.title`, the `detail` sheet kind and the sheet/hero styles.
+      `DetailRows` + `IDetailItem` stay (the detail pages use them).
+- [x] Sell picker (decided 1A): its rows no longer open a sheet; name, price, coloured "N left" and
+      Add stay. Masterfile rows unchanged (⋯ menu).
+- [x] Docs: `ui-design-conventions` § 5/§ 6, `codebase-engineering` § B, `CLAUDE.md` rule "a list row
+      opens a pushed page; never a drawer" + `ui-ux-pro-max` in the screen router row,
+      `project-map.md` stale modal lines.
+- [x] Full `visual-test` sweep 2026-10-28, signed-out + owner + employee × phone/tablet/desktop ×
+      light/dark: 168 captures, 0 console errors, every route guard holds; phone row taps
+      navigate on Stock, Stock history, Team, History, Sell picker and Masterfile open nothing.
+- Found, not fixed: the sweep's `account-menu` step times out on phone/tablet — the phone app bar
+  has no profile button since the redesign (profile lives on Account); the script needs
+  `SHEETS.account-menu` limited to desktop. Known: inputs 36 px tall on touch.
 
-- [ ] `DataTableList`: remove the `RecordDetailSheet` path (`detailSections`, `detailActions`,
-      `cardMetaLimit` overflow); compact rows either fit or navigate.
-- [ ] Delete `RecordDetailSheet`, `RecordDetailSection`, `SheetActions`, `rowDetailSheetModalKey`,
-      and `DetailModal` + `DetailSections` if nothing uses them (confirm each with the user).
-- [ ] Update `ui-design-conventions` (§ 3 table rows for RecordDetailSheet / DetailModal) and
-      `CLAUDE.md`: "a list row opens a pushed page; never a drawer". Add `ui-ux-pro-max` to the
-      skill router for screen work.
-- [ ] Full `visual-test` sweep, both roles, phone + desktop, light + dark.
-
-Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 4 (Retire the drawer)."
+rawer)."
 
 ## TARTAR redesign
 
