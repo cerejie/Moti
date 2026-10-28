@@ -13,8 +13,10 @@ import {
   detailPageRowText,
 } from "../../../styles/view/detailPage.styles";
 import { formatDateTime, formatSignedQuantity } from "../../../utils/format.utils";
+import { movementPath } from "../../../utils/route.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
+import RowLink from "../../common/view/RowLink";
 
 type IProps = {
   itemId: string;
@@ -39,13 +41,13 @@ const ItemMovementList = ({ itemId }: IProps) => {
             <span className={itemMovementIcon({ direction })} aria-hidden>
               {direction === "in" ? <ArrowUpRight /> : <ArrowDownRight />}
             </span>
-            <span className={detailPageRowText}>
+            <RowLink href={movementPath(movement.id)} className={detailPageRowText}>
               <span className={itemName}>{movementReasonLabels[movement.reason]}</span>
               <span className={itemMeta}>
                 {formatDateTime(movement.created_at)} · {movement.created_by_name}
                 {movement.note ? ` · ${movement.note}` : ""}
               </span>
-            </span>
+            </RowLink>
             <span className={historyQuantity({ direction })}>
               {formatSignedQuantity(movement.quantity)}
             </span>

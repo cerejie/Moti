@@ -14,14 +14,17 @@ import {
   onHandUnit,
   onHandValue,
 } from "../../../styles/inventory/inventory.styles";
+import { rowLinkRaised } from "../../../styles/view/rowLink.styles";
 import { formatNumber } from "../../../utils/format.utils";
+import { itemPath } from "../../../utils/route.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import EmptyState from "../../common/status/EmptyState";
+import RowLink from "../../common/view/RowLink";
 
 const visibleRows = 6;
 
-// Out-of-stock and low items, each one tap away from a restock.
+// Out-of-stock and low items: a row opens the item, its button restocks in one tap.
 const AttentionPanel = () => {
   const alerts = useStockAlerts();
   const stockModal = useStockMovementModal();
@@ -37,12 +40,12 @@ const AttentionPanel = () => {
       <ul className={dashboardList}>
         {items.slice(0, visibleRows).map((item) => (
           <li key={item.id} className={dashboardRow}>
-            <span className={dashboardRowText}>
+            <RowLink href={itemPath(item.id)} className={dashboardRowText}>
               <span className={itemName}>{item.name}</span>
               <span className={itemMeta}>
                 {item.item_code} · warning at {formatNumber(item.reorder_level)}
               </span>
-            </span>
+            </RowLink>
             <span className={dashboardRowEnd}>
               <span>
                 <span className={onHandValue({ status: item.stock_status })}>
@@ -53,6 +56,7 @@ const AttentionPanel = () => {
               <AppButton
                 size="icon"
                 variant="outline"
+                className={rowLinkRaised}
                 aria-label={`Add stock to ${item.name}`}
                 onPress={() => stockModal.openModal({ item, action: "stock_in" })}
               >

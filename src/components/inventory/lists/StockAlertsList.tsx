@@ -13,12 +13,18 @@ import {
   onHandValue,
 } from "../../../styles/inventory/inventory.styles";
 import { formatNumber } from "../../../utils/format.utils";
+import { itemPath } from "../../../utils/route.utils";
 import ErrorState from "../../common/status/ErrorState";
 import EmptyState from "../../common/status/EmptyState";
+import RowLink from "../../common/view/RowLink";
 import StockStatusBadge from "../status/StockStatusBadge";
 
+type IProps = {
+  onOpen?: () => void;
+};
+
 // Computed from current stock, so an item leaves the list once it is restocked.
-const StockAlertsList = () => {
+const StockAlertsList = ({ onOpen }: IProps) => {
   const alerts = useStockAlerts();
   const items = alerts.data ?? [];
 
@@ -34,12 +40,12 @@ const StockAlertsList = () => {
     <ul className={dashboardList}>
       {items.map((item) => (
         <li key={item.id} className={dashboardRow}>
-          <span className={dashboardRowText}>
+          <RowLink href={itemPath(item.id)} onPress={onOpen} className={dashboardRowText}>
             <span className={itemName}>{item.name}</span>
             <span className={itemMeta}>
               {item.item_code} · warning at {formatNumber(item.reorder_level)}
             </span>
-          </span>
+          </RowLink>
           <span className={dashboardRowEnd}>
             <span>
               <span className={onHandValue({ status: item.stock_status })}>

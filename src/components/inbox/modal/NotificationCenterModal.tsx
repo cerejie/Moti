@@ -53,7 +53,7 @@ const NotificationCenterModal = () => {
                 </AppButton>
               )}
             </div>
-            <StockAlertsList />
+            <StockAlertsList onOpen={closeModal} />
           </section>
         )}
         <InboxFeed section="updates" onOpen={closeModal} />

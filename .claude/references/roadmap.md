@@ -25,7 +25,8 @@ SaaS build, which comes later.
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 - [ ] V1.5: Pushed detail pages for every list (below), one conversation per phase —
-      Phase 1 done 2026-10-28 (v1.45); next up: Phase 2 (Stock)
+      Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46); next up: Phase 3
+      (Masterfile and Team)
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -85,15 +86,29 @@ Copy these; do not invent a second way:
 - Stays as is: `TransactionItemTable` (the sell picker — a tap adds to the cart, it is not a
   detail), the cart sheet and the checkout success modal (flows, not record details).
 
-### Phase 2: Stock — movement detail page
+### Phase 2: Stock — movement detail page (done 2026-10-28, v1.46)
 
-- [ ] `/movements/:movementId` (`can: "viewMovements"`), `movementServices.getById`, `useMovement(id)`.
-- [ ] Panel: heading = reason + item name → hero (signed quantity with direction icon, "Left after")
-      → Details (item code, by, when, note) → an "Open item" row linking to `itemPath(item_id)`.
-      No Manage section (movements are a ledger, never edited).
-- [ ] `MovementTable` row tap navigates; drop its `detailSections`.
-- [ ] Dashboard: `RecentMovementsPanel` rows open the movement page; `AttentionPanel` /
-      `StockAlertsList` rows open the item page (their stock-in button stays).
+- [x] `/movements/:movementId` (`can: "viewMovements"`), `movementServices.getById`,
+      `useMovement(id)` keyed `[movementListKey, "detail", id]`; `transaction_id` added to the
+      movement columns. `findCachedRow` now also reads plain-array caches (dashboard recent list).
+- [x] Panel: heading = reason, item name under it → hero (`MovementQuantityCard`: direction icon +
+      signed quantity, "Left after") → Details (item code, by, when, note) → Related
+      (`MovementLinkList`: "Open item", plus "Open the sale" when the movement has a
+      transaction). No Manage section.
+- [x] New primitive `common/view/RowLink` (+ `styles/view/rowLink.styles.ts`): a react-aria `Link`
+      stretched over its positioned row, so a button beside it (`rowLinkRaised`) keeps its own
+      tap; optional `onPress` runs before navigating. `dashboardRow` and `detailPageRow` are now
+      `relative`. Use it for every non-table row that opens a page.
+- [x] `MovementTable` row tap navigates; its `detailSections` are gone.
+- [x] Dashboard: `RecentMovementsPanel` rows → movement page; `AttentionPanel` rows → item page
+      (Add stock button stays); `StockAlertsList` rows → item page and close the notification
+      centre (`onOpen`). Also (user-approved): the item page's "Recent movements" rows open the
+      movement page.
+- [x] Checked 2026-10-28, owner at 360 px light + dark and 1440 light: list tap → page (tab bar
+      hidden), Open item / Open the sale, item page movement row → movement page, refresh + deep
+      link, deep-link back → Stock history, unknown id → not found, dashboard rows and Add stock,
+      bell stock alert closes the modal; employee's typed URL lands on `/transaction`; 0 console
+      errors.
 
 ### Phase 3: Masterfile and Team
 
@@ -118,7 +133,7 @@ Decide at the start (`codebase-engineering` § F), recommendation first:
       skill router for screen work.
 - [ ] Full `visual-test` sweep, both roles, phone + desktop, light + dark.
 
-Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 2 (Stock)."
+Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 3 (Masterfile and Team)."
 
 ## TARTAR redesign
 

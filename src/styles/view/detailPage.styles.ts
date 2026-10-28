@@ -33,7 +33,8 @@ export const detailHeroHint = "text-sm text-muted-foreground";
 // The related records under the facts.
 export const detailPageList = "flex flex-col divide-y overflow-hidden rounded-card border bg-card";
 
-export const detailPageRow = "flex items-center gap-3 px-4 py-3";
+// Positioned, so a RowLink inside takes the whole row.
+export const detailPageRow = "relative flex items-center gap-3 px-4 py-3";
 
 export const detailPageRowText = "flex min-w-0 flex-1 flex-col gap-0.5";
 

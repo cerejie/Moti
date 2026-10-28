@@ -101,15 +101,23 @@ export const createPersistOptions = (
   dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
 });
 
-// The row tapped in a list, so a detail page paints at once while its fresh copy loads.
+const cachedRowsOf = <TRow extends { id: string }>(
+  cached: IPaginationResponse<TRow> | TRow[] | TRow | undefined,
+): TRow[] => {
+  if (Array.isArray(cached)) return cached;
+  return cached && "totalCount" in cached ? cached.data : [];
+};
+
+// The row tapped in a list, paged or plain, so a detail page paints at once while its
+// fresh copy loads.
 export const findCachedRow = <TRow extends { id: string }>(
   client: QueryClient,
   listKey: string,
   id: string | undefined,
 ): TRow | undefined =>
   client
-    .getQueriesData<IPaginationResponse<TRow> | TRow>({ queryKey: [listKey] })
-    .flatMap(([, cached]) => (cached && "totalCount" in cached ? cached.data : []))
+    .getQueriesData<IPaginationResponse<TRow> | TRow[] | TRow>({ queryKey: [listKey] })
+    .flatMap(([, cached]) => cachedRowsOf(cached))
     .find((row) => row.id === id);
 
 // Offline, a new search, filter or page keeps the previous rows and cannot fetch its own.

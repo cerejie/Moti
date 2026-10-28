@@ -16,7 +16,7 @@ import { newWriteId } from "../../utils/write.utils";
 
 const table = "stock_movements";
 const columns =
-  "id, item_id, item:inventory_items(name, item_code, unit), type, reason, quantity, balance_after, note, created_by_name, created_at";
+  "id, item_id, transaction_id, item:inventory_items(name, item_code, unit), type, reason, quantity, balance_after, note, created_by_name, created_at";
 const itemHistoryLimit = 20;
 
 const movementServices = {
@@ -45,6 +45,17 @@ const movementServices = {
     if (error) throw toError(error);
 
     return (data ?? []) as unknown as IStockMovement[];
+  },
+
+  getById: async (id: string, signal?: AbortSignal): Promise<IStockMovement> => {
+    let query = supabase.from(table).select(columns).eq("id", id);
+    if (signal) query = query.abortSignal(signal);
+    const { data, error } = await query.maybeSingle();
+    if (error) throw toError(error);
+    // RLS hides another shop's movement exactly like a missing id.
+    if (!data) throw new Error("This movement doesn't exist or was removed.");
+
+    return data as unknown as IStockMovement;
   },
 
   getByItem: async (itemId: string, signal?: AbortSignal): Promise<IStockMovement[]> => {

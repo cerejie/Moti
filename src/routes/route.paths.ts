@@ -10,6 +10,7 @@ export const ROUTES = {
   masterfile: "/inventory/masterfile",
   item: "/inventory/:itemId",
   movements: "/movements",
+  movementDetail: "/movements/:movementId",
   users: "/users",
   account: "/account",
 } as const;

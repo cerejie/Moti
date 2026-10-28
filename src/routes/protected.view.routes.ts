@@ -91,6 +91,18 @@ export const protectedViewRoutes: IRoute[] = [
     lazy: { Component: async () => (await import("../pages/Movements/MovementsView")).default },
   },
   {
+    key: "movementDetail",
+    label: "Movement",
+    path: ROUTES.movementDetail,
+    isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
+    can: "viewMovements",
+    loader: permissionLoader("viewMovements", ROUTES.transaction),
+    lazy: {
+      Component: async () => (await import("../pages/MovementDetail/MovementDetailView")).default,
+    },
+  },
+  {
     key: "users",
     label: "Team",
     icon: Users,

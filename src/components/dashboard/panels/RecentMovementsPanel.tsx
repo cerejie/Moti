@@ -13,9 +13,11 @@ import {
   itemName,
 } from "../../../styles/inventory/inventory.styles";
 import { formatDateTime, formatSignedQuantity } from "../../../utils/format.utils";
+import { movementPath } from "../../../utils/route.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import EmptyState from "../../common/status/EmptyState";
+import RowLink from "../../common/view/RowLink";
 
 const RecentMovementsPanel = () => {
   const recent = useRecentMovements();
@@ -36,7 +38,7 @@ const RecentMovementsPanel = () => {
       <ul className={dashboardList}>
         {movements.map((movement) => (
           <li key={movement.id} className={dashboardRow}>
-            <span className={dashboardRowText}>
+            <RowLink href={movementPath(movement.id)} className={dashboardRowText}>
               <span className={itemName}>{movement.item?.name ?? "Deleted item"}</span>
               <span className={itemMeta}>
                 {[
@@ -45,7 +47,7 @@ const RecentMovementsPanel = () => {
                   formatDateTime(movement.created_at),
                 ].join(" · ")}
               </span>
-            </span>
+            </RowLink>
             <span
               className={historyQuantity({ direction: movement.quantity > 0 ? "in" : "out" })}
             >

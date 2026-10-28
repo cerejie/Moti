@@ -1,7 +1,8 @@
 // Attention and activity lists inside the dashboard's section cards.
 export const dashboardList = "flex flex-col divide-y";
 
-export const dashboardRow = "flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0";
+// Positioned, so a RowLink inside takes the whole row.
+export const dashboardRow = "relative flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0";
 
 export const dashboardRowText = "flex min-w-0 flex-col gap-0.5";
 
