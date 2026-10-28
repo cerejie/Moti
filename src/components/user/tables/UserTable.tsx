@@ -1,36 +1,21 @@
-import {
-  Ban,
-  Check,
-  KeyRound,
-  ShieldCheck,
-  ShieldX,
-  Trash2,
-  UserCheck,
-  UserRound,
-  UserX,
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { effectiveRoleLabels } from "../../../enums/role.enum";
-import { useModal } from "../../../hook/common/modal.hook";
-import { useCreatableRoles, useUserActions } from "../../../hook/data/user/user.form.hook";
 import { useUserList } from "../../../hook/data/user/user.list.hook";
-import { userPasswordModalKey } from "../../../keys/modal.keys";
-import type { IRowAction } from "../../../models/common/action.model";
-import type { IDetailSection } from "../../../models/common/detail.model";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { UserView } from "../../../models/data/user/user.request";
 import type { IUser } from "../../../models/data/user/user.response";
-import { selectUserId, useAccountStore } from "../../../store/data/account/account.store";
 import { itemIdentity, itemMeta, itemName, mutedText } from "../../../styles/inventory/inventory.styles";
 import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatShortDate } from "../../../utils/format.utils";
+import { userPath } from "../../../utils/route.utils";
 import DataTable from "../../common/table/DataTable";
-import RowActionMenu from "../../common/table/RowActionMenu";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
+import UserRowActions from "../menus/UserRowActions";
 import UserStatusBadges from "../status/UserStatusBadges";
 
-const buildColumns = (actionsOf: (user: IUser) => IRowAction[]): IDataTableColumn<IUser>[] => [
+const columns: IDataTableColumn<IUser>[] = [
   {
     key: "user",
     title: "Name",
@@ -64,24 +49,7 @@ const buildColumns = (actionsOf: (user: IUser) => IRowAction[]): IDataTableColum
     title: "Action",
     align: "center",
     className: nowrapCell,
-    render: (_, user) => {
-      const actions = actionsOf(user);
-      return actions.length > 0 ? (
-        <RowActionMenu label={`Manage ${user.full_name}`} actions={actions} />
-      ) : null;
-    },
-  },
-];
-
-const detailSections: IDetailSection<IUser>[] = [
-  {
-    key: "account",
-    title: "Account",
-    icon: <UserRound />,
-    items: [
-      { key: "role", label: "Role", render: (user) => effectiveRoleLabels[user.role] },
-      { key: "joined", label: "Joined", render: (user) => formatShortDate(user.created_at) },
-    ],
+    render: (_, user) => <UserRowActions user={user} />,
   },
 ];
 
@@ -94,80 +62,7 @@ const viewOptions: ISegmentOption<UserView>[] = [
 
 const UserTable = () => {
   const { query, view, setView } = useUserList();
-  const roles = useCreatableRoles();
-  const selfId = useAccountStore(selectUserId);
-  const userActions = useUserActions();
-  const passwordModal = useModal<IUser>(userPasswordModalKey);
-
-  // Only accounts below the caller's role get actions; the RPCs and RLS check the same.
-  // The row menu (wide) and the detail sheet footer (compact) share this list.
-  const actionsOf = (user: IUser): IRowAction[] => {
-    if (user.id === selfId || !roles.includes(user.role)) return [];
-
-    const items: IRowAction[] = [];
-
-    // Setting a temporary password answers the request; the database clears the flag.
-    if (user.password_reset_requested_at) {
-      items.push(
-        {
-          key: "reset-set",
-          label: "Set temporary password",
-          icon: <ShieldCheck />,
-          priority: "primary",
-          onSelect: () => passwordModal.openModal(user),
-        },
-        {
-          key: "reset-dismiss",
-          label: "Dismiss request",
-          icon: <ShieldX />,
-          onSelect: () => userActions.dismissReset(user),
-        },
-      );
-    }
-
-    if (user.approval_status === "pending") {
-      items.push(
-        { key: "approve", label: "Approve", icon: <Check />, onSelect: () => userActions.approve(user) },
-        { key: "reject", label: "Reject", icon: <Ban />, onSelect: () => userActions.reject(user) },
-      );
-    } else if (user.approval_status === "approved") {
-      items.push(
-        {
-          key: "password",
-          label: "Set password",
-          icon: <KeyRound />,
-          priority: "secondary",
-          onSelect: () => passwordModal.openModal(user),
-        },
-        {
-          key: "disable",
-          label: "Disable",
-          icon: <UserX />,
-          priority: "secondary",
-          onSelect: () => userActions.disable(user),
-        },
-      );
-    } else {
-      items.push({
-        key: "enable",
-        label: "Turn back on",
-        icon: <UserCheck />,
-        onSelect: () => userActions.enable(user),
-      });
-    }
-
-    // Disable is reversible and comes first; the permanent Delete waits in the menu.
-    items.push({
-      key: "delete",
-      label: "Delete",
-      icon: <Trash2 />,
-      danger: true,
-      priority: "menu",
-      onSelect: () => userActions.remove(user),
-    });
-
-    return items;
-  };
+  const navigate = useNavigate();
 
   return (
     <TablePanel
@@ -182,15 +77,13 @@ const UserTable = () => {
     >
       <DataTable<IUser>
         label="Accounts"
-        columns={buildColumns(actionsOf)}
+        columns={columns}
         data={query.data ?? []}
         loading={query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText={view === "pending" ? "No sign-ups waiting." : "No accounts here."}
-        detailSections={detailSections}
-        detailTitle={(user) => user.full_name}
-        detailActions={actionsOf}
+        onRowClick={(user) => void navigate(userPath(user.id))}
       />
     </TablePanel>
   );

@@ -13,7 +13,11 @@ import {
 } from "../../../models/data/user/user.request";
 import type { IUser } from "../../../models/data/user/user.response";
 import userServices from "../../../services/data/user.services";
-import { selectRole, useAccountStore } from "../../../store/data/account/account.store";
+import {
+  selectRole,
+  selectUserId,
+  useAccountStore,
+} from "../../../store/data/account/account.store";
 import { useConfirm } from "../../common/confirmation.hook";
 import { useModal } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
@@ -21,6 +25,14 @@ import { useAppMutation } from "../../common/mutation.hook";
 const userInvalidations = [[userListKey]] as const;
 
 export const useCreatableRoles = () => manageableRolesOf(useAccountStore(selectRole));
+
+// Only accounts below the caller's role can be managed; the RPCs and RLS check the same.
+export const useCanManageUser = () => {
+  const roles = useCreatableRoles();
+  const selfId = useAccountStore(selectUserId);
+
+  return (user: IUser) => user.id !== selfId && roles.includes(user.role);
+};
 
 export const useUserCreateForm = () => {
   const { modal, closeModal } = useModal(userCreateModalKey);
@@ -143,14 +155,17 @@ export const useUserActions = () => {
       }),
     reject: (user: IUser) => setStatus(user, "rejected"),
     dismissReset: (user: IUser) => resetMutation.mutate(user),
-    remove: (user: IUser) =>
+    remove: (user: IUser, onRemoved?: () => void) =>
       confirm({
         kind: "delete",
         title: `Delete ${user.full_name}?`,
         message: "The account is removed for good. Stock history keeps their name.",
         itemName: user.email,
         okText: "Delete",
-        onConfirm: () => removeMutation.mutateAsync(user),
+        onConfirm: async () => {
+          await removeMutation.mutateAsync(user);
+          onRemoved?.();
+        },
       }),
   };
 };

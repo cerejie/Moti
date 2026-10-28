@@ -25,8 +25,8 @@ SaaS build, which comes later.
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 - [ ] V1.5: Pushed detail pages for every list (below), one conversation per phase —
-      Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46); next up: Phase 3
-      (Masterfile and Team)
+      Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
+      (v1.47); next up: Phase 4 (Retire the drawer)
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -110,17 +110,24 @@ Copy these; do not invent a second way:
       bell stock alert closes the modal; employee's typed URL lands on `/transaction`; 0 console
       errors.
 
-### Phase 3: Masterfile and Team
+### Phase 3: Masterfile and Team (done 2026-10-28, v1.47)
 
-Decide at the start (`codebase-engineering` § F), recommendation first:
-1. Brands / Categories have only name, item count and date.
-   - A (recommended): no detail page — the compact row shows all three, Rename/Delete stay in the
-     row's ⋯ menu.
-   - B: a page per brand/category listing its items.
-2. Team users: `/users/:userId` (`can: "manageUsers"`) — Details (role, status, joined, email) →
-   Manage (approve / set temporary password / dismiss / disable, same actions as `actionsOf`).
-
-- [ ] Build what was chosen; drop `detailSections` / `detailActions` from those tables.
+Decided with the user: brands/categories get **no** page (1A); Team gets one.
+- [x] Brands / Categories: `detailSections` / `detailTitle` / `detailActions` dropped; the compact
+      row shows name, item count and date, Rename/Delete stay in the row's ⋯ menu (no sheet).
+- [x] `/users/:userId` (`can: "manageUsers"`), `userServices.getById`, `useUser(id)` keyed
+      `[userListKey, "detail", id]`; `useCanManageUser()` (not self, below the caller's role) in
+      `user.form.hook`; `remove(user, onRemoved?)` lets the page go back to Team after a delete.
+- [x] Panel: heading name + email → Details (role, status badges, joined, reset asked) → Manage
+      (`UserManageActions`: amber Set temporary password / Approve when waiting, Dismiss / Reject /
+      Set password / Disable / Turn back on, soft-red Delete last, status hint). Own account and
+      higher roles show no Manage.
+- [x] `UserTable` row tap navigates; the row menu moved to `menus/UserRowActions` (+ View details).
+- [x] Checked 2026-10-28, owner at 360 px light + dark and 1440 light: row tap and View details →
+      page (tab bar hidden), password modal, disable confirm, back → Team, refresh + deep link,
+      own account read-only, unknown id → not found, Delete (faked) → Team; Masterfile rows open
+      no sheet and their ⋯ menu works; employee's typed URL lands on `/transaction`; 0 console
+      errors.
 
 ### Phase 4: Retire the drawer
 
@@ -133,7 +140,7 @@ Decide at the start (`codebase-engineering` § F), recommendation first:
       skill router for screen work.
 - [ ] Full `visual-test` sweep, both roles, phone + desktop, light + dark.
 
-Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 3 (Masterfile and Team)."
+Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 4 (Retire the drawer)."
 
 ## TARTAR redesign
 

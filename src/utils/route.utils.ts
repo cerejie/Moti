@@ -9,6 +9,8 @@ export const transactionPath = (transactionId: string) =>
 export const movementPath = (movementId: string) =>
   generatePath(ROUTES.movementDetail, { movementId });
 
+export const userPath = (userId: string) => generatePath(ROUTES.userDetail, { userId });
+
 // Mirrors NavLink's own matching: the root path matches exactly, every other
 // path also matches its subpaths, so a subpage keeps its module highlighted.
 export const isRouteActive = (path: string, pathname: string) =>

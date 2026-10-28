@@ -1,10 +1,9 @@
-import { Pencil, Shapes, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useCategoryDelete } from "../../../hook/data/category/category.form.hook";
 import { useCategoryList } from "../../../hook/data/category/category.list.hook";
 import { categoryFormModalKey } from "../../../keys/modal.keys";
 import type { IRowAction } from "../../../models/common/action.model";
-import type { IDetailSection } from "../../../models/common/detail.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { ICategory } from "../../../models/data/category/category.response";
 import { itemName, mutedText } from "../../../styles/inventory/inventory.styles";
@@ -49,23 +48,11 @@ const buildColumns = (
   },
 ];
 
-const detailSections: IDetailSection<ICategory>[] = [
-  {
-    key: "category",
-    title: "Category",
-    icon: <Shapes />,
-    items: [
-      { key: "created", label: "Added", render: (category) => formatShortDate(category.created_at) },
-    ],
-  },
-];
-
 const CategoryTable = () => {
   const query = useCategoryList();
   const { openModal } = useModal<ICategory>(categoryFormModalKey);
   const remove = useCategoryDelete();
 
-  // The row menu (wide) and the detail sheet footer (compact) share this list.
   const actionsOf = (category: ICategory): IRowAction[] => [
     { key: "rename", label: "Rename", icon: <Pencil />, onSelect: () => openModal(category) },
     { key: "delete", label: "Delete", icon: <Trash2 />, danger: true, onSelect: () => remove(category) },
@@ -80,9 +67,6 @@ const CategoryTable = () => {
         loading={query.isLoading}
         error={query.error}
         onRetry={() => void query.refetch()}
-        detailSections={detailSections}
-        detailTitle={(category) => category.name}
-        detailActions={actionsOf}
         emptyText="No categories yet. Add one to group your items."
       />
     </TablePanel>

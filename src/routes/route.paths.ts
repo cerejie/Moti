@@ -12,5 +12,6 @@ export const ROUTES = {
   movements: "/movements",
   movementDetail: "/movements/:movementId",
   users: "/users",
+  userDetail: "/users/:userId",
   account: "/account",
 } as const;

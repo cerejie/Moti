@@ -25,6 +25,17 @@ const userServices = {
     return (data ?? []) as IUser[];
   },
 
+  getById: async (id: string, signal?: AbortSignal): Promise<IUser> => {
+    let query = supabase.from(table).select(columns).eq("id", id);
+    if (signal) query = query.abortSignal(signal);
+    const { data, error } = await query.maybeSingle();
+    if (error) throw toError(error);
+    // RLS hides an account the caller can't manage exactly like a missing id.
+    if (!data) throw new Error("This account doesn't exist or was removed.");
+
+    return data as IUser;
+  },
+
   create: async (values: ICreateUserInput): Promise<void> => {
     const { error } = await onlineOnly(
       supabase.rpc("admin_create_user_email", {
