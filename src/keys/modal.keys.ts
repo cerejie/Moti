@@ -5,7 +5,6 @@ export const categoryFormModalKey = "category-form";
 export const brandFormModalKey = "brand-form";
 export const cartModalKey = "transaction-cart";
 export const checkoutSuccessModalKey = "transaction-success";
-export const transactionDetailModalKey = "transaction-detail";
 export const transactionVoidModalKey = "transaction-void";
 export const userCreateModalKey = "user-create";
 export const userPasswordModalKey = "user-password";

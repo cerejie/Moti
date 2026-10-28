@@ -5,6 +5,7 @@ export const ROUTES = {
   register: "/register",
   forgotPassword: "/forgot-password",
   transaction: "/transaction",
+  transactionDetail: "/transaction/:transactionId",
   inventory: "/inventory",
   masterfile: "/inventory/masterfile",
   item: "/inventory/:itemId",

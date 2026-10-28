@@ -41,6 +41,17 @@ const transactionServices = {
     return toPage((data ?? []) as ITransaction[], count ?? 0, pagination);
   },
 
+  getById: async (id: string, signal?: AbortSignal): Promise<ITransaction> => {
+    let query = supabase.from(table).select(columns).eq("id", id);
+    if (signal) query = query.abortSignal(signal);
+    const { data, error } = await query.maybeSingle();
+    if (error) throw toError(error);
+    // RLS hides another shop's transaction exactly like a missing id.
+    if (!data) throw new Error("This transaction doesn't exist or was removed.");
+
+    return data as ITransaction;
+  },
+
   getLines: async (transactionId: string, signal?: AbortSignal): Promise<ITransactionLine[]> => {
     let query = supabase
       .from("stock_movements")

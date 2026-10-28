@@ -25,7 +25,7 @@ SaaS build, which comes later.
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 - [ ] V1.5: Pushed detail pages for every list (below), one conversation per phase —
-      next up: Phase 1 (Sell)
+      Phase 1 done 2026-10-28 (v1.45); next up: Phase 2 (Stock)
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -60,19 +60,28 @@ Copy these; do not invent a second way:
 - [ ] Old modal/sheet + its modal key deleted (confirm with the user first)
 - [ ] `yarn build` + `yarn lint` clean; `visual-test` at 360 px light and dark; commit (TARTAR format)
 
-### Phase 1: Sell — transaction detail page
+### Phase 1: Sell — transaction detail page (done 2026-10-28, v1.45)
 
-- [ ] Promote the shared pieces now that a second page needs them:
+- [x] Promote the shared pieces now that a second page needs them:
       `itemDetailSection/SectionTitle/Surface/Page` styles → `styles/view/detailPage.styles.ts`, a
       `common/view/DetailPageSection` (title + children), and `findCachedRow(queryClient, listKey, id)`
-      in `utils/query.utils.ts`; switch the item page to them.
-- [ ] `/transaction/:transactionId` (`can: "viewTransactions"`), `transactionServices.getById`,
+      in `utils/query.utils.ts`; switch the item page to them. Also promoted: hero
+      (`detailHero*`), related list (`detailPageList/Row/RowText`) and manage
+      (`detailManage*`) styles.
+- [x] `/transaction/:transactionId` (`can: "viewTransactions"`), `transactionServices.getById`,
       `useTransaction(id)`; lines keep using `getLines`.
-- [ ] Panel: heading "Transaction #N" + date · seller → hero (total, status Completed/Voided) →
+- [x] Panel: heading "Transaction #N" + date · seller → hero (total, status Completed/Voided) →
       Lines list → Voided details (when voided) → Manage: "Void transaction" (owner,
       `voidTransaction`), still opens the existing void form modal.
-- [ ] `TransactionHistoryTable` row tap navigates; delete `TransactionDetailModal` +
+- [x] `TransactionHistoryTable` row tap navigates; delete `TransactionDetailModal` +
       `transactionDetailModalKey`.
+- [x] Checked 2026-10-28, owner at 360 px light + dark and 1440 light: history tap → page (tab
+      bar hidden, round back), back keeps the History tab, refresh + deep link load, void form
+      opens (writes faked), voided shows its section and no Manage, unknown id → not found;
+      employee's typed URL lands on `/transaction`; 0 console errors.
+- Found, not fixed (pre-existing, v1.44): `onHandValue` `xl: "text-hero"` resolves to the
+  `--color-hero` colour, not the `--text-hero` size, so the item page's on-hand figure is small
+  and near-invisible in dark mode.
 - Stays as is: `TransactionItemTable` (the sell picker — a tap adds to the cart, it is not a
   detail), the cart sheet and the checkout success modal (flows, not record details).
 
@@ -109,7 +118,7 @@ Decide at the start (`codebase-engineering` § F), recommendation first:
       skill router for screen work.
 - [ ] Full `visual-test` sweep, both roles, phone + desktop, light + dark.
 
-Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 1 (Sell)."
+Kickoff prompt for the next conversation: "Read roadmap.md and do V1.5 Phase 2 (Stock)."
 
 ## TARTAR redesign
 

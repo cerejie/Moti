@@ -1,7 +1,8 @@
+import { cva } from "class-variance-authority";
 import { moneyLevel } from "../common/money.styles";
 
-// Transaction: the item picker, its add / quantity control, the cart bar and
-// the cart review.
+// Transaction: the item picker, its add / quantity control, the cart bar,
+// the cart review and the transaction page.
 
 // The picker leaves room at the bottom so the last row clears the cart bar.
 export const pickerStack = "flex flex-col gap-3 pb-20";
@@ -49,3 +50,21 @@ export const cartForm = "flex flex-col gap-4";
 
 // Success prompt: the totals under the message.
 export const receiptLine = "text-sm text-muted-foreground tabular-nums";
+
+// Transaction page: a voided total stays readable but is clearly no longer owed.
+export const transactionTotal = cva(moneyLevel({ level: "primary" }), {
+  variants: {
+    voided: {
+      true: "text-muted-foreground line-through",
+      false: "",
+    },
+  },
+  defaultVariants: { voided: false },
+});
+
+// Line total over its quantity, right-aligned like a receipt.
+export const lineAmount = "flex shrink-0 flex-col items-end gap-0.5";
+
+export const lineTotal = moneyLevel({ level: "supporting" });
+
+export const lineQuantity = "text-xs text-muted-foreground tabular-nums";

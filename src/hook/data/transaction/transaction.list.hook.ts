@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TransactionStatus } from "../../../enums/transaction.enum";
 import {
   inventoryListKey,
@@ -9,8 +9,10 @@ import {
   transactionHistoryTableKey,
   transactionPickTableKey,
 } from "../../../keys/table.keys";
+import type { ITransaction } from "../../../models/data/transaction/transaction.response";
 import inventoryServices from "../../../services/data/inventory.services";
 import transactionServices from "../../../services/data/transaction.services";
+import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
 import { useDebouncedSearch } from "../../common/search.hook";
@@ -60,7 +62,20 @@ export const useTransactionHistory = () => {
   });
 };
 
-export const useTransactionLines = (transactionId: string | undefined, enabled: boolean) =>
+// Keyed under the list prefix, so checkout and void invalidations refresh it too.
+export const useTransaction = (transactionId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useQuery<ITransaction>({
+    queryKey: [transactionListKey, "detail", transactionId],
+    queryFn: ({ signal }) => transactionServices.getById(transactionId ?? "", signal),
+    enabled: Boolean(transactionId),
+    placeholderData: () =>
+      findCachedRow<ITransaction>(queryClient, transactionListKey, transactionId),
+  });
+};
+
+export const useTransactionLines =(transactionId: string | undefined, enabled: boolean) =>
   useQuery({
     queryKey: [transactionLinesKey, transactionId],
     queryFn: ({ signal }) => transactionServices.getLines(transactionId ?? "", signal),

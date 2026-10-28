@@ -10,6 +10,7 @@ import {
   inventoryListKey,
 } from "../keys/query.keys";
 import { queryCacheStorageKey } from "../keys/storage.keys";
+import type { IPaginationResponse } from "../models/common/pagination.model";
 import { isNetworkError } from "./error.utils";
 
 const maxRetries = 1;
@@ -99,6 +100,17 @@ export const createPersistOptions = (
   maxAge: offlineCacheMs,
   dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
 });
+
+// The row tapped in a list, so a detail page paints at once while its fresh copy loads.
+export const findCachedRow = <TRow extends { id: string }>(
+  client: QueryClient,
+  listKey: string,
+  id: string | undefined,
+): TRow | undefined =>
+  client
+    .getQueriesData<IPaginationResponse<TRow> | TRow>({ queryKey: [listKey] })
+    .flatMap(([, cached]) => (cached && "totalCount" in cached ? cached.data : []))
+    .find((row) => row.id === id);
 
 // Offline, a new search, filter or page keeps the previous rows and cannot fetch its own.
 export const isShowingPausedRows = (query: {

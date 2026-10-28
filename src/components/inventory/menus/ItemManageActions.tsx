@@ -4,10 +4,10 @@ import { useItemArchive } from "../../../hook/data/inventory/inventory.form.hook
 import { itemFormModalKey } from "../../../keys/modal.keys";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import {
-  itemManageActions,
-  itemManageButton,
-  itemManageHint,
-} from "../../../styles/inventory/inventory.styles";
+  detailManageActions,
+  detailManageButton,
+  detailManageHint,
+} from "../../../styles/view/detailPage.styles";
 import AppButton from "../../common/button/AppButton";
 
 type IProps = {
@@ -21,12 +21,12 @@ const ItemManageActions = ({ item }: IProps) => {
   const archived = item.archived_at !== null;
 
   return (
-    <div className={itemManageActions}>
+    <div className={detailManageActions}>
       <AppButton
         size="lg"
         variant="outline"
         onPress={() => formModal.openModal(item)}
-        className={itemManageButton}
+        className={detailManageButton}
       >
         <Pencil data-icon="inline-start" aria-hidden />
         Edit item
@@ -37,7 +37,7 @@ const ItemManageActions = ({ item }: IProps) => {
           size="lg"
           variant="outline"
           onPress={() => restore(item)}
-          className={itemManageButton}
+          className={detailManageButton}
         >
           <ArchiveRestore data-icon="inline-start" aria-hidden />
           Restore item
@@ -48,14 +48,14 @@ const ItemManageActions = ({ item }: IProps) => {
           variant="outline"
           tone="dangerSoft"
           onPress={() => archive(item)}
-          className={itemManageButton}
+          className={detailManageButton}
         >
           <Archive data-icon="inline-start" aria-hidden />
           Archive item
         </AppButton>
       )}
 
-      <p className={itemManageHint}>
+      <p className={detailManageHint}>
         {archived
           ? "Restoring puts the item back on the list and on sale."
           : "Archived items leave the list and can't be sold. You can restore them anytime."}

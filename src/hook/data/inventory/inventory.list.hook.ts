@@ -6,9 +6,9 @@ import {
   stockAlertsKey,
 } from "../../../keys/query.keys";
 import { inventoryTableKey } from "../../../keys/table.keys";
-import type { IPaginationResponse } from "../../../models/common/pagination.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import inventoryServices from "../../../services/data/inventory.services";
+import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
 import { useDebouncedSearch } from "../../common/search.hook";
@@ -61,14 +61,7 @@ export const useInventoryItem = (itemId: string | undefined) => {
     queryKey: [inventoryListKey, "item", itemId],
     queryFn: ({ signal }) => inventoryServices.getById(itemId ?? "", signal),
     enabled: Boolean(itemId),
-    // The row tapped in the list paints the page at once while the fresh copy loads.
-    placeholderData: () =>
-      queryClient
-        .getQueriesData<IPaginationResponse<IInventoryItem> | IInventoryItem>({
-          queryKey: [inventoryListKey],
-        })
-        .flatMap(([, cached]) => (cached && "totalCount" in cached ? cached.data : []))
-        .find((item) => item.id === itemId),
+    placeholderData: () => findCachedRow<IInventoryItem>(queryClient, inventoryListKey, itemId),
   });
 };
 

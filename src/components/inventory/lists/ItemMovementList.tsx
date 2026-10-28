@@ -4,12 +4,14 @@ import { useItemMovements } from "../../../hook/data/movement/movement.list.hook
 import {
   itemMeta,
   itemMovementIcon,
-  itemMovementList,
-  itemMovementRow,
-  itemMovementText,
   itemName,
   historyQuantity,
 } from "../../../styles/inventory/inventory.styles";
+import {
+  detailPageList,
+  detailPageRow,
+  detailPageRowText,
+} from "../../../styles/view/detailPage.styles";
 import { formatDateTime, formatSignedQuantity } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
@@ -28,16 +30,16 @@ const ItemMovementList = ({ itemId }: IProps) => {
   if (!history.data?.length) return <EmptyState compact description="No stock movements yet." />;
 
   return (
-    <ul className={itemMovementList}>
+    <ul className={detailPageList}>
       {history.data.map((movement) => {
         const direction = movement.quantity > 0 ? "in" : "out";
 
         return (
-          <li key={movement.id} className={itemMovementRow}>
+          <li key={movement.id} className={detailPageRow}>
             <span className={itemMovementIcon({ direction })} aria-hidden>
               {direction === "in" ? <ArrowUpRight /> : <ArrowDownRight />}
             </span>
-            <span className={itemMovementText}>
+            <span className={detailPageRowText}>
               <span className={itemName}>{movementReasonLabels[movement.reason]}</span>
               <span className={itemMeta}>
                 {formatDateTime(movement.created_at)} · {movement.created_by_name}

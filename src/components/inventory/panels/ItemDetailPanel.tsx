@@ -3,20 +3,19 @@ import { usePermissions } from "../../../hook/data/account/account.permission.ho
 import { useInventoryItem } from "../../../hook/data/inventory/inventory.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
+import { priceText } from "../../../styles/inventory/inventory.styles";
 import {
-  itemDetailHeading,
-  itemDetailMeta,
-  itemDetailPage,
-  itemDetailSection,
-  itemDetailSectionTitle,
-  itemDetailSurface,
-  itemDetailTitle,
-  priceText,
-} from "../../../styles/inventory/inventory.styles";
+  detailPage,
+  detailPageHeading,
+  detailPageMeta,
+  detailPageSurface,
+  detailPageTitle,
+} from "../../../styles/view/detailPage.styles";
 import { formatDateTime, formatPeso } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import DetailPageSection from "../../common/view/DetailPageSection";
 import ItemStockCard from "../cards/ItemStockCard";
 import ItemMovementList from "../lists/ItemMovementList";
 import ItemManageActions from "../menus/ItemManageActions";
@@ -51,35 +50,32 @@ const ItemDetailPanel = () => {
   }
 
   return (
-    <div className={itemDetailPage}>
-      <div className={itemDetailHeading}>
-        <h1 className={itemDetailTitle}>{item.name}</h1>
-        <p className={itemDetailMeta}>
+    <div className={detailPage}>
+      <div className={detailPageHeading}>
+        <h1 className={detailPageTitle}>{item.name}</h1>
+        <p className={detailPageMeta}>
           {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
         </p>
       </div>
 
       <ItemStockCard item={item} />
 
-      <section className={itemDetailSection}>
-        <h2 className={itemDetailSectionTitle}>Details</h2>
-        <div className={itemDetailSurface}>
+      <DetailPageSection title="Details">
+        <div className={detailPageSurface}>
           <DetailRows record={item} items={detailItems} />
         </div>
-      </section>
+      </DetailPageSection>
 
       {viewMovements && (
-        <section className={itemDetailSection}>
-          <h2 className={itemDetailSectionTitle}>Recent movements</h2>
+        <DetailPageSection title="Recent movements">
           <ItemMovementList itemId={item.id} />
-        </section>
+        </DetailPageSection>
       )}
 
       {isOwner && (
-        <section className={itemDetailSection}>
-          <h2 className={itemDetailSectionTitle}>Manage</h2>
+        <DetailPageSection title="Manage">
           <ItemManageActions item={item} />
-        </section>
+        </DetailPageSection>
       )}
     </div>
   );

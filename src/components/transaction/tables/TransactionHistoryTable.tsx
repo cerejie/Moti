@@ -1,12 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import {
   transactionStatusLabels,
   type TransactionStatus,
 } from "../../../enums/transaction.enum";
 import { useFilters } from "../../../hook/common/filter.hook";
-import { useModal } from "../../../hook/common/modal.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useTransactionHistory } from "../../../hook/data/transaction/transaction.list.hook";
-import { transactionDetailModalKey } from "../../../keys/modal.keys";
 import { transactionHistoryTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
@@ -20,6 +19,7 @@ import {
 } from "../../../styles/inventory/inventory.styles";
 import { formatCount, formatDateTime, formatPeso } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
+import { transactionPath } from "../../../utils/route.utils";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
@@ -90,7 +90,7 @@ const TransactionHistoryTable = () => {
   const { filters, setFilters } = useFilters<{ status?: TransactionStatus }>(
     transactionHistoryTableKey,
   );
-  const { openModal } = useModal<ITransaction>(transactionDetailModalKey);
+  const navigate = useNavigate();
   const page = query.data;
 
   return (
@@ -118,7 +118,7 @@ const TransactionHistoryTable = () => {
         pagination={pagination}
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
-        onRowClick={(transaction) => openModal(transaction)}
+        onRowClick={(transaction) => void navigate(transactionPath(transaction.id))}
         emptyText="No transactions yet."
       />
     </TablePanel>

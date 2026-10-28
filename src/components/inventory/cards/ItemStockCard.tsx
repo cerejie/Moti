@@ -4,14 +4,16 @@ import { useStockMovementModal } from "../../../hook/data/movement/movement.form
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import {
   itemStockActions,
-  itemStockBody,
-  itemStockFigure,
-  itemStockHint,
-  itemStockLabel,
-  itemStockTop,
   onHandUnit,
   onHandValue,
 } from "../../../styles/inventory/inventory.styles";
+import {
+  detailHeroBody,
+  detailHeroFigure,
+  detailHeroHint,
+  detailHeroLabel,
+  detailHeroTop,
+} from "../../../styles/view/detailPage.styles";
 import { formatNumber } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
@@ -28,17 +30,17 @@ const ItemStockCard = ({ item }: IProps) => {
 
   return (
     <SectionCard>
-      <div className={itemStockBody}>
-        <div className={itemStockTop}>
-          <div className={itemStockFigure}>
-            <span className={itemStockLabel}>On hand</span>
+      <div className={detailHeroBody}>
+        <div className={detailHeroTop}>
+          <div className={detailHeroFigure}>
+            <span className={detailHeroLabel}>On hand</span>
             <span>
               <span className={onHandValue({ status: item.stock_status, size: "xl" })}>
                 {formatNumber(item.on_hand)}
               </span>
               <span className={onHandUnit}>{item.unit}</span>
             </span>
-            <span className={itemStockHint}>
+            <span className={detailHeroHint}>
               Low stock warning at {formatNumber(item.reorder_level)} {item.unit}
             </span>
           </div>

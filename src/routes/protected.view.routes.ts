@@ -40,6 +40,19 @@ export const protectedViewRoutes: IRoute[] = [
     lazy: { Component: async () => (await import("../pages/Transaction/TransactionView")).default },
   },
   {
+    key: "transactionDetail",
+    label: "Transaction",
+    path: ROUTES.transactionDetail,
+    isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
+    can: "viewTransactions",
+    loader: permissionLoader("viewTransactions", ROUTES.transaction),
+    lazy: {
+      Component: async () =>
+        (await import("../pages/TransactionDetail/TransactionDetailView")).default,
+    },
+  },
+  {
     key: "inventory",
     label: "Inventory",
     icon: Package,
