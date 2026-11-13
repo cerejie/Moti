@@ -29,24 +29,85 @@ SaaS build, which comes later.
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
 - [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
-      phase; next up: plan the flow redesign from the 2026-11-13 flow audit (below), then Phase 1
+      phase; flow redesign folded in 2026-11-13 (six phases); next up: Phase 1 (words, prices,
+      history)
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 
-Decided with the user on 2026-11-13. Built **before** V1.6 branches, on today's single stock; the
-analyzer and order list gain a branch filter when V1.6 lands. One phase per conversation; each ends
-with `yarn build` + `yarn lint` + a `visual-test` pass.
+Decided with the user on 2026-11-13 and refolded the same day from the flow audit (below). Built
+**before** V1.6 branches, on today's single stock; the analyzer and order list gain a branch filter
+when V1.6 lands. One phase per conversation; each ends with `yarn build` + `yarn lint` + a
+`visual-test` pass.
 
 Decisions (the user's answers):
 - **Analyzer first**, then branches.
-- **The Stock tab is the hub**: a `ContextSwitch` with **Reorder** (first) and **History** (today's
-  Stock history). Home gets an "Order next" card linking there. No sixth tab.
-- **Order list + Receive stock**: suggestions go into a saved order list that can be adjusted and
-  shared as text; a delivery is received in one multi-item save, like the sell cart.
-- **Quantities only**: no cost price, no suppliers (both stay in LATER).
+- **The Stock tab is the place to act**: three actions on top (**Receive delivery**, **Count
+  stock**, **Damaged or lost**), under them a `ContextSwitch` with **Reorder** (first) and
+  **History**. Home gets an "Order next" card linking there. No sixth tab.
+- **Stock history hides sales by default**: it opens on deliveries, counts and damage; a "Sales"
+  chip includes them and a sale row opens its sale page. The ledger itself does not change; the item
+  page keeps the full story, sales included.
+- **Stock count replaces "Correction ±"**: the owner types what is on the shelf, the app shows and
+  records the difference.
+- **Damaged or lost is one reason** with an optional note (no database change).
+- **Order list + Receive delivery**: suggestions go into a saved order list that can be adjusted
+  and shared as text; a delivery is received in one multi-item save, like the sell cart.
+- **Quantities only**: no cost price, no suppliers (both stay in LATER). **Selling price is hidden
+  everywhere, the item form included**; the column and its values stay. An item with no price sells.
+- **Employees see their own sales** (all dates, no void) and get **account notices only**.
+- **Unit is picked from a short list**: pc, set, box, pair, liter, meter; existing free text is
+  converted.
+- **Thresholds (pick 1A)**: period 30 days with a 7 / 30 / 90 switch, cover target 14 days, slow
+  stock 60 days without a sale.
+- **Home card (pick 2A)**: "Order next" above the recent list, top 5 items, linking to Stock · Reorder.
+
+### One vocabulary
+
+Labels only: routes, tables, columns and reason values keep their names.
+
+| Idea | The one name | Replaces |
+|---|---|---|
+| Selling | **Sell** (tab, sidebar, page title); switch **New sale / Sales history**; a record is a **Sale** | Transaction, New transaction, History |
+| The ledger | **Stock history**; one row is a **stock change** | Recent activity, Recent movements, Movement |
+| Stock coming in (`restock`) | **Delivery**; action **Receive delivery** | Restock, Add stock, Stock in |
+| Fixing the number (`correction`) | **Stock count**; action **Count stock** | Correction |
+| Stock written off (`damaged`) | **Damaged or lost** | Deduct, Damaged, Stock out |
+| What to buy | **Order list** (never used for a sale) | — |
+
+The Stock in / Stock out filter becomes reason chips: Deliveries, Counts, Damaged or lost, Sales.
+
+### Where everything lives
+
+| Thing | Phone | Desktop |
+|---|---|---|
+| Receive delivery, Count stock, Damaged or lost | Three labelled buttons at the top of the Stock tab, above the switch | Buttons at the right of the Stock page header |
+| Reorder / History | Switch under the actions, Reorder first | Same switch; History pages 20 rows |
+| History filters | Search + reason chips; person filter in the filter sheet | Same, inline in the toolbar |
+| Single-item shortcuts | Item page hero and Inventory row ⋯ menu: the same three actions, the same flow, that item already picked | Same |
+| Stock change page | Titled by the item, the reason as a badge | Same |
+| New sale / Sales history | Sell tab switch; an employee sees only their own sales | Same |
+| Order next card | Home, above the recent list; rows carry a labelled button | Home, in the empty right column |
+| Recent list on Home | "Recent stock changes", sales hidden, 5 rows, See all → Stock · History | Same |
+| Order list bar | Bottom of Reorder, like the cart bar | Same |
+| Masterfile | Under Inventory, with the round back button | Same |
+| Push prompt | Bell and Account only, off the top of Home | Same |
+
+### The four flows
+
+- **Sell** (unchanged): Sell → pick → cart → Complete → success sheet. Only the words change, the
+  price text goes and top sellers come first.
+- **Receive a delivery**: Stock → Receive delivery → pick items like the sell picker → a quantity
+  per item → review ("5 items, 62 pieces") → Save (all or none) → success. With an order list it
+  opens pre-filled; each quantity is confirmed or changed and what did not arrive stays open.
+- **Count stock**: Stock → Count stock → pick items or a whole category → type the shelf count
+  beside the app's count → review shows only the differences → Save. A matching item records
+  nothing. The app saves the **difference found** (counted − the on-hand the screen showed), never
+  the absolute number, so a count queued offline does not erase sales made before it syncs.
+- **Damaged or lost**: Stock → Damaged or lost (or the item page) → one item → quantity → optional
+  note → before → after preview → Save.
 
 Owner's restock loop: Home "Order next" → Stock · Reorder → Add to order list → Share to the
-supplier → delivery arrives → Receive stock (one save). Selling stays pick → cart → checkout.
+supplier → delivery arrives → Receive delivery (one save).
 
 How the analyzer decides (plain arithmetic, shown to the owner, never a black box):
 - Pace = units sold in the period ÷ days (voided sales excluded; a newer item uses its own age).
@@ -57,10 +118,23 @@ How the analyzer decides (plain arithmetic, shown to the owner, never a black bo
 - Slow stock = has stock, no sale in 60 days.
 - Too few sales → "Not enough sales yet", not a guess.
 
-Assumptions to confirm in Phase 1's plan: period 30 days (switch 7 / 30 / 90), cover target 14
-days, slow stock 60 days. Open question (from the audit): may an item with no price be sold?
+Audit findings by phase: Phase 1 = S1, S2, S6, S7, S8, F1, F2, F3, F6, F8, F9 · Phase 2 = F7 ·
+Phase 3 = S3, S4, S5, F10 · Phase 5 = F4, F5.
 
-### Phase 1: Analyzer, read-only
+### Phase 1: Words, prices, history (no migration)
+
+- [ ] Vocabulary: the table above in enum labels, navigation, page titles and the Sell switch.
+- [ ] Prices hidden: Sell rows, cart, totals on Sales history and the sale page, the item form and
+      Details, the Inventory subtitle.
+- [ ] Stock history: sales and voids hidden by default; search; reason chips replace Stock in /
+      Stock out; person filter; a sale row opens its sale page; desktop pages 20 rows.
+- [ ] Stock change page: titled by the item, the reason as a badge.
+- [ ] Home: "Recent activity" → "Recent stock changes" (sales hidden, 5 rows, See all → Stock ·
+      History); the Needs attention restock button gets a label.
+- [ ] Push prompt in the bell and Account only.
+- [ ] Masterfile uses the round back button; item page hero on-hand figure at its real size.
+
+### Phase 2: Analyzer, read-only
 
 - [ ] Migration 9: one owner-only RPC (per item: sold units, transaction count, pace, days left,
       suggested quantity, last sold, group), computed from `stock_movements`; no new table.
@@ -68,36 +142,47 @@ days, slow stock 60 days. Open question (from the audit): may an item with no pr
 - [ ] Stock tab: `ContextSwitch` Reorder | History in `ContentView` `tabs` (copy `TransactionTabSwitch`).
 - [ ] Reorder view: Order now, Running low soon, Fast movers, Slow stock; 7 / 30 / 90 switch;
       rows open the item page; the four data states.
-- [ ] Home: "Order next" card above Recent activity.
+- [ ] Home: "Order next" card above the recent list (desktop: the right column).
 - [ ] Item page: "Sales pace" section.
 
-### Phase 2: Order list
+### Phase 3: Receive delivery, Count stock, Damaged or lost
 
-- [ ] Migration 10: a saved order list (header + lines, FKs, RLS owner-only), one open list at a time.
+- [ ] Migration 10: a multi-item, all-or-none receive RPC (`restock` rows) and a stock count RPC
+      (lines of item, counted, on-hand seen; records the difference as `correction`, nothing when
+      they match); both take a `client_id` (offline replay safe) and go through `runWrite`.
+- [ ] Stock tab: the three action buttons (phone: top row; desktop: page header).
+- [ ] Receive delivery: picker → quantities → review → success screen.
+- [ ] Count stock: pick items or a category → shelf counts → review of differences → save.
+- [ ] Damaged or lost: today's Deduct dialog without the reason picker (`damaged`, optional note).
+- [ ] Item page hero and Inventory row ⋯ menu open the same three with the item picked; the old
+      Add stock / Deduct dialogs retire and the client stops sending `correction` by hand.
+
+### Phase 4: Order list
+
+- [ ] Migration 11: a saved order list (header + lines, FKs, RLS owner-only), one open list at a time.
 - [ ] Add from a Reorder row or "Add all suggestions"; adjust and remove on a pushed order-list page.
 - [ ] A bar on Reorder like the cart bar: "Order list · N items".
 - [ ] Share: plain text through the Web Share API, copy as the fallback.
+- [ ] Receive delivery opens pre-filled from the list; partial deliveries keep the rest open and
+      the list closes when fully received.
 
-### Phase 3: Receive stock
+### Phase 5: Employee and polish
 
-- [ ] RPC: multi-item, all-or-none restock with a `client_id` (offline replay safe), through `runWrite`.
-- [ ] Receive from the order list (confirm or change each quantity; partial deliveries keep the
-      rest open) and a free "Receive stock" picker for deliveries that had no list.
-- [ ] Success screen; the list closes when fully received.
+- [ ] Migration 12: employees read their own sales (RLS); `app.notify` stops sending "New item" to
+      employees; unit text converted to the list (show the user any value that does not map first).
+- [ ] Sales history for an employee: own sales, no void.
+- [ ] Item form: unit picked from pc, set, box, pair, liter, meter.
+- [ ] Sell picker: top sellers first by default (needs a sold count employees may read).
+- [ ] "Add to order list" from Home's Order next rows and the item page.
 
-### Phase 4: Flow polish
-
-- [ ] Sell picker: top sellers first by default.
-- [ ] "Add to order list" from Home's attention rows and the item page.
-
-### Phase 5: Motion and premium feel (no new library)
+### Phase 6: Motion and premium feel (no new library)
 
 - [ ] Motion tokens (durations, easings) in `theme.css`; everything honours reduced motion.
 - [ ] Pushed pages slide in and back (View Transitions); tab changes cross-fade.
 - [ ] Press feedback on buttons and rows; sliding `ContextSwitch` and tab bar indicators.
 - [ ] Sheets spring and follow the finger; skeletons cross-fade into content.
 - [ ] Stat cards and totals count to their value; the cart bar bumps on add.
-- [ ] Animated check on checkout and on Receive; a short vibration on Android.
+- [ ] Animated check on checkout, Receive and Count; a short vibration on Android.
 
 ## Flow audit (2026-11-13): stock movement and the whole flow
 
@@ -105,6 +190,9 @@ The user finds the flow confusing, **stock movement above all**. Audit only, not
 out of scope** (inventory only; prices step out of the picture). Next conversation (Fable 5.2):
 decide the flow redesign with the user, then fold it into V1.7's phases **before** V1.7 Phase 1 is
 built (Phase 1's open picks, thresholds 1A and Home card 2A, wait on this).
+
+**Decided 2026-11-13**: all six questions are answered and folded into V1.7 (above), which also
+lists the phase that fixes each finding.
 
 Sweep: owner + employee, phone 390 and desktop 1440, light, dev server `localhost:5173`, writes
 faked; 53 steps, 0 console errors. Script `flows.mjs` in that session's scratchpad (not in the repo).
@@ -156,6 +244,9 @@ its one-line explanation, the add-stock before → after preview, Deduct disable
 5. Hide prices everywhere for now (F2), or keep the optional price field but drop it from lists,
    cart and history?
 6. Employee: own sales history yes/no; which notices they get (F5).
+
+Answers (2026-11-13): 1 hidden by default, a Sales chip shows them · 2 yes · 3 yes · 4 the word
+list in V1.7 · 5 hidden everywhere, the item form included · 6 own sales yes, account notices only.
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -1021,15 +1112,22 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
   **per branch** (shared catalog, `branch_stock` count); owners and the developer scope with a
   header switcher, employees are assigned branches; existing data moves into a first branch
   **Main**; built whole-app in six phases.
+- 2026-11-13 (V1.7 flow redesign): **one vocabulary** — Sell / Sale / Sales history, Stock history,
+  Delivery, Stock count, Damaged or lost, Order list (labels only, database names unchanged).
+  **Stock history hides sales by default.** **Stock count replaces Correction** and saves the
+  difference found, not the absolute number. **Selling price is hidden everywhere, the item form
+  included** (replaces the 2026-09-24 display-only price; the column stays). **Employees see their
+  own sales and get account notices only.** **Unit is a short list**, not free text.
 
 ## Who sees what
 
 | Capability | Developer | Owner | Employee |
 |---|:-:|:-:|:-:|
 | Transaction: search, filter, cart, checkout | ✓ | ✓ | ✓ |
-| Transaction history, void | ✓ | ✓ | ✗ |
+| Sales history | ✓ | ✓ | own sales only (from V1.7 Phase 5) |
+| Void a sale | ✓ | ✓ | ✗ |
 | Inventory page | ✓ | ✓ | ✗ |
-| Add stock, deduct damaged/correction | ✓ | ✓ | ✗ |
+| Receive delivery, count stock, damaged or lost | ✓ | ✓ | ✗ |
 | Create, edit, archive items; Masterfile (categories, brands) | ✓ | ✓ | ✗ |
 | Dashboard, stock history, alerts bell, push | ✓ | ✓ | ✗ |
 | Manage accounts | owners + employees | employees | ✗ |
