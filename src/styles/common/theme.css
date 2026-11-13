@@ -341,8 +341,9 @@
   --text-page-title--line-height: 2rem;
   --text-money-lg: 1.75rem;
   --text-money-lg--line-height: 2.25rem;
-  --text-hero: 2rem;
-  --text-hero--line-height: 2.5rem;
+  /* Not "hero": text-hero would resolve to the --color-hero colour instead of a size. */
+  --text-display: 2rem;
+  --text-display--line-height: 2.5rem;
 
   --text-xs: 0.75rem;
   --text-xl: 1.25rem;

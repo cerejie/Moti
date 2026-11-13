@@ -1,4 +1,3 @@
-import PushPromptNotice from "../../components/account/cards/PushPromptNotice";
 import BentoCell from "../../components/common/view/BentoCell";
 import BentoGrid from "../../components/common/view/BentoGrid";
 import ContentView from "../../components/common/view/ContentView";
@@ -10,7 +9,6 @@ import { dashboardPanels } from "../../styles/dashboard/dashboard.styles";
 
 const DashboardView = () => (
   <ContentView title="Dashboard" subtitle="Stock levels at a glance" layout="bento">
-    <PushPromptNotice />
     <InventorySummaryCards />
 
     <BentoGrid className={dashboardPanels}>

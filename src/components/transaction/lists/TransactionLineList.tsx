@@ -1,16 +1,12 @@
 import { useTransactionLines } from "../../../hook/data/transaction/transaction.list.hook";
 import { itemMeta, itemName } from "../../../styles/inventory/inventory.styles";
-import {
-  lineAmount,
-  lineQuantity,
-  lineTotal,
-} from "../../../styles/transaction/transaction.styles";
+import { lineQuantity } from "../../../styles/transaction/transaction.styles";
 import {
   detailPageList,
   detailPageRow,
   detailPageRowText,
 } from "../../../styles/view/detailPage.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatNumber } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 
@@ -37,22 +33,10 @@ const TransactionLineList = ({ transactionId }: IProps) => {
           <li key={line.id} className={detailPageRow}>
             <span className={detailPageRowText}>
               <span className={itemName}>{line.item?.name ?? "Deleted item"}</span>
-              <span className={itemMeta}>
-                {[
-                  line.item?.item_code,
-                  line.unit_price === null ? null : `${formatPeso(line.unit_price)} each`,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </span>
+              <span className={itemMeta}>{line.item?.item_code ?? ""}</span>
             </span>
-            <span className={lineAmount}>
-              <span className={lineTotal}>
-                {line.unit_price === null ? "—" : formatPeso(line.unit_price * sold)}
-              </span>
-              <span className={lineQuantity}>
-                × {formatNumber(sold)} {line.item?.unit ?? ""}
-              </span>
+            <span className={lineQuantity}>
+              × {formatNumber(sold)} {line.item?.unit ?? ""}
             </span>
           </li>
         );

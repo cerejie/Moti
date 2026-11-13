@@ -35,8 +35,6 @@ export const cartRowTop = "flex items-start justify-between gap-3";
 
 export const cartRowBottom = "flex items-center justify-between gap-3";
 
-export const cartLineTotal = moneyLevel({ level: "supporting" });
-
 export const cartSummary = "flex items-center justify-between gap-3 rounded-xl bg-muted p-3";
 
 // The caption wraps under "Total"; the value on the right never breaks.
@@ -44,14 +42,12 @@ export const cartSummaryMeta = "text-xs text-muted-foreground";
 
 export const cartSummaryTotal = `shrink-0 ${moneyLevel({ level: "primary" })}`;
 
-export const cartSummaryNoPrice = "shrink-0 whitespace-nowrap text-muted-foreground";
-
 export const cartForm = "flex flex-col gap-4";
 
 // Success prompt: the totals under the message.
 export const receiptLine = "text-sm text-muted-foreground tabular-nums";
 
-// Transaction page: a voided total stays readable but is clearly no longer owed.
+// Sale page: a voided total stays readable but clearly no longer counts.
 export const transactionTotal = cva(moneyLevel({ level: "primary" }), {
   variants: {
     voided: {
@@ -62,9 +58,5 @@ export const transactionTotal = cva(moneyLevel({ level: "primary" }), {
   defaultVariants: { voided: false },
 });
 
-// Line total over its quantity, right-aligned like a receipt.
-export const lineAmount = "flex shrink-0 flex-col items-end gap-0.5";
-
-export const lineTotal = moneyLevel({ level: "supporting" });
-
-export const lineQuantity = "text-xs text-muted-foreground tabular-nums";
+// The quantity sold on a line, at the row's end like a receipt.
+export const lineQuantity = `shrink-0 ${moneyLevel({ level: "supporting" })}`;

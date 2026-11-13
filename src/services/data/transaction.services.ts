@@ -47,7 +47,7 @@ const transactionServices = {
     const { data, error } = await query.maybeSingle();
     if (error) throw toError(error);
     // RLS hides another shop's transaction exactly like a missing id.
-    if (!data) throw new Error("This transaction doesn't exist or was removed.");
+    if (!data) throw new Error("This sale doesn't exist or was removed.");
 
     return data as ITransaction;
   },
@@ -70,7 +70,7 @@ const transactionServices = {
     runWrite({
       kind: "rpc",
       fn: "record_transaction",
-      label: `Transaction of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
+      label: `Sale of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
       args: {
         p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
         p_note: note,
@@ -82,7 +82,7 @@ const transactionServices = {
     runWrite({
       kind: "rpc",
       fn: "void_transaction",
-      label: `Void transaction #${transaction.number}`,
+      label: `Void sale #${transaction.number}`,
       args: { p_transaction_id: transaction.id, p_reason: reason },
     }),
 };

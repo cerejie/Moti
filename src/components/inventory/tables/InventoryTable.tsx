@@ -19,10 +19,9 @@ import {
   mutedText,
   onHandUnit,
   onHandValue,
-  priceText,
 } from "../../../styles/inventory/inventory.styles";
 import { nowrapCell } from "../../../styles/table/table.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatNumber } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import { itemPath } from "../../../utils/route.utils";
 import FilterBar from "../../common/filter/FilterBar";
@@ -80,16 +79,6 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
     collapse: "xl",
     listHidden: true,
     render: (_, item) => <span className={mutedText}>{formatNumber(item.reorder_level)}</span>,
-  },
-  {
-    key: "price",
-    title: "Price",
-    listHidden: true,
-    render: (_, item) => (
-      <span className={priceText}>
-        {item.selling_price === null ? "—" : formatPeso(item.selling_price)}
-      </span>
-    ),
   },
   {
     key: "actions",

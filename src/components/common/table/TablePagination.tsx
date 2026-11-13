@@ -40,7 +40,7 @@ type IProps = {
   showSizeChanger?: boolean;
 };
 
-const pageSizes = [8, 16, 32, 64] as const;
+const pageSizes = [8, 16, 20, 32, 64] as const;
 
 // Wide screens only; compact loads more rows as the list scrolls instead.
 const TablePagination = ({

@@ -31,12 +31,12 @@ const TransactionDetailPanel = () => {
   const { voidTransaction } = usePermissions();
   const transaction = query.data;
 
-  if (query.isLoading) return <EmptyState loading description="Loading transaction…" />;
+  if (query.isLoading) return <EmptyState loading description="Loading sale…" />;
   if (!transaction) {
     return (
       <ErrorState
         error={query.error}
-        title="Transaction not found"
+        title="Sale not found"
         onRetry={() => void query.refetch()}
       />
     );
@@ -47,7 +47,7 @@ const TransactionDetailPanel = () => {
   return (
     <div className={detailPage}>
       <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>Transaction #{transaction.number}</h1>
+        <h1 className={detailPageTitle}>Sale #{transaction.number}</h1>
         <p className={detailPageMeta}>
           {formatDateTime(transaction.created_at)} · {transaction.created_by_name}
         </p>

@@ -7,7 +7,7 @@ import {
   detailHeroLabel,
   detailHeroTop,
 } from "../../../styles/view/detailPage.styles";
-import { formatCount, formatPeso } from "../../../utils/format.utils";
+import { formatCount } from "../../../utils/format.utils";
 import SectionCard from "../../common/card/SectionCard";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
 
@@ -20,14 +20,11 @@ const TransactionTotalCard = ({ transaction }: IProps) => (
     <div className={detailHeroBody}>
       <div className={detailHeroTop}>
         <div className={detailHeroFigure}>
-          <span className={detailHeroLabel}>Total</span>
+          <span className={detailHeroLabel}>Sold</span>
           <span className={transactionTotal({ voided: transaction.status === "voided" })}>
-            {transaction.total_amount === null ? "—" : formatPeso(transaction.total_amount)}
-          </span>
-          <span className={detailHeroHint}>
-            {formatCount(transaction.line_count, "item")} ·{" "}
             {formatCount(transaction.total_quantity, "pc")}
           </span>
+          <span className={detailHeroHint}>{formatCount(transaction.line_count, "item")}</span>
           {transaction.note && <span className={detailHeroHint}>{transaction.note}</span>}
         </div>
         <TransactionStatusBadge status={transaction.status} />

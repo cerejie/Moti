@@ -28,8 +28,8 @@ const RecentMovementsPanel = () => {
       return (
         <EmptyState
           icon={<History />}
-          title="No activity yet"
-          description="Sales and restocks show up here as they happen."
+          title="No stock changes yet"
+          description="Deliveries, counts and damage show up here as they happen."
         />
       );
     }
@@ -61,10 +61,10 @@ const RecentMovementsPanel = () => {
 
   return (
     <SectionCard
-      title="Recent activity"
+      title="Recent stock changes"
       extra={
         <AppButton href={ROUTES.movements} variant="link">
-          Full history
+          See all
         </AppButton>
       }
       loading={recent.isLoading}

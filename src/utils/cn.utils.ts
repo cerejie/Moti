@@ -9,7 +9,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      text: ["micro", "caption", "label", "body", "emphasis", "section", "page-title", "money-lg", "hero"],
+      text: ["micro", "caption", "label", "body", "emphasis", "section", "page-title", "money-lg", "display"],
       shadow: ["panel", "card", "menu", "overlay"],
       radius: ["control", "card", "surface", "sheet", "panel", "pill"],
     },

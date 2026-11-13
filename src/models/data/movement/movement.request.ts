@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   movementReasonSchema,
   movementTypeSchema,
-  type MovementType,
+  type MovementReason,
 } from "../../../enums/stock.enum";
 
 export const movementFormSchema = z.object({
@@ -17,5 +17,7 @@ export const movementFormSchema = z.object({
 export type IMovementFormInput = z.infer<typeof movementFormSchema>;
 
 export interface IMovementFilters {
-  type?: MovementType;
+  reasons: readonly MovementReason[];
+  personId?: string;
+  search: string;
 }

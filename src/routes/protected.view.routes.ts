@@ -16,7 +16,7 @@ export const menuGroup = "Menu";
 // The sidebar, the bottom tab bar and the app bar / header title all map over this array;
 // order here is the order they render in. `can` hides a route from roles without
 // that permission, and its loader turns a typed URL away the same way.
-// Every role can transact, so Transaction is where a refused URL lands.
+// Every role can sell, so Sell is where a refused URL lands.
 // Each screen is its own chunk, fetched during navigation alongside its loader.
 export const protectedViewRoutes: IRoute[] = [
   {
@@ -26,14 +26,13 @@ export const protectedViewRoutes: IRoute[] = [
     icon: LayoutDashboard,
     path: ROUTES.home,
     can: "viewDashboard",
-    // Employees land on Transaction instead.
+    // Employees land on Sell instead.
     loader: permissionLoader("viewDashboard", ROUTES.transaction),
     lazy: { Component: async () => (await import("../pages/Dashboard/DashboardView")).default },
   },
   {
     key: "transaction",
-    label: "Transaction",
-    shortLabel: "Sell",
+    label: "Sell",
     icon: ShoppingCart,
     path: ROUTES.transaction,
     can: "transact",
@@ -41,7 +40,7 @@ export const protectedViewRoutes: IRoute[] = [
   },
   {
     key: "transactionDetail",
-    label: "Transaction",
+    label: "Sale",
     path: ROUTES.transactionDetail,
     isNotNav: true,
     handle: { pushed: true } satisfies IRouteHandle,
@@ -66,6 +65,7 @@ export const protectedViewRoutes: IRoute[] = [
     label: "Masterfile",
     path: ROUTES.masterfile,
     isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
     can: "manageInventory",
     loader: permissionLoader("manageInventory", ROUTES.transaction),
     lazy: { Component: async () => (await import("../pages/Masterfile/MasterfileView")).default },
@@ -92,7 +92,7 @@ export const protectedViewRoutes: IRoute[] = [
   },
   {
     key: "movementDetail",
-    label: "Movement",
+    label: "Stock change",
     path: ROUTES.movementDetail,
     isNotNav: true,
     handle: { pushed: true } satisfies IRouteHandle,

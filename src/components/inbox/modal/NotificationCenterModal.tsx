@@ -49,7 +49,7 @@ const NotificationCenterModal = () => {
               <h3 className={inboxSectionTitle}>Stock alerts</h3>
               {hasAlerts && (
                 <AppButton variant="ghost" size="sm" onPress={goToDashboard}>
-                  Restock
+                  Add stock
                 </AppButton>
               )}
             </div>

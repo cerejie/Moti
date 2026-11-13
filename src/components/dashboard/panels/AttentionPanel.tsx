@@ -3,6 +3,7 @@ import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook
 import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
 import { ROUTES } from "../../../routes/route.paths";
 import {
+  attentionAction,
   dashboardList,
   dashboardRow,
   dashboardRowEnd,
@@ -14,7 +15,6 @@ import {
   onHandUnit,
   onHandValue,
 } from "../../../styles/inventory/inventory.styles";
-import { rowLinkRaised } from "../../../styles/view/rowLink.styles";
 import { formatNumber } from "../../../utils/format.utils";
 import { itemPath } from "../../../utils/route.utils";
 import AppButton from "../../common/button/AppButton";
@@ -24,7 +24,7 @@ import RowLink from "../../common/view/RowLink";
 
 const visibleRows = 6;
 
-// Out-of-stock and low items: a row opens the item, its button restocks in one tap.
+// Out-of-stock and low items: a row opens the item, its button adds stock in one tap.
 const AttentionPanel = () => {
   const alerts = useStockAlerts();
   const stockModal = useStockMovementModal();
@@ -54,13 +54,13 @@ const AttentionPanel = () => {
                 <span className={onHandUnit}>{item.unit}</span>
               </span>
               <AppButton
-                size="icon"
                 variant="outline"
-                className={rowLinkRaised}
+                className={attentionAction}
                 aria-label={`Add stock to ${item.name}`}
                 onPress={() => stockModal.openModal({ item, action: "stock_in" })}
               >
-                <PackagePlus />
+                <PackagePlus data-icon="inline-start" aria-hidden />
+                Add stock
               </AppButton>
             </span>
           </li>
@@ -72,7 +72,7 @@ const AttentionPanel = () => {
   return (
     <SectionCard
       title="Needs attention"
-      subtitle={count > 0 ? `${count} item${count === 1 ? "" : "s"} to restock` : undefined}
+      subtitle={count > 0 ? `${count} item${count === 1 ? "" : "s"} low or out` : undefined}
       extra={
         count > visibleRows && (
           <AppButton href={ROUTES.inventory} variant="link">

@@ -21,14 +21,14 @@ const VoidTransactionModal = () => {
     <EntityFormModal
       open={open}
       onOpenChange={onOpenChange}
-      title={transaction ? `Void transaction #${transaction.number}` : "Void transaction"}
-      description="Every item goes back into stock. The transaction stays in history, marked voided."
+      title={transaction ? `Void sale #${transaction.number}` : "Void sale"}
+      description="Every item goes back into stock. The sale stays in history, marked voided."
       size="sm"
       form={form}
       fields={fields}
       onSubmit={onSubmit}
       submitting={mutation.isPending}
-      submitLabel="Void transaction"
+      submitLabel="Void sale"
       submitKind="danger"
       error={mutation.error?.message}
     />

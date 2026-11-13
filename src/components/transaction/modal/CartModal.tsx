@@ -2,26 +2,19 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCheckoutForm } from "../../../hook/data/transaction/transaction.form.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
 import type { ICheckoutFormInput } from "../../../models/data/transaction/transaction.request";
-import {
-  itemIdentity,
-  itemMeta,
-  itemName,
-  mutedText,
-} from "../../../styles/inventory/inventory.styles";
+import { itemIdentity, itemMeta, itemName } from "../../../styles/inventory/inventory.styles";
 import {
   cartForm,
-  cartLineTotal,
   cartList,
   cartRow,
   cartRowBottom,
   cartRowTop,
   cartSummary,
   cartSummaryMeta,
-  cartSummaryNoPrice,
   cartSummaryTotal,
   quantityStepper,
 } from "../../../styles/transaction/transaction.styles";
-import { formatCount, formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatNumber } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import FormField from "../../common/form/FormField";
 import FormRoot from "../../common/form/FormRoot";
@@ -48,8 +41,8 @@ const CartModal = () => {
     <AppModal
       open={open}
       onOpenChange={onOpenChange}
-      title="Review transaction"
-      description="Check the items and quantities, then complete the transaction."
+      title="Review sale"
+      description="Check the items and quantities, then complete the sale."
       size="md"
       footer={
         <>
@@ -66,7 +59,7 @@ const CartModal = () => {
             loading={mutation.isPending}
             disabled={empty}
           >
-            Complete transaction
+            Complete sale
           </AppButton>
         </>
       }
@@ -118,11 +111,6 @@ const CartModal = () => {
                       <Plus />
                     </AppButton>
                   </div>
-                  <span className={item.selling_price === null ? mutedText : cartLineTotal}>
-                    {item.selling_price === null
-                      ? "No price"
-                      : formatPeso(item.selling_price * quantity)}
-                  </span>
                 </div>
               </li>
             ))}
@@ -133,14 +121,9 @@ const CartModal = () => {
           <div className={cartSummary}>
             <span className={itemIdentity}>
               <span className={itemName}>Total</span>
-              <span className={cartSummaryMeta}>
-                {formatCount(cart.totalQuantity, "pc")}
-                {cart.hasUnpriced ? " · items without a price not counted" : ""}
-              </span>
+              <span className={cartSummaryMeta}>{formatCount(cart.itemCount, "item")}</span>
             </span>
-            <span className={cart.totalAmount === null ? cartSummaryNoPrice : cartSummaryTotal}>
-              {cart.totalAmount === null ? "No prices set" : formatPeso(cart.totalAmount)}
-            </span>
+            <span className={cartSummaryTotal}>{formatCount(cart.totalQuantity, "pc")}</span>
           </div>
         )}
 

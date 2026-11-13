@@ -12,11 +12,10 @@ import {
   mutedText,
   onHandUnit,
   onHandValue,
-  priceText,
   stockStatusText,
 } from "../../../styles/inventory/inventory.styles";
 import { nowrapCell } from "../../../styles/table/table.styles";
-import { formatNumber, formatPeso } from "../../../utils/format.utils";
+import { formatNumber } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
@@ -68,18 +67,6 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
     title: "Status",
     listHidden: true,
     render: (_, item) => <StockStatusBadge status={item.stock_status} />,
-  },
-  {
-    key: "price",
-    title: "Price",
-    mobile: "subtitle",
-    render: (_, item) => (
-      <span className={priceText}>
-        {item.selling_price === null ? "—" : formatPeso(item.selling_price)}
-      </span>
-    ),
-    listRender: (item) =>
-      item.selling_price === null ? "No price set" : formatPeso(item.selling_price),
   },
   {
     key: "actions",

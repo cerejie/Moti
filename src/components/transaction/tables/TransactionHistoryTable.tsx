@@ -15,9 +15,8 @@ import {
   itemMeta,
   itemName,
   mutedText,
-  priceText,
 } from "../../../styles/inventory/inventory.styles";
-import { formatCount, formatDateTime, formatPeso } from "../../../utils/format.utils";
+import { formatCount, formatDateTime } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import { transactionPath } from "../../../utils/route.utils";
 import DataTable from "../../common/table/DataTable";
@@ -28,7 +27,7 @@ import TransactionStatusBadge from "../status/TransactionStatusBadge";
 const columns: IDataTableColumn<ITransaction>[] = [
   {
     key: "number",
-    title: "Transaction",
+    title: "Sale",
     render: (_, transaction) => (
       <span className={itemIdentity}>
         <span className={itemName}>#{transaction.number}</span>
@@ -47,24 +46,14 @@ const columns: IDataTableColumn<ITransaction>[] = [
   {
     key: "items",
     title: "Items",
-    listHidden: true,
+    mobile: "amount",
     render: (_, transaction) => (
       <span className={mutedText}>
         {formatCount(transaction.line_count, "item")} ·{" "}
         {formatCount(transaction.total_quantity, "pc")}
       </span>
     ),
-  },
-  {
-    key: "total",
-    title: "Total",
-    align: "right",
-    mobile: "amount",
-    render: (_, transaction) => (
-      <span className={priceText}>
-        {transaction.total_amount === null ? "—" : formatPeso(transaction.total_amount)}
-      </span>
-    ),
+    listRender: (transaction) => formatCount(transaction.total_quantity, "pc"),
   },
   {
     key: "status",
@@ -97,7 +86,7 @@ const TransactionHistoryTable = () => {
     <TablePanel
       toolbar={
         <ContextSwitch
-          label="Transaction status"
+          label="Sale status"
           value={filters.status ?? allStatuses}
           options={statusOptions}
           onChange={(next) =>
@@ -107,7 +96,7 @@ const TransactionHistoryTable = () => {
       }
     >
       <DataTable<ITransaction>
-        label="Transactions"
+        label="Sales"
         columns={columns}
         data={page?.data ?? []}
         loading={query.isLoading}
@@ -119,7 +108,7 @@ const TransactionHistoryTable = () => {
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
         onRowClick={(transaction) => void navigate(transactionPath(transaction.id))}
-        emptyText="No transactions yet."
+        emptyText="No sales yet."
       />
     </TablePanel>
   );

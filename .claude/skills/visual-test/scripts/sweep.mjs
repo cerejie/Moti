@@ -85,7 +85,7 @@ async function openCart(page) {
 }
 
 async function openTransaction(page) {
-  await page.locator(PAGE_TABS).filter({ hasText: /^History$/ }).click();
+  await page.locator(PAGE_TABS).filter({ hasText: /^Sales history$/ }).click();
   // Phone draws cards, wider screens a table; wait for whichever arrives instead of guessing early.
   const card = page.locator("main button").filter({ hasText: /^#\d+/ }).first();
   const row = page.locator("main [role=row]").nth(1);

@@ -29,7 +29,7 @@ const ItemMovementList = ({ itemId }: IProps) => {
   if (history.isError) {
     return <ErrorState compact error={history.error} onRetry={() => void history.refetch()} />;
   }
-  if (!history.data?.length) return <EmptyState compact description="No stock movements yet." />;
+  if (!history.data?.length) return <EmptyState compact description="No stock changes yet." />;
 
   return (
     <ul className={detailPageList}>

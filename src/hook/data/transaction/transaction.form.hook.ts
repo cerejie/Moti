@@ -10,7 +10,6 @@ import {
 import {
   checkoutFormSchema,
   voidFormSchema,
-  type ICartLine,
   type ICheckoutFormInput,
   type IVoidFormInput,
 } from "../../../models/data/transaction/transaction.request";
@@ -24,16 +23,8 @@ import { useAppMutation } from "../../common/mutation.hook";
 export interface ICheckoutReceipt {
   itemCount: number;
   totalQuantity: number;
-  totalAmount: number | null;
   queued: boolean;
 }
-
-// Display only: the priced lines add up; null when no line has a price.
-const totalAmountOf = (lines: readonly ICartLine[]): number | null => {
-  const priced = lines.filter((line) => line.item.selling_price !== null);
-  if (priced.length === 0) return null;
-  return priced.reduce((sum, line) => sum + (line.item.selling_price ?? 0) * line.quantity, 0);
-};
 
 export const useCart = () => {
   const lines = useCartStore(selectCartLines);
@@ -46,8 +37,6 @@ export const useCart = () => {
     lines,
     itemCount: lines.length,
     totalQuantity: lines.reduce((sum, line) => sum + line.quantity, 0),
-    totalAmount: totalAmountOf(lines),
-    hasUnpriced: lines.some((line) => line.item.selling_price === null),
     add,
     setQuantity,
     remove,
@@ -79,7 +68,6 @@ export const useCheckoutForm = () => {
         const receipt: ICheckoutReceipt = {
           itemCount: cart.itemCount,
           totalQuantity: cart.totalQuantity,
-          totalAmount: cart.totalAmount,
           queued: result.queued,
         };
         cart.clear();
@@ -123,11 +111,11 @@ export const useVoidForm = () => {
     (values: IVoidFormInput) =>
       transaction
         ? transactionServices.void(transaction, values.reason)
-        : Promise.reject(new Error("No transaction selected")),
+        : Promise.reject(new Error("No sale selected")),
     {
       silentError: true,
       invalidate: stockQueryKeys,
-      successMessage: "Transaction voided. Stock is back on the shelf.",
+      successMessage: "Sale voided. Stock is back on the shelf.",
       onSuccess: closeModal,
     },
   );

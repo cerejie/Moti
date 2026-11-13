@@ -43,11 +43,11 @@ const ItemFormModal = () => {
     },
     {
       key: "stock",
-      title: "Stock and price",
+      title: "Stock",
       description: "You get a low-stock alert when on-hand drops to this quantity.",
+      // The selling price has no field while prices are hidden; an edit carries the saved one through.
       fields: [
         { name: "reorder_level", label: "Warning low stock quantity", type: "number", required: true },
-        { name: "selling_price", label: "Selling price", type: "amount", placeholder: "Optional" },
         {
           name: "opening_stock",
           label: "Opening stock",

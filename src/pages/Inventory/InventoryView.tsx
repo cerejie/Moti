@@ -7,7 +7,7 @@ import InventoryTable from "../../components/inventory/tables/InventoryTable";
 const InventoryView = () => (
   <ContentView
     title="Inventory"
-    subtitle="Every part on the shelf, its stock and its price"
+    subtitle="Every part on the shelf and its stock"
     actions={<InventoryHeaderActions />}
   >
     <InventoryTable />

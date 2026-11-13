@@ -1,33 +1,35 @@
 import { useMemo } from "react";
-import type { IPaginationRequest } from "../../models/common/pagination.model";
+import {
+  IPaginationFormValue,
+  type IPaginationRequest,
+} from "../../models/common/pagination.model";
 import {
   selectPagination,
   usePaginationStore,
 } from "../../store/common/pagination.store";
 
-// `defaults` override the store's page size until the key has been written,
-// e.g. a table fixed at ten rows.
+const basePagination = new IPaginationFormValue();
+
+// `defaults` sit under whatever the key has stored, e.g. a table that pages twenty rows.
+// Every caller of the same key passes the same defaults.
 export const usePagination = (
   key: string,
   defaults?: Partial<IPaginationRequest>,
 ) => {
   const stored = usePaginationStore(selectPagination(key));
-  const hasEntry = usePaginationStore((state) => key in state.pagination);
   const setPaginationAt = usePaginationStore((state) => state.setPagination);
   const resetPaginationAt = usePaginationStore((state) => state.resetPagination);
 
   return useMemo(() => {
-    const pagination = hasEntry ? stored : { ...stored, ...defaults };
+    const pagination: IPaginationRequest = { ...basePagination, ...defaults, ...stored };
 
     return {
       pagination,
-      // The whole value is written so the first step keeps the defaults.
-      setPagination: (patch: Partial<IPaginationRequest>) =>
-        setPaginationAt(key, { ...pagination, ...patch }),
+      setPagination: (patch: Partial<IPaginationRequest>) => setPaginationAt(key, patch),
       goToPage: (pageNumber: number, pageSize: number) =>
         setPaginationAt(key, { pageNumber, pageSize }),
       resetPagination: () => resetPaginationAt(key),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- defaults is a literal at the call site
-  }, [stored, hasEntry, key, setPaginationAt, resetPaginationAt]);
+  }, [stored, key, setPaginationAt, resetPaginationAt]);
 };

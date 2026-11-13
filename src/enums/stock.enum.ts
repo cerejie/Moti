@@ -32,11 +32,6 @@ export const movementTypeValues = ["stock_in", "stock_out"] as const;
 export const movementTypeSchema = z.enum(movementTypeValues);
 export type MovementType = z.infer<typeof movementTypeSchema>;
 
-export const movementTypeLabels: Record<MovementType, string> = {
-  stock_in: "Stock in",
-  stock_out: "Stock out",
-};
-
 export const movementReasonValues = [
   "sale",
   "void",
@@ -51,10 +46,10 @@ export type MovementReason = z.infer<typeof movementReasonSchema>;
 export const movementReasonLabels: Record<MovementReason, string> = {
   sale: "Sale",
   void: "Voided sale",
-  restock: "Restock",
+  restock: "Delivery",
   opening_balance: "Opening stock",
-  damaged: "Damaged",
-  correction: "Correction",
+  damaged: "Damaged or lost",
+  correction: "Stock count",
 };
 
 export const movementReasonTones: Record<MovementReason, Tone> = {
@@ -64,6 +59,26 @@ export const movementReasonTones: Record<MovementReason, Tone> = {
   opening_balance: "info",
   damaged: "danger",
   correction: "neutral",
+};
+
+// Stock history's chips. Sales already have their own history, so the list opens without them.
+export const movementViewValues = ["changes", "deliveries", "counts", "damaged", "sales"] as const;
+export type MovementView = (typeof movementViewValues)[number];
+
+export const movementViewLabels: Record<MovementView, string> = {
+  changes: "Stock changes",
+  deliveries: "Deliveries",
+  counts: "Counts",
+  damaged: "Damaged or lost",
+  sales: "Sales",
+};
+
+export const movementViewReasons: Record<MovementView, readonly MovementReason[]> = {
+  changes: ["restock", "opening_balance", "damaged", "correction"],
+  deliveries: ["restock"],
+  counts: ["correction"],
+  damaged: ["damaged"],
+  sales: ["sale", "void"],
 };
 
 // The owner's manual adjustments. Sales and voids come only from transactions,

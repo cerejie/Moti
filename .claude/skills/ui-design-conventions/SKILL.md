@@ -33,7 +33,7 @@ Also load the official **`shadcn`** skill for any UI work, and run
   Moti extras (`--success`, `--warning`, …), the type scale, and the safe-area utilities
   (`pt-safe`, `pb-safe`, `px-safe`, `p-safe-*`, `h-dvh-safe`).
 - **Type, shadow and radius are TARTAR's names.** Text: the semantic sizes (`text-caption`,
-  `text-label`, `text-body`, `text-emphasis`, `text-section`, `text-page-title`, `text-hero`) or
+  `text-label`, `text-body`, `text-emphasis`, `text-section`, `text-page-title`, `text-display`) or
   Tailwind's stock `text-xs` / `text-sm` / `text-lg`; there is no `text-md`. Shadows:
   `shadow-card` / `shadow-panel` / `shadow-menu` / `shadow-overlay`. New shadow or radius names
   are also registered in `utils/cn.utils.ts` so `cn()` merges them.

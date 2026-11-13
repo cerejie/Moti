@@ -13,6 +13,6 @@ export const transactionStatusTones: Record<TransactionStatus, Tone> = {
   voided: "neutral",
 };
 
-// The Transaction page's tabs; History is the owner's.
+// The Sell page's tabs; Sales history is the owner's.
 export const transactionTabValues = ["new", "history"] as const;
 export type TransactionTab = (typeof transactionTabValues)[number];

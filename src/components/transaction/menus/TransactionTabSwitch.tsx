@@ -6,11 +6,11 @@ import type { ISegmentOption } from "../../../models/common/segment.model";
 import ContextSwitch from "../../common/view/ContextSwitch";
 
 const tabOptions: ISegmentOption<TransactionTab>[] = [
-  { key: "new", label: "New transaction" },
-  { key: "history", label: "History" },
+  { key: "new", label: "New sale" },
+  { key: "history", label: "Sales history" },
 ];
 
-// Only people who can see past transactions get the switch; everyone else just sells.
+// Only people who can see past sales get the switch; everyone else just sells.
 const TransactionTabSwitch = () => {
   const { viewTransactions } = usePermissions();
   const { filters, setFilters } = useFilters<{ tab?: TransactionTab }>(transactionTabKey);
@@ -19,7 +19,7 @@ const TransactionTabSwitch = () => {
 
   return (
     <ContextSwitch
-      label="Transaction"
+      label="Sell"
       value={filters.tab ?? "new"}
       options={tabOptions}
       onChange={(next) => setFilters({ tab: next })}

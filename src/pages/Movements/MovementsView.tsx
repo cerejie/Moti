@@ -2,7 +2,7 @@ import ContentView from "../../components/common/view/ContentView";
 import MovementTable from "../../components/movement/tables/MovementTable";
 
 const MovementsView = () => (
-  <ContentView title="Stock history" subtitle="Every sale, restock and correction, newest first">
+  <ContentView title="Stock history" subtitle="Deliveries, counts and damage, newest first">
     <MovementTable />
   </ContentView>
 );

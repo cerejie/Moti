@@ -6,7 +6,7 @@ import TransactionPanel from "../../components/transaction/panels/TransactionPan
 
 const TransactionView = () => (
   <ContentView
-    title="Transaction"
+    title="Sell"
     subtitle="Find the items, add them, then check out"
     tabs={<TransactionTabSwitch />}
   >

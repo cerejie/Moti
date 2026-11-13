@@ -29,8 +29,8 @@ SaaS build, which comes later.
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
 - [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
-      phase; flow redesign folded in 2026-11-13 (six phases); next up: Phase 1 (words, prices,
-      history)
+      phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
+      next up: Phase 2 (analyzer, read-only)
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 
@@ -121,18 +121,35 @@ How the analyzer decides (plain arithmetic, shown to the owner, never a black bo
 Audit findings by phase: Phase 1 = S1, S2, S6, S7, S8, F1, F2, F3, F6, F8, F9 · Phase 2 = F7 ·
 Phase 3 = S3, S4, S5, F10 · Phase 5 = F4, F5.
 
-### Phase 1: Words, prices, history (no migration)
+### Phase 1: Words, prices, history (no migration) — done 2026-11-13 (v1.51)
 
-- [ ] Vocabulary: the table above in enum labels, navigation, page titles and the Sell switch.
-- [ ] Prices hidden: Sell rows, cart, totals on Sales history and the sale page, the item form and
+- [x] Vocabulary: the table above in enum labels, navigation, page titles and the Sell switch.
+- [x] Prices hidden: Sell rows, cart, totals on Sales history and the sale page, the item form and
       Details, the Inventory subtitle.
-- [ ] Stock history: sales and voids hidden by default; search; reason chips replace Stock in /
+- [x] Stock history: sales and voids hidden by default; search; reason chips replace Stock in /
       Stock out; person filter; a sale row opens its sale page; desktop pages 20 rows.
-- [ ] Stock change page: titled by the item, the reason as a badge.
-- [ ] Home: "Recent activity" → "Recent stock changes" (sales hidden, 5 rows, See all → Stock ·
+- [x] Stock change page: titled by the item, the reason as a badge.
+- [x] Home: "Recent activity" → "Recent stock changes" (sales hidden, 5 rows, See all → Stock ·
       History); the Needs attention restock button gets a label.
-- [ ] Push prompt in the bell and Account only.
-- [ ] Masterfile uses the round back button; item page hero on-hand figure at its real size.
+- [x] Push prompt in the bell and Account only.
+- [x] Masterfile uses the round back button; item page hero on-hand figure at its real size.
+
+Notes (2026-11-13):
+- Chips: Stock changes (default: deliveries, opening stock, damage, counts) · Deliveries · Counts ·
+  Damaged or lost · Sales (sales and voids). Search matches the item's name or code (inner join on
+  `inventory_items`); Person filters `created_by` from the Team list. A sale or void row opens
+  its sale page; others open the stock change page.
+- Add stock / Deduct keep their names and reason picker until Phase 3 retires them; only the
+  reason labels changed (Delivery, Stock count, Damaged or lost). Home's button reads "Add stock".
+- The sale page hero shows pieces sold, not a total. Prices stay in the database; the item form
+  carries a saved price through an edit untouched.
+- Pagination store keeps only what was written per key; `usePagination(key, defaults)` layers
+  the table's defaults under it, so a filter's page reset no longer drops a 20-row page size.
+  Every caller of one key passes the same defaults. 20 added to the page-size picker.
+- F1 fixed by renaming the type token `--text-hero` → `--text-display` (`text-hero` resolved to
+  the `--color-hero` colour); registered in `cn.utils`.
+- Masterfile is a pushed route now: phone drops the app bar and tab bar and shows the round back.
+- Database-written notification text (e.g. "New item") is unchanged; Phase 5 handles it.
 
 ### Phase 2: Analyzer, read-only
 

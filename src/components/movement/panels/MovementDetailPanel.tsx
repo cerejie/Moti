@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import { movementReasonLabels } from "../../../enums/stock.enum";
 import { useMovement } from "../../../hook/data/movement/movement.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
@@ -18,8 +17,8 @@ import DetailPageSection from "../../common/view/DetailPageSection";
 import MovementQuantityCard from "../cards/MovementQuantityCard";
 import MovementLinkList from "../lists/MovementLinkList";
 
+// The item code already sits under the title, so it is not repeated here.
 const detailItems: IDetailItem<IStockMovement>[] = [
-  { key: "code", label: "Item code", render: (movement) => movement.item?.item_code ?? "—" },
   { key: "by", label: "By", render: (movement) => movement.created_by_name },
   { key: "date", label: "When", render: (movement) => formatDateTime(movement.created_at) },
   {
@@ -36,18 +35,22 @@ const MovementDetailPanel = () => {
   const query = useMovement(movementId);
   const movement = query.data;
 
-  if (query.isLoading) return <EmptyState loading description="Loading movement…" />;
+  if (query.isLoading) return <EmptyState loading description="Loading stock change…" />;
   if (!movement) {
     return (
-      <ErrorState error={query.error} title="Movement not found" onRetry={() => void query.refetch()} />
+      <ErrorState
+        error={query.error}
+        title="Stock change not found"
+        onRetry={() => void query.refetch()}
+      />
     );
   }
 
   return (
     <div className={detailPage}>
       <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>{movementReasonLabels[movement.reason]}</h1>
-        <p className={detailPageMeta}>{movement.item?.name ?? "Deleted item"}</p>
+        <h1 className={detailPageTitle}>{movement.item?.name ?? "Deleted item"}</h1>
+        {movement.item && <p className={detailPageMeta}>{movement.item.item_code}</p>}
       </div>
 
       <MovementQuantityCard movement={movement} />

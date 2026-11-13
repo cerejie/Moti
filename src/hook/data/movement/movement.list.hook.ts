@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { MovementType } from "../../../enums/stock.enum";
+import { movementViewReasons, type MovementView } from "../../../enums/stock.enum";
 import { itemMovementsKey, movementListKey } from "../../../keys/query.keys";
 import { movementTableKey } from "../../../keys/table.keys";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
@@ -7,23 +7,51 @@ import movementServices from "../../../services/data/movement.services";
 import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
+import { useDebouncedSearch } from "../../common/search.hook";
 
 type IMovementFilterValues = {
-  type?: MovementType;
+  view?: MovementView;
+  personId?: string;
 };
 
-const recentLimit = 8;
+const recentLimit = 5;
+
+// A ledger is read in long runs, so Stock history pages wider than the other tables.
+export const movementPageDefaults = { pageSize: 20 } as const;
 
 export const useMovementList = () => {
-  const { filters } = useFilters<IMovementFilterValues>(movementTableKey);
-  const { pagination } = usePagination(movementTableKey);
-  const type = filters.type;
+  const { filters, setFilters } = useFilters<IMovementFilterValues>(movementTableKey);
+  const search = useDebouncedSearch(movementTableKey, movementTableKey);
+  const { pagination } = usePagination(movementTableKey, movementPageDefaults);
 
-  return useQuery({
-    queryKey: [movementListKey, type, pagination.pageNumber, pagination.pageSize],
-    queryFn: ({ signal }) => movementServices.getList({ type }, pagination, signal),
+  const view = filters.view ?? "changes";
+  const personId = filters.personId;
+
+  const query = useQuery({
+    queryKey: [
+      movementListKey,
+      view,
+      personId,
+      search,
+      pagination.pageNumber,
+      pagination.pageSize,
+    ],
+    queryFn: ({ signal }) =>
+      movementServices.getList(
+        { reasons: movementViewReasons[view], personId, search },
+        pagination,
+        signal,
+      ),
     placeholderData: keepPreviousData,
   });
+
+  return {
+    query,
+    view,
+    setView: (next: MovementView) => setFilters({ view: next }),
+    // A search or a person narrowed the list, so an empty result is "no match", not "none yet".
+    narrowed: search !== "" || Boolean(personId),
+  };
 };
 
 export const useRecentMovements = (enabled = true) =>

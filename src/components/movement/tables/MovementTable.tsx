@@ -2,12 +2,16 @@ import { useNavigate } from "react-router-dom";
 import {
   movementReasonLabels,
   movementReasonTones,
-  movementTypeLabels,
-  type MovementType,
+  movementViewLabels,
+  movementViewValues,
+  type MovementView,
 } from "../../../enums/stock.enum";
-import { useFilters } from "../../../hook/common/filter.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
-import { useMovementList } from "../../../hook/data/movement/movement.list.hook";
+import {
+  movementPageDefaults,
+  useMovementList,
+} from "../../../hook/data/movement/movement.list.hook";
+import { useUserOptions } from "../../../hook/data/user/user.list.hook";
 import { movementTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
@@ -22,7 +26,9 @@ import {
 import { movementByCell, movementNote } from "../../../styles/movement/movement.styles";
 import { formatDateTime, formatNumber, formatSignedQuantity } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
-import { movementPath } from "../../../utils/route.utils";
+import { movementPath, transactionPath } from "../../../utils/route.utils";
+import FilterBar from "../../common/filter/FilterBar";
+import FilterToolbar from "../../common/filter/FilterToolbar";
 import StatusBadge from "../../common/status/StatusBadge";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
@@ -101,36 +107,60 @@ const columns: IDataTableColumn<IStockMovement>[] = [
   },
 ];
 
-const allTypes = "all";
+const viewOptions: ISegmentOption<MovementView>[] = movementViewValues.map((key) => ({
+  key,
+  label: movementViewLabels[key],
+}));
 
-type ITypeChoice = MovementType | typeof allTypes;
+const emptyTextByView: Record<MovementView, string> = {
+  changes: "No stock changes yet.",
+  deliveries: "No deliveries yet.",
+  counts: "No stock counts yet.",
+  damaged: "Nothing damaged or lost.",
+  sales: "No sales yet.",
+};
 
-const typeOptions: ISegmentOption<ITypeChoice>[] = [
-  { key: allTypes, label: "All" },
-  { key: "stock_in", label: movementTypeLabels.stock_in },
-  { key: "stock_out", label: movementTypeLabels.stock_out },
-];
+// A sale's own page tells the whole story, so its rows open that instead of the single line.
+const pathOf = (movement: IStockMovement) =>
+  movement.transaction_id ? transactionPath(movement.transaction_id) : movementPath(movement.id);
 
 const MovementTable = () => {
-  const query = useMovementList();
+  const { query, view, setView, narrowed } = useMovementList();
   const navigate = useNavigate();
-  const { pagination, goToPage } = usePagination(movementTableKey);
-  const { filters, setFilters } = useFilters<{ type?: MovementType }>(movementTableKey);
+  const { pagination, goToPage } = usePagination(movementTableKey, movementPageDefaults);
+  const { options: personOptions } = useUserOptions();
   const page = query.data;
 
   return (
     <TablePanel
       toolbar={
-        <ContextSwitch
-          label="Movement type"
-          value={filters.type ?? allTypes}
-          options={typeOptions}
-          onChange={(next) => setFilters({ type: next === allTypes ? undefined : next })}
-        />
+        <>
+          <ContextSwitch
+            label="Kind of stock change"
+            value={view}
+            options={viewOptions}
+            onChange={setView}
+          />
+          <FilterToolbar>
+            <FilterBar
+              filterKey={movementTableKey}
+              searchKey={movementTableKey}
+              searchPlaceholder="Item name or code"
+              controls={[
+                {
+                  key: "personId",
+                  label: "Person",
+                  placeholder: "Everyone",
+                  options: personOptions,
+                },
+              ]}
+            />
+          </FilterToolbar>
+        </>
       }
     >
       <DataTable<IStockMovement>
-        label="Stock movements"
+        label="Stock history"
         columns={columns}
         data={page?.data ?? []}
         loading={query.isLoading}
@@ -141,8 +171,8 @@ const MovementTable = () => {
         pagination={pagination}
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
-        emptyText="No stock movements yet."
-        onRowClick={(movement) => void navigate(movementPath(movement.id))}
+        emptyText={narrowed ? "Nothing matches. Try another item or person." : emptyTextByView[view]}
+        onRowClick={(movement) => void navigate(pathOf(movement))}
       />
     </TablePanel>
   );

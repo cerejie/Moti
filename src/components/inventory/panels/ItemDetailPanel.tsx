@@ -3,7 +3,6 @@ import { usePermissions } from "../../../hook/data/account/account.permission.ho
 import { useInventoryItem } from "../../../hook/data/inventory/inventory.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
-import { priceText } from "../../../styles/inventory/inventory.styles";
 import {
   detailPage,
   detailPageHeading,
@@ -11,7 +10,7 @@ import {
   detailPageSurface,
   detailPageTitle,
 } from "../../../styles/view/detailPage.styles";
-import { formatDateTime, formatPeso } from "../../../utils/format.utils";
+import { formatDateTime } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
@@ -22,14 +21,6 @@ import ItemManageActions from "../menus/ItemManageActions";
 
 // The item code already sits under the title, so it is not repeated here.
 const detailItems: IDetailItem<IInventoryItem>[] = [
-  {
-    key: "price",
-    label: "Selling price",
-    render: (item) =>
-      item.selling_price === null ? "—" : (
-        <span className={priceText}>{formatPeso(item.selling_price)}</span>
-      ),
-  },
   { key: "category", label: "Category", render: (item) => item.category?.name ?? "—" },
   { key: "brand", label: "Brand", render: (item) => item.brand?.name ?? "—" },
   { key: "location", label: "Shelf / location", render: (item) => item.location ?? "—" },
@@ -67,7 +58,7 @@ const ItemDetailPanel = () => {
       </DetailPageSection>
 
       {viewMovements && (
-        <DetailPageSection title="Recent movements">
+        <DetailPageSection title="Stock history">
           <ItemMovementList itemId={item.id} />
         </DetailPageSection>
       )}
