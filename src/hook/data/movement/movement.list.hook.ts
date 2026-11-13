@@ -1,7 +1,11 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { movementViewReasons, type MovementView } from "../../../enums/stock.enum";
+import {
+  movementViewReasons,
+  type MovementView,
+  type StockTab,
+} from "../../../enums/stock.enum";
 import { itemMovementsKey, movementListKey } from "../../../keys/query.keys";
-import { movementTableKey } from "../../../keys/table.keys";
+import { movementTableKey, stockTabKey } from "../../../keys/table.keys";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
 import movementServices from "../../../services/data/movement.services";
 import { findCachedRow } from "../../../utils/query.utils";
@@ -51,6 +55,16 @@ export const useMovementList = () => {
     setView: (next: MovementView) => setFilters({ view: next }),
     // A search or a person narrowed the list, so an empty result is "no match", not "none yet".
     narrowed: search !== "" || Boolean(personId),
+  };
+};
+
+// The Stock page's tab; Home's links set it before they open the page.
+export const useStockTab = () => {
+  const { filters, setFilters } = useFilters<{ tab?: StockTab }>(stockTabKey);
+
+  return {
+    tab: filters.tab ?? "reorder",
+    setTab: (next: StockTab) => setFilters({ tab: next }),
   };
 };
 

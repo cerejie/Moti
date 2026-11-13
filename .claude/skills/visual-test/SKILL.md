@@ -53,8 +53,9 @@ touched. What it does, per role × size × theme:
   deliberate and skipped), buttons/tabs past the right edge, touch targets under 44 px
   (phone and tablet only), page and console errors.
 - **Writes are faked:** every non-GET to `rest/v1` or `functions/v1` gets an empty 200, except
-  the read RPCs `login_email`, `my_authority_role`, `inventory_summary`. A new read RPC must be
-  added to `READ_RPC` in the script, or its screen shows faked data.
+  the read RPCs `login_email`, `my_authority_role`, `inventory_summary`, `stock_analysis`. A new
+  read RPC must be added to `READ_RPC` in the script, or its screen shows faked data. Before its
+  migration is applied, `FIXTURES=<file.json>` (`{ "<rpc>": <response body> }`) answers it.
 
 Output in `OUT`: `<role>/<screen>-<size>-<theme>.jpg`, `report.json` (every capture, its
 issues, console errors, faked writes) and `index.html` — a phone gallery, light and dark side by

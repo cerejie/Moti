@@ -15,6 +15,7 @@ import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
 import DetailPageSection from "../../common/view/DetailPageSection";
+import ItemSalesPaceCard from "../cards/ItemSalesPaceCard";
 import ItemStockCard from "../cards/ItemStockCard";
 import ItemMovementList from "../lists/ItemMovementList";
 import ItemManageActions from "../menus/ItemManageActions";
@@ -56,6 +57,12 @@ const ItemDetailPanel = () => {
           <DetailRows record={item} items={detailItems} />
         </div>
       </DetailPageSection>
+
+      {isOwner && (
+        <DetailPageSection title="Sales pace">
+          <ItemSalesPaceCard itemId={item.id} />
+        </DetailPageSection>
+      )}
 
       {viewMovements && (
         <DetailPageSection title="Stock history">

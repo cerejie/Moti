@@ -1,6 +1,9 @@
 import { History } from "lucide-react";
 import { movementReasonLabels } from "../../../enums/stock.enum";
-import { useRecentMovements } from "../../../hook/data/movement/movement.list.hook";
+import {
+  useRecentMovements,
+  useStockTab,
+} from "../../../hook/data/movement/movement.list.hook";
 import { ROUTES } from "../../../routes/route.paths";
 import {
   dashboardList,
@@ -21,6 +24,7 @@ import RowLink from "../../common/view/RowLink";
 
 const RecentMovementsPanel = () => {
   const recent = useRecentMovements();
+  const { setTab } = useStockTab();
   const movements = recent.data ?? [];
 
   const renderBody = () => {
@@ -63,7 +67,7 @@ const RecentMovementsPanel = () => {
     <SectionCard
       title="Recent stock changes"
       extra={
-        <AppButton href={ROUTES.movements} variant="link">
+        <AppButton href={ROUTES.movements} variant="link" onPress={() => setTab("history")}>
           See all
         </AppButton>
       }

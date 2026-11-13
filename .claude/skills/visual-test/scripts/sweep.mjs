@@ -4,6 +4,7 @@
 //   OUT=<scratchpad>/shots PW=<scratchpad>/node_modules/playwright-core/index.js node sweep.mjs
 // Optional: ROLES=signed-out,owner,employee  SIZES=phone,tablet,desktop  THEMES=light,dark
 //           SCREENS=transaction,inventory (screen names to keep)  BASE=http://127.0.0.1:4180
+//           FIXTURES=<file.json>: { "<rpc>": <response body> } for a read RPC not yet migrated
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -29,7 +30,8 @@ const themes = pick(process.env.THEMES, ["light", "dark"]);
 const onlyScreens = process.env.SCREENS?.split(",");
 
 // Reads pass through; every write is answered with an empty 200 so a sweep never changes data.
-const READ_RPC = /\/rpc\/(login_email|my_authority_role|inventory_summary)\b/;
+const READ_RPC = /\/rpc\/(login_email|my_authority_role|inventory_summary|stock_analysis)\b/;
+const FIXTURES = process.env.FIXTURES ? JSON.parse(fs.readFileSync(process.env.FIXTURES, "utf8")) : {};
 
 // Screens per role. `expect` is where a typed URL must land (route-guard check).
 const SCREENS = {
@@ -70,6 +72,7 @@ const SHEETS = {
     { name: "item-form", path: "/inventory", open: (p) => p.getByRole("button", { name: "Add item" }).first().click() },
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
+    { name: "item-page", path: "/inventory", open: openItem },
   ],
   employee: [
     { name: "bell", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
@@ -91,6 +94,16 @@ async function openTransaction(page) {
   const row = page.locator("main [role=row]").nth(1);
   await card.or(row).first().waitFor({ timeout: 15000 });
   await card.or(row).first().click();
+}
+
+// The first Inventory row's pushed page.
+async function openItem(page) {
+  // A phone card's title is the first button in its row.
+  const card = page.locator("main li button").first();
+  const row = page.locator("main [role=row]").nth(1);
+  await card.or(row).first().waitFor({ timeout: 15000 });
+  await card.or(row).first().click();
+  await page.waitForURL(/\/inventory\/(?!masterfile)[^/]+$/, { timeout: 15000 });
 }
 
 // Auth screens fade in over ~1.5 s, so a signed-out capture waits longer.
@@ -293,6 +306,10 @@ const main = async () => {
         await context.route(/\/(rest|functions)\/v1\//, (route) => {
           const request = route.request();
           const method = request.method();
+          const rpc = request.url().match(/\/rpc\/(\w+)/)?.[1];
+          if (rpc && rpc in FIXTURES) {
+            return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(FIXTURES[rpc]) });
+          }
           if (["GET", "HEAD", "OPTIONS"].includes(method) || (method === "POST" && READ_RPC.test(request.url()))) return route.continue();
           faked.add(`${method} ${request.url().split("?")[0].replace(/^.*\/v1/, "")}`);
           return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });

@@ -51,6 +51,7 @@ const AppButton = ({
         variant={props.variant}
         size={props.size}
         aria-label={props["aria-label"]}
+        onPress={props.onPress}
         isDisabled={isDisabled}
         className={classes}
       >

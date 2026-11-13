@@ -106,6 +106,18 @@ export function formatCount(count: number, singular: string, plural = `${singula
   return `${formatNumber(count)} ${count === 1 ? singular : plural}`;
 }
 
+const paceFormatter = new Intl.NumberFormat("en-PH", { maximumFractionDigits: 1 });
+
+// Units sold per day, e.g. "1.4 a day"; a trickle reads "Under 0.1 a day".
+export function formatPace(pace: number): string {
+  return pace > 0 && pace < 0.1 ? "Under 0.1 a day" : `${paceFormatter.format(pace)} a day`;
+}
+
+// Days of stock at the current pace, e.g. "12 days left", "Under 1 day left".
+export function formatDaysLeft(days: number): string {
+  return days < 1 ? "Under 1 day left" : `${formatCount(Math.floor(days), "day")} left`;
+}
+
 // A signed ledger quantity, e.g. +12 or −3.
 export function formatSignedQuantity(value: number): string {
   return value > 0 ? `+${formatNumber(value)}` : `−${formatNumber(Math.abs(value))}`;

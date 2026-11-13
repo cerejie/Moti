@@ -30,7 +30,8 @@ SaaS build, which comes later.
 - [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
-      next up: Phase 2 (analyzer, read-only)
+      Phase 2 coded 2026-11-13 (v1.52, migration 9 waits to be applied); next up: Phase 3
+      (Receive delivery, Count stock, Damaged or lost)
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 
@@ -151,16 +152,33 @@ Notes (2026-11-13):
 - Masterfile is a pushed route now: phone drops the app bar and tab bar and shows the round back.
 - Database-written notification text (e.g. "New item") is unchanged; Phase 5 handles it.
 
-### Phase 2: Analyzer, read-only
+### Phase 2: Analyzer, read-only — coded 2026-11-13 (v1.52)
 
-- [ ] Migration 9: one owner-only RPC (per item: sold units, transaction count, pace, days left,
+- [x] Migration 9: one owner-only RPC (per item: sold units, transaction count, pace, days left,
       suggested quantity, last sold, group), computed from `stock_movements`; no new table.
-- [ ] Analyzer slice: model, service, query key, list hook.
-- [ ] Stock tab: `ContextSwitch` Reorder | History in `ContentView` `tabs` (copy `TransactionTabSwitch`).
-- [ ] Reorder view: Order now, Running low soon, Fast movers, Slow stock; 7 / 30 / 90 switch;
+- [x] Analyzer slice: model, service, query key, list hook.
+- [x] Stock tab: `ContextSwitch` Reorder | History in `ContentView` `tabs` (copy `TransactionTabSwitch`).
+- [x] Reorder view: Order now, Running low soon, Fast movers, Slow stock; 7 / 30 / 90 switch;
       rows open the item page; the four data states.
-- [ ] Home: "Order next" card above the recent list (desktop: the right column).
-- [ ] Item page: "Sales pace" section.
+- [x] Home: "Order next" card above the recent list (desktop: the right column).
+- [x] Item page: "Sales pace" section.
+
+Notes (2026-11-13):
+- Decided: Running low soon = under twice the cover target (14–28 days left); "Not enough sales
+  yet" = fewer than 3 sales in the period (an Out / low item still shows under Order now, with
+  on hand instead of a suggestion); Slow stock only for items at least 60 days old; the sidebar
+  reads "Stock" (page title "Stock", the tab "History").
+- `stock_analysis(p_days, p_cover_days, p_slow_days, p_min_sales, p_item_id)` is `security
+  invoker` and refuses non-owners; the thresholds live in `enums/analyzer.enum.ts` and are sent on
+  every call. Whole-shop calls return only items that need a look or sold something. A partial
+  index on sale rows (`stock_movements_sale_idx`) backs it. Voided sales are excluded; sales from
+  before transactions count one each.
+- Home's Order next always reads 30 days and shares the Reorder view's cache at 30 days. Its rows
+  carry no button yet; Phase 5 adds "Add to order list".
+- Home's See all links set the Stock tab first (Order next → Reorder, Recent → History);
+  `AppButton` now passes `onPress` to its link form.
+- Sweep: `stock_analysis` is a read RPC in `sweep.mjs`; `FIXTURES=<json>` answers an RPC whose
+  migration is not applied yet; an `item-page` capture opens the first Inventory row.
 
 ### Phase 3: Receive delivery, Count stock, Damaged or lost
 

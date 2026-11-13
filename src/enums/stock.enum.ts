@@ -95,3 +95,7 @@ export const stockActionTitles: Record<StockAction, string> = {
   stock_in: "Add stock",
   stock_out: "Deduct stock",
 };
+
+// The Stock page's tabs: what to order first, then the ledger.
+export const stockTabValues = ["reorder", "history"] as const;
+export type StockTab = (typeof stockTabValues)[number];

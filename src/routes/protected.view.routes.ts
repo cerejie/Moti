@@ -82,8 +82,7 @@ export const protectedViewRoutes: IRoute[] = [
   },
   {
     key: "movements",
-    label: "Stock history",
-    shortLabel: "Stock",
+    label: "Stock",
     icon: ArrowLeftRight,
     path: ROUTES.movements,
     can: "viewMovements",
