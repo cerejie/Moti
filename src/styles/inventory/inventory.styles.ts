@@ -74,8 +74,6 @@ export const historyQuantity = cva("shrink-0 font-bold tabular-nums", {
   },
 });
 
-// Item page: the stock hero's two actions.
-export const itemStockActions = "grid grid-cols-2 gap-2";
 
 // Direction is carried by the arrow and the sign as well as the colour.
 export const itemMovementIcon = cva(

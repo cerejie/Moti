@@ -1,6 +1,6 @@
 import { PackageCheck, PackagePlus } from "lucide-react";
 import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook";
-import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
+import { useStockActions } from "../../../hook/data/movement/movement.form.hook";
 import { ROUTES } from "../../../routes/route.paths";
 import {
   attentionAction,
@@ -24,10 +24,10 @@ import RowLink from "../../common/view/RowLink";
 
 const visibleRows = 6;
 
-// Out-of-stock and low items: a row opens the item, its button adds stock in one tap.
+// Out-of-stock and low items: a row opens the item, its button opens a delivery with it picked.
 const AttentionPanel = () => {
   const alerts = useStockAlerts();
-  const stockModal = useStockMovementModal();
+  const stock = useStockActions();
   const items = alerts.data ?? [];
   const count = items.length;
 
@@ -56,11 +56,11 @@ const AttentionPanel = () => {
               <AppButton
                 variant="outline"
                 className={attentionAction}
-                aria-label={`Add stock to ${item.name}`}
-                onPress={() => stockModal.openModal({ item, action: "stock_in" })}
+                aria-label={`Receive a delivery of ${item.name}`}
+                onPress={() => stock.receive(item)}
               >
                 <PackagePlus data-icon="inline-start" aria-hidden />
-                Add stock
+                Receive
               </AppButton>
             </span>
           </li>

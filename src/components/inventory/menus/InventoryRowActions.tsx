@@ -1,6 +1,7 @@
 import {
   Archive,
   ArchiveRestore,
+  ClipboardCheck,
   Eye,
   PackageMinus,
   PackagePlus,
@@ -10,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useItemArchive } from "../../../hook/data/inventory/inventory.form.hook";
-import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
+import { useStockActions } from "../../../hook/data/movement/movement.form.hook";
 import { itemFormModalKey } from "../../../keys/modal.keys";
 import type { IRowAction } from "../../../models/common/action.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -21,10 +22,10 @@ type IProps = {
   item: IInventoryItem;
 };
 
-// Sales go through Transaction; here the owner adjusts stock and manages the item.
+// Sales go through Sell; here the owner opens a stock action with this item picked and manages it.
 const InventoryRowActions = ({ item }: IProps) => {
   const { isOwner } = usePermissions();
-  const stockModal = useStockMovementModal();
+  const stock = useStockActions();
   const formModal = useModal<IInventoryItem>(itemFormModalKey);
   const navigate = useNavigate();
   const { archive, restore } = useItemArchive();
@@ -35,17 +36,23 @@ const InventoryRowActions = ({ item }: IProps) => {
   if (!archived && isOwner) {
     actions.push(
       {
-        key: "stock-in",
-        label: "Add stock",
+        key: "receive",
+        label: "Receive delivery",
         icon: <PackagePlus />,
-        onSelect: () => stockModal.openModal({ item, action: "stock_in" }),
+        onSelect: () => stock.receive(item),
       },
       {
-        key: "stock-out",
-        label: "Deduct stock",
+        key: "count",
+        label: "Count stock",
+        icon: <ClipboardCheck />,
+        onSelect: () => stock.count(item),
+      },
+      {
+        key: "damaged",
+        label: "Damaged or lost",
         icon: <PackageMinus />,
         disabled: item.on_hand === 0,
-        onSelect: () => stockModal.openModal({ item, action: "stock_out" }),
+        onSelect: () => stock.damaged(item),
       },
     );
   }

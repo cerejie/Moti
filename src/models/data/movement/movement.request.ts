@@ -1,20 +1,14 @@
 import { z } from "zod";
-import {
-  movementReasonSchema,
-  movementTypeSchema,
-  type MovementReason,
-} from "../../../enums/stock.enum";
+import type { MovementReason } from "../../../enums/stock.enum";
 
-export const movementFormSchema = z.object({
-  type: movementTypeSchema,
-  reason: movementReasonSchema,
+export const damagedFormSchema = z.object({
   quantity: z
     .string()
     .trim()
     .regex(/^[1-9]\d*$/, "Enter a quantity of at least 1"),
   note: z.string().trim().max(200),
 });
-export type IMovementFormInput = z.infer<typeof movementFormSchema>;
+export type IDamagedFormInput = z.infer<typeof damagedFormSchema>;
 
 export interface IMovementFilters {
   reasons: readonly MovementReason[];

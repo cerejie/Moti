@@ -9,5 +9,8 @@ export const stockTabKey = "stock-tab";
 // Holds the Reorder view's sales period.
 export const reorderKey = "reorder";
 export const transactionPickTableKey = "transaction-pick";
+export const deliveryPickTableKey = "delivery-pick";
+export const countPickTableKey = "count-pick";
+export const damagedPickTableKey = "damaged-pick";
 export const transactionHistoryTableKey = "transaction-history";
 export const userTableKey = "users";

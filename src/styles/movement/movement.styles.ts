@@ -23,3 +23,10 @@ export const movementLinkIcon =
   "flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground [&_svg]:size-4";
 
 export const movementLinkChevron = "size-4 shrink-0 text-muted-foreground";
+
+// The Stock tab's three actions: a row of equal tiles on phones, header buttons on desktop.
+export const stockActions = "grid grid-cols-3 gap-2 wide:flex wide:flex-wrap";
+
+// On phones each tile stacks its icon over a label that may wrap to two lines.
+export const stockActionButton =
+  "compact:h-auto compact:min-h-16 compact:flex-col compact:gap-1 compact:whitespace-normal compact:px-2 compact:py-2 compact:text-xs compact:leading-tight";

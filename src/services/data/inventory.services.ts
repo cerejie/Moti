@@ -23,6 +23,7 @@ const table = "inventory_items";
 const columns =
   "id, item_code, name, category_id, category:categories(name), brand_id, brand:brands(name), unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
 const alertLimit = 50;
+const categoryCountLimit = 200;
 
 const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
 
@@ -95,6 +96,20 @@ const inventoryServices = {
       low_count: Number(row.low_count),
       out_count: Number(row.out_count),
     };
+  },
+
+  // A whole category for a stock count; the cap matches what one count can hold.
+  getByCategory: async (categoryId: string): Promise<IInventoryItem[]> => {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .is("archived_at", null)
+      .eq("category_id", categoryId)
+      .order("name")
+      .limit(categoryCountLimit);
+    if (error) throw toError(error);
+
+    return (data ?? []) as unknown as IInventoryItem[];
   },
 
   // Emptiest shelves first, so out-of-stock items lead.

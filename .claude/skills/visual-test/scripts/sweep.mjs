@@ -47,6 +47,9 @@ const SCREENS = {
     { name: "inventory", path: "/inventory" },
     { name: "masterfile", path: "/inventory/masterfile" },
     { name: "movements", path: "/movements" },
+    { name: "receive", path: "/movements/receive" },
+    { name: "count", path: "/movements/count" },
+    { name: "damaged", path: "/movements/damaged" },
     { name: "users", path: "/users" },
     { name: "account", path: "/account" },
   ],
@@ -57,6 +60,8 @@ const SCREENS = {
     { name: "guard-inventory", path: "/inventory", expect: "/transaction" },
     { name: "guard-masterfile", path: "/inventory/masterfile", expect: "/transaction" },
     { name: "guard-movements", path: "/movements", expect: "/transaction" },
+    { name: "guard-receive", path: "/movements/receive", expect: "/transaction" },
+    { name: "guard-count", path: "/movements/count", expect: "/transaction" },
     { name: "guard-users", path: "/users", expect: "/transaction" },
   ],
 };
@@ -73,6 +78,9 @@ const SHEETS = {
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
     { name: "item-page", path: "/inventory", open: openItem },
+    { name: "delivery-review", path: "/movements/receive", open: (p) => openPicked(p, /Review delivery/) },
+    { name: "count-sheet", path: "/movements/count", open: (p) => openPicked(p, /Enter counts/) },
+    { name: "damaged-sheet", path: "/movements/damaged", open: openDamaged },
   ],
   employee: [
     { name: "bell", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
@@ -94,6 +102,17 @@ async function openTransaction(page) {
   const row = page.locator("main [role=row]").nth(1);
   await card.or(row).first().waitFor({ timeout: 15000 });
   await card.or(row).first().click();
+}
+
+// Receive and Count: add the first item, then open the sheet from the bar.
+async function openPicked(page, barButton) {
+  await page.locator("main").getByRole("button", { name: /^Add$/ }).first().click();
+  await page.waitForTimeout(300);
+  await page.getByRole("button", { name: barButton }).click();
+}
+
+async function openDamaged(page) {
+  await page.locator("main").getByRole("button", { name: /damaged or lost$/ }).filter({ hasNot: page.locator("[disabled]") }).first().click();
 }
 
 // The first Inventory row's pushed page.

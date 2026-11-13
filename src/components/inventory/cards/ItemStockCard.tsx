@@ -1,12 +1,5 @@
-import { PackageMinus, PackagePlus } from "lucide-react";
-import { usePermissions } from "../../../hook/data/account/account.permission.hook";
-import { useStockMovementModal } from "../../../hook/data/movement/movement.form.hook";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
-import {
-  itemStockActions,
-  onHandUnit,
-  onHandValue,
-} from "../../../styles/inventory/inventory.styles";
+import { onHandUnit, onHandValue } from "../../../styles/inventory/inventory.styles";
 import {
   detailHeroBody,
   detailHeroFigure,
@@ -15,8 +8,8 @@ import {
   detailHeroTop,
 } from "../../../styles/view/detailPage.styles";
 import { formatNumber } from "../../../utils/format.utils";
-import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
+import StockActions from "../../movement/menus/StockActions";
 import StockStatusBadge from "../status/StockStatusBadge";
 
 type IProps = {
@@ -24,8 +17,6 @@ type IProps = {
 };
 
 const ItemStockCard = ({ item }: IProps) => {
-  const { isOwner } = usePermissions();
-  const stockModal = useStockMovementModal();
   const archived = item.archived_at !== null;
 
   return (
@@ -47,23 +38,7 @@ const ItemStockCard = ({ item }: IProps) => {
           <StockStatusBadge status={item.stock_status} archived={archived} />
         </div>
 
-        {isOwner && !archived && (
-          <div className={itemStockActions}>
-            <AppButton size="lg" onPress={() => stockModal.openModal({ item, action: "stock_in" })}>
-              <PackagePlus data-icon="inline-start" aria-hidden />
-              Add stock
-            </AppButton>
-            <AppButton
-              size="lg"
-              variant="outline"
-              disabled={item.on_hand === 0}
-              onPress={() => stockModal.openModal({ item, action: "stock_out" })}
-            >
-              <PackageMinus data-icon="inline-start" aria-hidden />
-              Deduct
-            </AppButton>
-          </div>
-        )}
+        {!archived && <StockActions item={item} />}
       </div>
     </SectionCard>
   );

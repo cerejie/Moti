@@ -81,21 +81,6 @@ export const movementViewReasons: Record<MovementView, readonly MovementReason[]
   sales: ["sale", "void"],
 };
 
-// The owner's manual adjustments. Sales and voids come only from transactions,
-// opening stock only from create_item (record_movement refuses them).
-export const reasonsByType: Record<MovementType, readonly MovementReason[]> = {
-  stock_in: ["restock", "correction"],
-  stock_out: ["damaged", "correction"],
-};
-
-// What the stock dialog was opened for.
-export type StockAction = "stock_in" | "stock_out";
-
-export const stockActionTitles: Record<StockAction, string> = {
-  stock_in: "Add stock",
-  stock_out: "Deduct stock",
-};
-
 // The Stock page's tabs: what to order first, then the ledger.
 export const stockTabValues = ["reorder", "history"] as const;
 export type StockTab = (typeof stockTabValues)[number];

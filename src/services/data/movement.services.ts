@@ -1,6 +1,8 @@
+import type { ICountLine } from "../../models/data/count/count.request";
+import type { IDeliveryLine } from "../../models/data/delivery/delivery.request";
 import type {
+  IDamagedFormInput,
   IMovementFilters,
-  IMovementFormInput,
 } from "../../models/data/movement/movement.request";
 import type { IStockMovement } from "../../models/data/movement/movement.response";
 import {
@@ -86,21 +88,50 @@ const movementServices = {
   },
 
   // The client id is fixed here, so a queued replay after a lost response is ignored.
-  record: (
+  recordDamaged: (
     itemId: string,
     itemName: string,
-    values: IMovementFormInput,
+    values: IDamagedFormInput,
   ): Promise<IMutationResult> =>
     runWrite({
       kind: "rpc",
       fn: "record_movement",
-      label: `${values.type === "stock_in" ? "Add" : "Deduct"} ${values.quantity} × ${itemName}`,
+      label: `Damaged or lost: ${values.quantity} × ${itemName}`,
       args: {
         p_item_id: itemId,
-        p_type: values.type,
-        p_reason: values.reason,
+        p_type: "stock_out",
+        p_reason: "damaged",
         p_quantity: Number(values.quantity),
         p_note: values.note,
+        p_client_id: newWriteId(),
+      },
+    }),
+
+  receiveDelivery: (lines: readonly IDeliveryLine[], note: string): Promise<IMutationResult> =>
+    runWrite({
+      kind: "rpc",
+      fn: "receive_delivery",
+      label: `Receive delivery of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
+      args: {
+        p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
+        p_note: note,
+        p_client_id: newWriteId(),
+      },
+    }),
+
+  // Only the lines that differ are sent; on_hand_seen is what the screen showed.
+  recordCount: (lines: readonly ICountLine[], note: string): Promise<IMutationResult> =>
+    runWrite({
+      kind: "rpc",
+      fn: "record_stock_count",
+      label: `Stock count of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
+      args: {
+        p_lines: lines.map((line) => ({
+          item_id: line.item.id,
+          counted: line.counted,
+          on_hand_seen: line.item.on_hand,
+        })),
+        p_note: note,
         p_client_id: newWriteId(),
       },
     }),

@@ -1,12 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import {
-  movementReasonLabels,
-  reasonsByType,
-  stockActionTitles,
-} from "../../../enums/stock.enum";
-import { useStockMovementForm } from "../../../hook/data/movement/movement.form.hook";
+import { useDamagedStockForm } from "../../../hook/data/movement/movement.form.hook";
 import type { IFieldConfig } from "../../../models/common/field.model";
-import type { IMovementFormInput } from "../../../models/data/movement/movement.request";
+import type { IDamagedFormInput } from "../../../models/data/movement/movement.request";
 import {
   itemIdentity,
   itemMeta,
@@ -24,26 +19,25 @@ import FormField from "../../common/form/FormField";
 import FormRoot from "../../common/form/FormRoot";
 import AppModal from "../../common/modal/AppModal";
 import AppAlert from "../../common/status/AppAlert";
-import StockStatusBadge from "../status/StockStatusBadge";
+import StockStatusBadge from "../../inventory/status/StockStatusBadge";
 
-const formId = "stock-movement-form";
+const formId = "damaged-stock-form";
 
-const StockMovementModal = () => {
-  const { open, item, action, form, mutation, preview, onSubmit, onOpenChange } =
-    useStockMovementForm();
+const fields: IFieldConfig<IDamagedFormInput>[] = [
+  { name: "quantity", label: "Quantity", type: "number", span: "full", required: true },
+  {
+    name: "note",
+    label: "Note",
+    type: "textarea",
+    span: "full",
+    placeholder: "Optional, e.g. cracked in transit",
+  },
+];
+
+const DamagedStockModal = () => {
+  const { open, item, form, mutation, preview, onSubmit, onOpenChange } = useDamagedStockForm();
 
   if (!item) return null;
-
-  const reasonOptions = reasonsByType[action].map((reason) => ({
-    value: reason,
-    label: movementReasonLabels[reason],
-  }));
-
-  const fields: IFieldConfig<IMovementFormInput>[] = [
-    { name: "reason", label: "Reason", type: "select", options: reasonOptions, span: "full" },
-    { name: "quantity", label: "Quantity", type: "number", span: "full", required: true },
-    { name: "note", label: "Note", type: "textarea", span: "full", placeholder: "Optional" },
-  ];
 
   const previewTone = preview.after <= item.reorder_level ? "warning" : "default";
 
@@ -51,20 +45,24 @@ const StockMovementModal = () => {
     <AppModal
       open={open}
       onOpenChange={onOpenChange}
-      title={stockActionTitles[action]}
+      title="Damaged or lost"
       size="sm"
       footer={
         <>
-          <AppButton variant="outline" disabled={mutation.isPending} onPress={() => onOpenChange(false)}>
+          <AppButton
+            variant="outline"
+            disabled={mutation.isPending}
+            onPress={() => onOpenChange(false)}
+          >
             Cancel
           </AppButton>
           <AppButton
             type="submit"
             form={formId}
             loading={mutation.isPending}
-            disabled={preview.insufficient}
+            disabled={preview.insufficient || item.on_hand === 0}
           >
-            {stockActionTitles[action]}
+            Save
           </AppButton>
         </>
       }
@@ -80,13 +78,11 @@ const StockMovementModal = () => {
           <StockStatusBadge status={item.stock_status} />
         </div>
 
-        {fields
-          .filter((field) => !field.hidden?.(form.getValues()))
-          .map((field) => (
-            <FormField key={field.name} config={field} />
-          ))}
+        {fields.map((field) => (
+          <FormField key={field.name} config={field} />
+        ))}
 
-        {/* A deduction past zero has no "after" worth showing, only the shortfall. */}
+        {/* Past zero there is no "after" worth showing, only the shortfall. */}
         {preview.insufficient ? (
           <AppAlert tone="danger">
             Only {formatNumber(preview.before)} {item.unit} on hand —{" "}
@@ -112,4 +108,4 @@ const StockMovementModal = () => {
   );
 };
 
-export default StockMovementModal;
+export default DamagedStockModal;

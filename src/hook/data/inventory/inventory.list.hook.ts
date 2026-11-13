@@ -53,6 +53,42 @@ export const useInventoryList = () => {
   };
 };
 
+type IPickFilterValues = {
+  categoryId?: string;
+  brandId?: string;
+};
+
+// The items a sale, delivery, count or write-off picks from: every active item, out-of-stock
+// ones included. Each picker keeps its own search, filters and page under its table key.
+export const useItemPickList = (tableKey: string) => {
+  const { filters } = useFilters<IPickFilterValues>(tableKey);
+  const search = useDebouncedSearch(tableKey, tableKey);
+  const { pagination } = usePagination(tableKey);
+  const { categoryId, brandId } = filters;
+
+  const query = useQuery({
+    queryKey: [
+      inventoryListKey,
+      "pick",
+      tableKey,
+      categoryId,
+      brandId,
+      search,
+      pagination.pageNumber,
+      pagination.pageSize,
+    ],
+    queryFn: ({ signal }) =>
+      inventoryServices.getList(
+        { view: "all", categoryId, brandId, search },
+        pagination,
+        signal,
+      ),
+    placeholderData: keepPreviousData,
+  });
+
+  return { query, categoryId };
+};
+
 // Keyed under the list prefix, so every stock, edit and archive invalidation refreshes it too.
 export const useInventoryItem = (itemId: string | undefined) => {
   const queryClient = useQueryClient();

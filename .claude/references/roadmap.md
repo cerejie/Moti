@@ -30,8 +30,8 @@ SaaS build, which comes later.
 - [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
-      Phase 2 coded 2026-11-13 (v1.52, migration 9 waits to be applied); next up: Phase 3
-      (Receive delivery, Count stock, Damaged or lost)
+      Phase 2 done 2026-11-13 (v1.52, migration 9 applied); Phase 3 coded 2026-11-14 (v1.53,
+      migration 10 waits to be applied); next up: Phase 4 (Order list)
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 
@@ -180,17 +180,35 @@ Notes (2026-11-13):
 - Sweep: `stock_analysis` is a read RPC in `sweep.mjs`; `FIXTURES=<json>` answers an RPC whose
   migration is not applied yet; an `item-page` capture opens the first Inventory row.
 
-### Phase 3: Receive delivery, Count stock, Damaged or lost
+### Phase 3: Receive delivery, Count stock, Damaged or lost — coded 2026-11-14 (v1.53)
 
-- [ ] Migration 10: a multi-item, all-or-none receive RPC (`restock` rows) and a stock count RPC
+- [x] Migration 10: a multi-item, all-or-none receive RPC (`restock` rows) and a stock count RPC
       (lines of item, counted, on-hand seen; records the difference as `correction`, nothing when
       they match); both take a `client_id` (offline replay safe) and go through `runWrite`.
-- [ ] Stock tab: the three action buttons (phone: top row; desktop: page header).
-- [ ] Receive delivery: picker → quantities → review → success screen.
-- [ ] Count stock: pick items or a category → shelf counts → review of differences → save.
-- [ ] Damaged or lost: today's Deduct dialog without the reason picker (`damaged`, optional note).
-- [ ] Item page hero and Inventory row ⋯ menu open the same three with the item picked; the old
+- [x] Stock tab: the three action buttons (phone: top row; desktop: page header).
+- [x] Receive delivery: picker → quantities → review → success screen.
+- [x] Count stock: pick items or a category → shelf counts → review of differences → save.
+- [x] Damaged or lost: today's Deduct dialog without the reason picker (`damaged`, optional note).
+- [x] Item page hero and Inventory row ⋯ menu open the same three with the item picked; the old
       Add stock / Deduct dialogs retire and the client stops sending `correction` by hand.
+
+Notes (2026-11-14):
+- Decided: a count whose difference would take an item below zero (sales since the screen showed
+  its number) refuses the whole save and names the item to recount; Damaged or lost from the Stock
+  tab opens a picker page (`/movements/damaged`), tapping an item opens the sheet.
+- `receive_delivery(p_lines, p_note, p_client_id)` and `record_stock_count(p_lines, p_note,
+  p_client_id)` are owner-only `security definer`. No schema change: each row's `client_id` is
+  `md5(batch id || item id)::uuid`, so a replay is ignored and a concurrent duplicate hits the
+  unique index. `record_movement` is unchanged (damaged, and older queued writes).
+- Pushed pages `/movements/receive`, `/movements/count`, `/movements/damaged`, all on the one
+  `ItemPickerTable` (Sell uses it too) with a picker key each. From an item (hero, row ⋯ menu,
+  Home's Needs attention "Receive") the flow opens on its sheet with the item picked; the success
+  screen pops back the way it came.
+- Count: "Count all in <category>" shows once the picker is filtered to a category (up to 200).
+  A count with no differences sends nothing and says so. Delivery and count drafts live in
+  memory only, like the cart.
+- `QuantityInput` (common/form) is the one typed quantity: cart, delivery review, count sheet.
+- Sweep: receive, count, damaged pages and their sheets; employee guards for the new routes.
 
 ### Phase 4: Order list
 

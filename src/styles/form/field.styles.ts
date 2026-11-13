@@ -11,3 +11,7 @@ export const fieldSelect = "w-full";
 
 // A reserved error line: takes its height, shows nothing, says nothing.
 export const fieldErrorReserved = "invisible";
+
+// A typed quantity beside − and +: thumb-sized, and 16 px text so iOS does not zoom.
+export const quantityInput =
+  "min-h-touch w-16 px-1 text-center text-base font-bold tabular-nums";
