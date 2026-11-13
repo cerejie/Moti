@@ -27,6 +27,135 @@ SaaS build, which comes later.
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
+- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
+- [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
+      phase; next up: plan the flow redesign from the 2026-11-13 flow audit (below), then Phase 1
+
+## V1.7: Stock analyzer, order list, receive stock, motion
+
+Decided with the user on 2026-11-13. Built **before** V1.6 branches, on today's single stock; the
+analyzer and order list gain a branch filter when V1.6 lands. One phase per conversation; each ends
+with `yarn build` + `yarn lint` + a `visual-test` pass.
+
+Decisions (the user's answers):
+- **Analyzer first**, then branches.
+- **The Stock tab is the hub**: a `ContextSwitch` with **Reorder** (first) and **History** (today's
+  Stock history). Home gets an "Order next" card linking there. No sixth tab.
+- **Order list + Receive stock**: suggestions go into a saved order list that can be adjusted and
+  shared as text; a delivery is received in one multi-item save, like the sell cart.
+- **Quantities only**: no cost price, no suppliers (both stay in LATER).
+
+Owner's restock loop: Home "Order next" → Stock · Reorder → Add to order list → Share to the
+supplier → delivery arrives → Receive stock (one save). Selling stays pick → cart → checkout.
+
+How the analyzer decides (plain arithmetic, shown to the owner, never a black box):
+- Pace = units sold in the period ÷ days (voided sales excluded; a newer item uses its own age).
+- Days left = on hand ÷ pace.
+- Order now = Out, at or under the warning quantity, or days left under the cover target.
+- Suggested quantity = pace × cover target − on hand, rounded up.
+- Fast movers = ranked by units sold, with the number of transactions.
+- Slow stock = has stock, no sale in 60 days.
+- Too few sales → "Not enough sales yet", not a guess.
+
+Assumptions to confirm in Phase 1's plan: period 30 days (switch 7 / 30 / 90), cover target 14
+days, slow stock 60 days. Open question (from the audit): may an item with no price be sold?
+
+### Phase 1: Analyzer, read-only
+
+- [ ] Migration 9: one owner-only RPC (per item: sold units, transaction count, pace, days left,
+      suggested quantity, last sold, group), computed from `stock_movements`; no new table.
+- [ ] Analyzer slice: model, service, query key, list hook.
+- [ ] Stock tab: `ContextSwitch` Reorder | History in `ContentView` `tabs` (copy `TransactionTabSwitch`).
+- [ ] Reorder view: Order now, Running low soon, Fast movers, Slow stock; 7 / 30 / 90 switch;
+      rows open the item page; the four data states.
+- [ ] Home: "Order next" card above Recent activity.
+- [ ] Item page: "Sales pace" section.
+
+### Phase 2: Order list
+
+- [ ] Migration 10: a saved order list (header + lines, FKs, RLS owner-only), one open list at a time.
+- [ ] Add from a Reorder row or "Add all suggestions"; adjust and remove on a pushed order-list page.
+- [ ] A bar on Reorder like the cart bar: "Order list · N items".
+- [ ] Share: plain text through the Web Share API, copy as the fallback.
+
+### Phase 3: Receive stock
+
+- [ ] RPC: multi-item, all-or-none restock with a `client_id` (offline replay safe), through `runWrite`.
+- [ ] Receive from the order list (confirm or change each quantity; partial deliveries keep the
+      rest open) and a free "Receive stock" picker for deliveries that had no list.
+- [ ] Success screen; the list closes when fully received.
+
+### Phase 4: Flow polish
+
+- [ ] Sell picker: top sellers first by default.
+- [ ] "Add to order list" from Home's attention rows and the item page.
+
+### Phase 5: Motion and premium feel (no new library)
+
+- [ ] Motion tokens (durations, easings) in `theme.css`; everything honours reduced motion.
+- [ ] Pushed pages slide in and back (View Transitions); tab changes cross-fade.
+- [ ] Press feedback on buttons and rows; sliding `ContextSwitch` and tab bar indicators.
+- [ ] Sheets spring and follow the finger; skeletons cross-fade into content.
+- [ ] Stat cards and totals count to their value; the cart bar bumps on add.
+- [ ] Animated check on checkout and on Receive; a short vibration on Android.
+
+## Flow audit (2026-11-13): stock movement and the whole flow
+
+The user finds the flow confusing, **stock movement above all**. Audit only, nothing fixed. **Money is
+out of scope** (inventory only; prices step out of the picture). Next conversation (Fable 5.2):
+decide the flow redesign with the user, then fold it into V1.7's phases **before** V1.7 Phase 1 is
+built (Phase 1's open picks, thresholds 1A and Home card 2A, wait on this).
+
+Sweep: owner + employee, phone 390 and desktop 1440, light, dev server `localhost:5173`, writes
+faked; 53 steps, 0 console errors. Script `flows.mjs` in that session's scratchpad (not in the repo).
+
+### Stock movement (the core confusion)
+- S1 One idea, six names: "Stock history" (sidebar, page), "Stock" (phone tab), "Recent activity"
+  (dashboard), "Recent movements" (item page), "Movement" (detail route), "Stock in / Stock out"
+  (filter).
+- S2 Every sale lives in two histories: Transaction → History (one receipt) and Stock history (one
+  row per line). 7 of the first 8 Stock history rows are sales, burying restocks and damage.
+- S3 The Stock tab is read-only. Add stock / Deduct live elsewhere: item page hero, Inventory row ⋯
+  menu, a dashboard icon.
+- S4 "Correction" is a reason under both Add stock and Deduct; fixing a wrong count means working out
+  the difference and its direction. No "set the count to X" (stock count).
+- S5 A delivery is entered one item at a time (open item → Add stock → save → back → repeat).
+- S6 Movement detail is titled by its reason ("Sale"), the item under it.
+- S7 Dashboard "Needs attention" restock button is an unlabelled box icon.
+- S8 Stock history filters only in / out: no search, no reason, item or person filter (PROD-01).
+
+### The rest of the flow
+- F1 Item page hero on-hand figure renders small (known `onHandValue` `xl` bug, Phase 1 of V1.5).
+- F2 Price noise while money is out of scope: "No price set" on every Sell row, cart "No price" /
+  "No prices set", "—" totals on History and the transaction page, "Selling price" in the item
+  form and Details, Inventory subtitle "…and its price".
+- F3 Selling has three names: tab "Sell", page "Transaction", switch "New transaction / History".
+- F4 Unit is free text: "49 pcs" beside "pc" everywhere else.
+- F5 Employee bell: 17 "New item" notices (noise for someone who only sells); employees cannot see
+  their own past sales.
+- F6 The push prompt shows three times (dashboard top, bell, Account) and takes the top of the
+  phone dashboard.
+- F7 Desktop dashboard mostly empty; "Recent activity" repeats Stock history.
+- F8 Masterfile hides behind an Inventory button and uses "Back to Inventory" text, not the round
+  back button of pushed pages.
+- F9 Desktop Stock history pages 8 rows at a time.
+- F10 No "receive a delivery" or "stock count" flow; only single adjustments.
+
+Works, keep: sell flow (pick → cart → complete → success sheet), rows open pushed pages, void with
+its one-line explanation, the add-stock before → after preview, Deduct disabled at 0.
+
+### Questions for the planning conversation
+1. Stock history: keep sales in it, hide them by default, or show sales only through Transaction
+   History (S2)?
+2. What the Stock tab is for: a place to act (Receive delivery, Count stock, Damaged/lost, plus the
+   V1.7 Reorder view) with history underneath (S3, S5, S10)?
+3. Replace "Correction ±" with a **stock count** (enter what is on the shelf, the app records the
+   difference) (S4)?
+4. One vocabulary across the app (S1, F3): e.g. "Sell" / "Sales", "Stock in" / "Stock out",
+   "Stock history".
+5. Hide prices everywhere for now (F2), or keep the optional price field but drop it from lists,
+   cart and history?
+6. Employee: own sales history yes/no; which notices they get (F5).
 
 ## V1.5: Pushed detail pages for every list (no drawers)
 
@@ -150,6 +279,97 @@ Decided with the user: brands/categories get **no** page (1A); Team gets one.
   `SHEETS.account-menu` limited to desktop. Known: inputs 36 px tall on touch.
 
 rawer)."
+
+## V1.6: Branches (TARTAR style)
+
+Decided with the user on 2026-11-13: the shop gets **branches**, built the way TARTAR does them.
+This replaces "one shop, one stock" from 2026-10-02 (it is still one shop — no tenancy, no SaaS).
+One phase per conversation; each ends with `yarn build` + `yarn lint` + a `visual-test` pass.
+
+Rules (the user's answers):
+- **Each branch has its own stock.** The item catalog (code, name, category, brand, unit, price)
+  stays shared; the count lives per branch. A sale deducts only from the branch that sold it and
+  Low / Out is judged per branch.
+- **Staff work like TARTAR.** Developer and owner see every branch and get the header switcher
+  ("All branches" or one branch, remembered on the device). Each employee is assigned one or more
+  branches under Team and sees and sells only in those.
+- **Existing data moves into a first branch named "Main"** (all stock, movements, transactions,
+  every current employee). Nothing is deleted; Main can be renamed.
+
+Assumptions to confirm in Phase 1's plan (not yet decided by the user):
+- The warning low stock quantity stays **one number per item**, applied to each branch.
+- A branch is **archived, never deleted**, and only when it holds no stock.
+- "All branches" is a **viewing** scope. Any write (sell, add or deduct stock, new item's opening
+  stock) needs one branch; with "All branches" selected the form asks which.
+
+TARTAR files to port (`Ejie_Business/TARTAR/src`): `hook/data/branch/branch.{list,scope,manage}.hook.ts`,
+`store/data/branch/branch.store.ts`, `components/common/layout/ProtectedBranchScope.tsx` +
+`BranchScopeList.tsx`, `components/branch/tables/BranchesTable.tsx`, and the `app.can_see_branch`
+RLS helper. Moti differences: branches have a **uuid** id (not a slug) and assignments live in a
+`user_branches` table with foreign keys (not a `text[]` on the user).
+
+### Phase 1: Database, Manage branches, header switcher
+
+- [ ] Migration 9 `create_branches` (Claude writes it, the user pastes it into the SQL editor):
+      `branches` (id, name unique by lower(name), sort, archived_at); `user_branches`
+      (user_id, branch_id); `branch_stock` (branch_id, item_id, on_hand ≥ 0, generated
+      `stock_status`) backfilled from `inventory_items.on_hand` into Main; `branch_id` (not null,
+      FK, indexed) on `transactions` and `stock_movements`, backfilled to Main.
+      `inventory_items.on_hand` is kept as the all-branches total, maintained by a trigger on
+      `branch_stock` (no column dropped).
+- [ ] RLS: `app.can_see_branch(branch_id)` — owners and the developer always, employees through
+      `user_branches`; applied to `branch_stock`, `transactions`, `stock_movements`. Branch writes
+      are owner-only.
+- [ ] RPCs take a branch: `record_transaction`, `record_movement`, `create_item` (opening stock),
+      `inventory_summary(p_branch_id default null)`; `void_transaction` returns stock to the
+      transaction's own branch. A missing branch falls back to the caller's only branch, else Main,
+      so the current app and queued offline writes keep working until Phases 2–3 land.
+- [ ] Low / Out push + inbox trigger moves from `inventory_items` to `branch_stock` and names the
+      branch; the 08:00 digest counts per-branch rows.
+- [ ] Branch slice: `models/data/branch`, `services/data/branch.services.ts`, `branch.list.hook`,
+      `branch.manage.hook`, `branch.scope.hook`, `store/data/branch/branch.store.ts` (persisted
+      `branchFilter`, key in `storage.keys.ts`), query + modal keys.
+- [ ] `/branches` Manage branches page (owner + developer): table, add, rename, archive — through
+      `EntityFormModal` and `runWrite`.
+- [ ] Header switcher: desktop `AppHeader`, phone `AppBar`; hidden when the account can see only
+      one branch. Nothing is filtered by it yet.
+
+### Phase 2: Transaction
+
+- [ ] Sell picker shows the active branch's stock (`branch_stock`); the cart belongs to one
+      branch and is cleared (after a confirm) when the branch changes; checkout sends the branch.
+- [ ] With "All branches" selected, New transaction asks for a branch first.
+- [ ] History: **Branch** column (hidden when a single branch is selected), list follows the
+      switcher; server-side filter on `branch_id`.
+- [ ] Transaction detail page: branch in the heading meta; void unchanged.
+- [ ] Offline queue: the queued payload carries the branch.
+
+### Phase 3: Inventory and Stock history
+
+- [ ] Inventory list: on-hand and status for the selected branch; "All branches" shows the total.
+- [ ] Item page: hero shows the selected branch (or the total), plus a "By branch" list.
+- [ ] Add stock / deduct: writes to the selected branch, asks when "All branches".
+- [ ] New item: opening stock goes to the chosen branch.
+- [ ] Stock history: Branch column + follows the switcher; movement detail page shows the branch.
+
+### Phase 4: Dashboard, alerts, notifications
+
+- [ ] Summary cards, Attention panel and the bell's Stock alerts follow the switcher; in
+      "All branches" each alert row names its branch.
+- [ ] Push and inbox text: "Low stock · <item> · <branch>".
+
+### Phase 5: Team
+
+- [ ] Create / edit employee: assign branches (at least one); user detail page lists them.
+- [ ] Approving a sign-up asks for the branch first.
+- [ ] Employee shell: branch name in the header; a switcher only when assigned more than one.
+- [ ] Check with the test accounts that an employee cannot read or sell in another branch
+      (typed URL, direct RPC).
+
+### Phase 6: Transfer stock between branches (confirm with the user before building)
+
+- [ ] One action that moves a quantity from branch A to branch B as a paired out + in movement.
+      Until then an owner deducts in one branch and adds in the other.
 
 ## TARTAR redesign
 
@@ -797,6 +1017,10 @@ Each batch gets its own plan and approval, except Batch 1, which is already appr
 - 2026-10-02 (V1.3 Phase 1): the app's Supabase project is **`kuesqdurgmlncugdurxq`**; the CLI
   was relinked to it (the old link to `fskokirvjcxuxiclkpie` was stale). `send-push` has no
   `config.toml`, so every redeploy needs `--no-verify-jwt`.
+- 2026-11-13 (V1.6): **branches, TARTAR style** — replaces "one shop, one stock". Stock is
+  **per branch** (shared catalog, `branch_stock` count); owners and the developer scope with a
+  header switcher, employees are assigned branches; existing data moves into a first branch
+  **Main**; built whole-app in six phases.
 
 ## Who sees what
 
