@@ -1,4 +1,5 @@
 import type { StockStatus } from "../../../enums/stock.enum";
+import type { ItemUnit } from "../../../enums/unit.enum";
 
 export interface IInventoryItem {
   id: string;
@@ -8,7 +9,7 @@ export interface IInventoryItem {
   category: { name: string } | null;
   brand_id: string | null;
   brand: { name: string } | null;
-  unit: string;
+  unit: ItemUnit;
   on_hand: number;
   reorder_level: number;
   selling_price: number | null;

@@ -1,7 +1,10 @@
+import { itemUnitLabels, itemUnitValues } from "../../../enums/unit.enum";
 import { useItemForm } from "../../../hook/data/inventory/inventory.form.hook";
 import type { IFieldSection } from "../../../models/common/field.model";
 import type { IItemFormInput } from "../../../models/data/inventory/inventory.request";
 import EntityFormModal from "../../common/form/EntityFormModal";
+
+const unitOptions = itemUnitValues.map((unit) => ({ value: unit, label: itemUnitLabels[unit] }));
 
 const ItemFormModal = () => {
   const {
@@ -37,7 +40,7 @@ const ItemFormModal = () => {
           options: brandOptions,
           placeholder: "Pick or type a new brand",
         },
-        { name: "unit", label: "Unit", type: "text", required: true, placeholder: "pc, set, L" },
+        { name: "unit", label: "Unit", type: "select", required: true, options: unitOptions },
         { name: "location", label: "Shelf / location", type: "text", placeholder: "Optional, e.g. Rack B-3" },
       ],
     },

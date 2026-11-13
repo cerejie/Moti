@@ -28,6 +28,7 @@ type IProps = {
   label: string;
   actionTitle: string;
   renderAction: (item: IInventoryItem) => ReactNode;
+  topSellersFirst?: boolean;
 };
 
 const columnsWith = (
@@ -88,8 +89,14 @@ const columnsWith = (
 
 // Search, filter and pick: the list behind Sell, Receive delivery, Count stock and
 // Damaged or lost. Each keeps its own search, filters and page under its table key.
-const ItemPickerTable = ({ tableKey, label, actionTitle, renderAction }: IProps) => {
-  const { query } = useItemPickList(tableKey);
+const ItemPickerTable = ({
+  tableKey,
+  label,
+  actionTitle,
+  renderAction,
+  topSellersFirst = false,
+}: IProps) => {
+  const { query } = useItemPickList(tableKey, topSellersFirst);
   const { pagination, goToPage } = usePagination(tableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();

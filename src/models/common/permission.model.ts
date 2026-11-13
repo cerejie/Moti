@@ -25,7 +25,8 @@ export const derivePermissions = (role: EffectiveRole | null): IPermissions => {
     isOwner,
     viewDashboard: isOwner,
     transact: isStaff,
-    viewTransactions: isOwner,
+    // An employee sees only their own sales (RLS), and cannot void them.
+    viewTransactions: isStaff,
     voidTransaction: isOwner,
     browseInventory: isOwner,
     manageInventory: isOwner,

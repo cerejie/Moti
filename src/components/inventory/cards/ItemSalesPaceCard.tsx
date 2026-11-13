@@ -7,6 +7,7 @@ import {
 import { useItemSalesPace } from "../../../hook/data/analyzer/analyzer.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
+import { orderPaceStack } from "../../../styles/order/order.styles";
 import { detailPageSurface } from "../../../styles/view/detailPage.styles";
 import {
   formatCount,
@@ -18,6 +19,7 @@ import {
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import OrderAddButton from "../../order/menus/OrderAddButton";
 
 type IProps = {
   itemId: string;
@@ -67,8 +69,11 @@ const ItemSalesPaceCard = ({ itemId }: IProps) => {
   if (!pace.data) return <EmptyState compact description="No sales pace for this item." />;
 
   return (
-    <div className={detailPageSurface}>
-      <DetailRows record={pace.data} items={paceItems} />
+    <div className={orderPaceStack}>
+      <div className={detailPageSurface}>
+        <DetailRows record={pace.data} items={paceItems} />
+      </div>
+      <OrderAddButton row={pace.data} full />
     </div>
   );
 };

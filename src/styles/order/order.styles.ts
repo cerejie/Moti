@@ -6,4 +6,9 @@ export const orderListStack = "flex flex-col gap-3 pb-20";
 // Beside a Reorder row's link, above its tap area.
 export const orderAddButton = `${rowLinkRaised} min-h-touch wide:min-h-9`;
 
+// Under the item page's sales pace.
+export const orderAddButtonFull = "min-h-touch w-full";
+
+export const orderPaceStack = "flex flex-col gap-3";
+
 export const orderBarActions = "flex shrink-0 items-center gap-2";

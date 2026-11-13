@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { InventoryView } from "../../../enums/stock.enum";
+import { itemUnitValues } from "../../../enums/unit.enum";
 
 const wholeNumber = (label: string) =>
   z.string().trim().regex(/^\d+$/, `${label} must be a whole number`);
@@ -13,7 +14,7 @@ export const itemFormSchema = z.object({
   name: z.string().trim().min(1, "Enter the item name").max(120),
   category: z.string().trim().min(1, "Pick or type a category").max(60),
   brand: z.string().trim().min(1, "Pick or type a brand").max(60),
-  unit: z.string().trim().min(1, "Enter the unit, e.g. pc").max(12),
+  unit: z.enum(itemUnitValues, "Pick a unit"),
   reorder_level: wholeNumber("Warning low stock quantity"),
   selling_price: z
     .string()
@@ -35,4 +36,6 @@ export interface IInventoryFilters {
   categoryId?: string;
   brandId?: string;
   search: string;
+  // The Sell picker lists what sells most first; everything else reads A–Z.
+  topSellersFirst?: boolean;
 }

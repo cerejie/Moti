@@ -9,6 +9,7 @@ const TransactionItemTable = () => (
     label="Items to sell"
     actionTitle="Add"
     renderAction={(item) => <CartQuantityControl item={item} />}
+    topSellersFirst
   />
 );
 

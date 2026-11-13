@@ -5,6 +5,10 @@ import { ROUTES } from "../../../routes/route.paths";
 import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import AnalyzerItemList from "../../analyzer/lists/AnalyzerItemList";
+import OrderAddButton from "../../order/menus/OrderAddButton";
+import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
+
+const renderOrderAction = (row: IStockAnalysisRow) => <OrderAddButton row={row} />;
 
 // The top of Stock · Reorder, so the owner sees what to buy without leaving Home.
 const OrderNextPanel = () => {
@@ -27,6 +31,7 @@ const OrderNextPanel = () => {
       <AnalyzerItemList
         rows={orderNext.data ?? []}
         kind="order"
+        renderAction={renderOrderAction}
         emptyTitle="Nothing to order right now."
       />
     </SectionCard>

@@ -239,14 +239,36 @@ Notes (2026-11-14):
 - Sweep: `FIXTURES` also answers a table read (`{ "order_lists": <row> }`); `order-list` screen and
   the employee guard added.
 
-### Phase 5: Employee and polish
+### Phase 5: Employee and polish — coded 2026-11-14 (v1.55)
 
-- [ ] Migration 12: employees read their own sales (RLS); `app.notify` stops sending "New item" to
+- [x] Migration 12: employees read their own sales (RLS); `app.notify` stops sending "New item" to
       employees; unit text converted to the list (show the user any value that does not map first).
-- [ ] Sales history for an employee: own sales, no void.
-- [ ] Item form: unit picked from pc, set, box, pair, liter, meter.
-- [ ] Sell picker: top sellers first by default (needs a sold count employees may read).
-- [ ] "Add to order list" from Home's Order next rows and the item page.
+- [x] Sales history for an employee: own sales, no void.
+- [x] Item form: unit picked from pc, set, box, pair, liter, meter.
+- [x] Sell picker: top sellers first by default (needs a sold count employees may read).
+- [x] "Add to order list" from Home's Order next rows and the item page.
+
+Notes (2026-11-14):
+- Decided (all A): top sellers = units sold since the item was created; the old "New item"
+  notices in employees' bells are deleted. Units before the migration: `pc` ×17, `pcs` ×2 →
+  `pc`; the migration stops itself if any value is left unmapped.
+- `transactions_select` = owner, or staff on their own `created_by`; a second `stock_movements`
+  select policy gives staff their own `sale` rows (the sale page lines). An archived item's line
+  shows "Deleted item" to an employee (they cannot read archived items). `viewTransactions` is
+  every staff role now; `voidTransaction` stays owner-only.
+- The `inventory_items_new_push` trigger and `app.push_item_event()` are dropped (employees were
+  its only recipients); `app.notify` and `app.push_employees()` are unchanged.
+- `inventory_items.units_sold` (sales − voids, backfilled) kept by the `stock_movements_units_sold`
+  trigger; owners have no update grant on it. The Sell picker orders `units_sold desc, name`
+  (`topSellersFirst` on `ItemPickerTable`); Receive, Count and Damaged stay A–Z.
+- `enums/unit.enum.ts` holds the six units; `IInventoryItem.unit` is `ItemUnit`.
+- `OrderAddButton` `full` = the item page's full-width "Add to order list" under Sales pace;
+  Home's Order next rows carry the row "Add".
+- Sweep: `ORDER_STRIP=<column>` drops a sort on a column not migrated yet; employee `txn-detail`.
+- Migration 12 verified live (2026-11-14): 19 items `pc`, `units_sold` backfilled, the employee
+  reads only sale #1 and its two lines. Sweep: 252 captures, 0 console errors; 8 account-menu
+  clicks time out on phone/tablet and the History chip row reports Damaged/Sales off-screen —
+  neither screen changed in this phase, left for a later check.
 
 ### Phase 6: Motion and premium feel (no new library)
 

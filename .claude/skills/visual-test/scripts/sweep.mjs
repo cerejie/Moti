@@ -6,6 +6,7 @@
 //           SCREENS=transaction,inventory (screen names to keep)  BASE=http://127.0.0.1:4180
 //           FIXTURES=<file.json>: { "<rpc or table>": <response body> } for a read RPC or table
 //           not yet migrated (a table fixture is one row; .single() reads get it bare, lists as [row])
+//           ORDER_STRIP=<column>: drop a sort on a column whose migration is not applied yet
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -32,6 +33,7 @@ const onlyScreens = process.env.SCREENS?.split(",");
 
 // Reads pass through; every write is answered with an empty 200 so a sweep never changes data.
 const READ_RPC = /\/rpc\/(login_email|my_authority_role|inventory_summary|stock_analysis)\b/;
+const ORDER_STRIP = process.env.ORDER_STRIP;
 const FIXTURES = process.env.FIXTURES ? JSON.parse(fs.readFileSync(process.env.FIXTURES, "utf8")) : {};
 
 // Screens per role. `expect` is where a typed URL must land (route-guard check).
@@ -89,6 +91,7 @@ const SHEETS = {
     { name: "bell", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
     { name: "account-menu", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
     { name: "cart", path: "/transaction", open: openCart },
+    { name: "txn-detail", path: "/transaction", open: openTransaction },
   ],
 };
 
@@ -337,6 +340,12 @@ const main = async () => {
             const single = (request.headers().accept ?? "").includes("pgrst.object");
             const body = single ? FIXTURES[table] : [FIXTURES[table]];
             return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
+          }
+          if (ORDER_STRIP && method === "GET" && request.url().includes(`order=${ORDER_STRIP}`)) {
+            const url = new URL(request.url());
+            const order = url.searchParams.get("order").split(",").filter((part) => !part.startsWith(`${ORDER_STRIP}.`));
+            url.searchParams.set("order", order.join(","));
+            return route.continue({ url: url.toString() });
           }
           if (["GET", "HEAD", "OPTIONS"].includes(method) || (method === "POST" && READ_RPC.test(request.url()))) return route.continue();
           faked.add(`${method} ${request.url().split("?")[0].replace(/^.*\/v1/, "")}`);

@@ -31,7 +31,7 @@ const editableValues = (values: IItemSaveValues) => ({
   name: values.name.trim(),
   category_id: values.category_id,
   brand_id: values.brand_id,
-  unit: values.unit.trim(),
+  unit: values.unit,
   reorder_level: Number(values.reorder_level),
   selling_price: values.selling_price === "" ? null : Number(values.selling_price),
   location: textOrNull(values.location),
@@ -64,6 +64,7 @@ const inventoryServices = {
       );
     }
 
+    if (filters.topSellersFirst) query = query.order("units_sold", { ascending: false });
     if (signal) query = query.abortSignal(signal);
     const { data, error, count } = await query.order("name").range(from, to);
     if (error) throw toError(error);
