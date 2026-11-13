@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { AnalysisListKind } from "../../../enums/analyzer.enum";
 import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
 import {
@@ -26,6 +27,8 @@ type IProps = {
   rows: IStockAnalysisRow[];
   kind: AnalysisListKind;
   emptyTitle: string;
+  // Order rows carry "Add to the order list"; the rest stay plain links.
+  renderAction?: (row: IStockAnalysisRow) => ReactNode;
 };
 
 type IFigure = { value: number; caption: string };
@@ -53,7 +56,7 @@ const figureFor = (row: IStockAnalysisRow, kind: AnalysisListKind): IFigure => {
   return { value: row.on_hand, caption: "on hand" };
 };
 
-const AnalyzerItemList = ({ rows, kind, emptyTitle }: IProps) => {
+const AnalyzerItemList = ({ rows, kind, emptyTitle, renderAction }: IProps) => {
   if (rows.length === 0) return <EmptyState compact description={emptyTitle} />;
 
   return (
@@ -74,6 +77,7 @@ const AnalyzerItemList = ({ rows, kind, emptyTitle }: IProps) => {
               </span>
               <span className={analysisCaption}>{figure.caption}</span>
             </span>
+            {renderAction?.(row)}
           </li>
         );
       })}

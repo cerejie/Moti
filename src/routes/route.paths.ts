@@ -13,6 +13,7 @@ export const ROUTES = {
   receiveDelivery: "/movements/receive",
   stockCount: "/movements/count",
   damagedStock: "/movements/damaged",
+  orderList: "/movements/order-list",
   movementDetail: "/movements/:movementId",
   users: "/users",
   userDetail: "/users/:userId",

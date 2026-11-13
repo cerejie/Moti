@@ -10,6 +10,7 @@ import {
 import movementServices from "../../../services/data/movement.services";
 import {
   selectDeliveryLines,
+  selectDeliveryOrderListId,
   useDeliveryStore,
 } from "../../../store/data/delivery/delivery.store";
 import { useModal, useModalActions } from "../../common/modal.hook";
@@ -20,10 +21,12 @@ export interface IDeliveryReceipt {
   itemCount: number;
   totalQuantity: number;
   queued: boolean;
+  fromOrderList: boolean;
 }
 
 export const useDelivery = () => {
   const lines = useDeliveryStore(selectDeliveryLines);
+  const orderListId = useDeliveryStore(selectDeliveryOrderListId);
   const add = useDeliveryStore((state) => state.add);
   const setQuantity = useDeliveryStore((state) => state.setQuantity);
   const remove = useDeliveryStore((state) => state.remove);
@@ -31,6 +34,7 @@ export const useDelivery = () => {
 
   return {
     lines,
+    orderListId,
     itemCount: lines.length,
     totalQuantity: lines.reduce((sum, line) => sum + line.quantity, 0),
     add,
@@ -56,7 +60,7 @@ export const useReceiveDeliveryForm = () => {
   }, [modal.visible, reset]);
 
   const mutation = useAppMutation(
-    (values: IDeliveryFormInput) => movementServices.receiveDelivery(delivery.lines, values.note),
+    (values: IDeliveryFormInput) => movementServices.receiveDelivery(delivery.lines, values.note, delivery.orderListId),
     {
       silentError: true,
       invalidate: stockQueryKeys,
@@ -65,6 +69,7 @@ export const useReceiveDeliveryForm = () => {
           itemCount: delivery.itemCount,
           totalQuantity: delivery.totalQuantity,
           queued: result.queued,
+          fromOrderList: delivery.orderListId !== null,
         };
         delivery.clear();
         closeModal();

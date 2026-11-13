@@ -6,17 +6,21 @@ import { create } from "../../common/reset.store";
 
 type States = {
   lines: IDeliveryLine[];
+  // Set when the delivery was started from the order list; the save then updates that list.
+  orderListId: string | null;
 };
 
 type Actions = {
   add: (item: IStockLineItem) => void;
   setQuantity: (itemId: string, quantity: number) => void;
   remove: (itemId: string) => void;
+  fillFromOrderList: (orderListId: string, lines: IDeliveryLine[]) => void;
   clear: () => void;
 };
 
 const initialValues: States = {
   lines: [],
+  orderListId: null,
 };
 
 const maxQuantity = 99_999;
@@ -53,10 +57,19 @@ export const useDeliveryStore = create<States & Actions>()((set) => ({
   remove: (itemId) =>
     set((state) => ({ lines: state.lines.filter((line) => line.item.id !== itemId) })),
 
-  clear: () => set({ lines: [] }),
+  // Replaces the draft: the list is what is expected, each quantity is then confirmed or changed.
+  fillFromOrderList: (orderListId, lines) =>
+    set({
+      orderListId,
+      lines: lines.map((line) => ({ ...line, quantity: clampDeliveryQuantity(line.quantity) })),
+    }),
+
+  clear: () => set({ lines: [], orderListId: null }),
 }));
 
 export const selectDeliveryLines = (state: States) => state.lines;
+
+export const selectDeliveryOrderListId = (state: States) => state.orderListId;
 
 export const selectDeliveryQuantity = (itemId: string) => (state: States) =>
   state.lines.find((line) => line.item.id === itemId)?.quantity ?? 0;

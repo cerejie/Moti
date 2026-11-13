@@ -19,6 +19,12 @@ import BentoCell from "../../common/view/BentoCell";
 import BentoGrid from "../../common/view/BentoGrid";
 import AnalyzerItemList from "../lists/AnalyzerItemList";
 import AnalyzerPeriodSwitch from "../menus/AnalyzerPeriodSwitch";
+import OrderAddAllButton from "../../order/menus/OrderAddAllButton";
+import OrderAddButton from "../../order/menus/OrderAddButton";
+import OrderListBar from "../../order/panels/OrderListBar";
+import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
+
+const renderOrderAction = (row: IStockAnalysisRow) => <OrderAddButton row={row} />;
 
 // What to order first, worked out from the period's sales; every rule is spelled out under it.
 const ReorderPanel = () => {
@@ -39,10 +45,13 @@ const ReorderPanel = () => {
             <SectionCard
               title="Order now"
               subtitle={`Out, low, or under ${analysisCoverDays} days left`}
+              extra={<OrderAddAllButton rows={groups.orderNow} />}
+              stackExtra
             >
               <AnalyzerItemList
                 rows={groups.orderNow}
                 kind="order"
+                renderAction={renderOrderAction}
                 emptyTitle="Nothing to order right now."
               />
             </SectionCard>
@@ -55,6 +64,7 @@ const ReorderPanel = () => {
               <AnalyzerItemList
                 rows={groups.lowSoon}
                 kind="order"
+                renderAction={renderOrderAction}
                 emptyTitle="Nothing is running low."
               />
             </SectionCard>
@@ -94,6 +104,7 @@ const ReorderPanel = () => {
         <AnalyzerPeriodSwitch value={period} onChange={setPeriod} />
       </div>
       {renderBody()}
+      <OrderListBar />
     </div>
   );
 };

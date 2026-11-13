@@ -19,7 +19,9 @@ const DeliverySuccessModal = () => {
       message={
         receipt?.queued
           ? "It will be recorded when you're back online."
-          : "Stock has been added."
+          : receipt?.fromOrderList
+            ? "Stock has been added and the order list updated. Anything that did not arrive stays on it."
+            : "Stock has been added."
       }
       okText="Done"
       onClose={goBack}

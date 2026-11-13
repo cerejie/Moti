@@ -4,7 +4,8 @@
 //   OUT=<scratchpad>/shots PW=<scratchpad>/node_modules/playwright-core/index.js node sweep.mjs
 // Optional: ROLES=signed-out,owner,employee  SIZES=phone,tablet,desktop  THEMES=light,dark
 //           SCREENS=transaction,inventory (screen names to keep)  BASE=http://127.0.0.1:4180
-//           FIXTURES=<file.json>: { "<rpc>": <response body> } for a read RPC not yet migrated
+//           FIXTURES=<file.json>: { "<rpc or table>": <response body> } for a read RPC or table
+//           not yet migrated (a table fixture is one row; .single() reads get it bare, lists as [row])
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -50,6 +51,7 @@ const SCREENS = {
     { name: "receive", path: "/movements/receive" },
     { name: "count", path: "/movements/count" },
     { name: "damaged", path: "/movements/damaged" },
+    { name: "order-list", path: "/movements/order-list" },
     { name: "users", path: "/users" },
     { name: "account", path: "/account" },
   ],
@@ -62,6 +64,7 @@ const SCREENS = {
     { name: "guard-movements", path: "/movements", expect: "/transaction" },
     { name: "guard-receive", path: "/movements/receive", expect: "/transaction" },
     { name: "guard-count", path: "/movements/count", expect: "/transaction" },
+    { name: "guard-order-list", path: "/movements/order-list", expect: "/transaction" },
     { name: "guard-users", path: "/users", expect: "/transaction" },
   ],
 };
@@ -328,6 +331,12 @@ const main = async () => {
           const rpc = request.url().match(/\/rpc\/(\w+)/)?.[1];
           if (rpc && rpc in FIXTURES) {
             return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(FIXTURES[rpc]) });
+          }
+          const table = rpc ? null : request.url().match(/\/rest\/v1\/(\w+)/)?.[1];
+          if (table && table in FIXTURES && method === "GET") {
+            const single = (request.headers().accept ?? "").includes("pgrst.object");
+            const body = single ? FIXTURES[table] : [FIXTURES[table]];
+            return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
           }
           if (["GET", "HEAD", "OPTIONS"].includes(method) || (method === "POST" && READ_RPC.test(request.url()))) return route.continue();
           faked.add(`${method} ${request.url().split("?")[0].replace(/^.*\/v1/, "")}`);

@@ -13,6 +13,7 @@ export const transactionLinesKey = "transaction-lines";
 export const movementListKey = "movement-list";
 export const itemMovementsKey = "item-movements";
 export const stockAnalysisKey = "stock-analysis";
+export const orderListKey = "order-list";
 export const userListKey = "user-list";
 export const inboxListKey = "inbox-list";
 
@@ -24,6 +25,7 @@ export const stockQueryKeys = [
   [movementListKey],
   [itemMovementsKey],
   [stockAnalysisKey],
+  [orderListKey],
   [transactionListKey],
   [transactionLinesKey],
 ] as const;

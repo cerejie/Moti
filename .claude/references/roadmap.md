@@ -210,14 +210,34 @@ Notes (2026-11-14):
 - `QuantityInput` (common/form) is the one typed quantity: cart, delivery review, count sheet.
 - Sweep: receive, count, damaged pages and their sheets; employee guards for the new routes.
 
-### Phase 4: Order list
+### Phase 4: Order list — coded 2026-11-14 (v1.54)
 
-- [ ] Migration 11: a saved order list (header + lines, FKs, RLS owner-only), one open list at a time.
-- [ ] Add from a Reorder row or "Add all suggestions"; adjust and remove on a pushed order-list page.
-- [ ] A bar on Reorder like the cart bar: "Order list · N items".
-- [ ] Share: plain text through the Web Share API, copy as the fallback.
-- [ ] Receive delivery opens pre-filled from the list; partial deliveries keep the rest open and
+- [x] Migration 11: a saved order list (header + lines, FKs, RLS owner-only), one open list at a time.
+- [x] Add from a Reorder row or "Add all suggestions"; adjust and remove on a pushed order-list page.
+- [x] A bar on Reorder like the cart bar: "Order list · N items".
+- [x] Share: plain text through the Web Share API, copy as the fallback.
+- [x] Receive delivery opens pre-filled from the list; partial deliveries keep the rest open and
       the list closes when fully received.
+
+Notes (2026-11-14):
+- Decided: receiving from the list is a new `receive_order_list(p_list_id, p_lines, p_note,
+  p_client_id)` that calls `receive_delivery` (unchanged) and takes what arrived off each line in
+  the same save; a line received in full (or over) goes, a fully received list is closed and
+  kept (`status closed`, `closed_at`). An item without a suggestion (too few sales) goes on with
+  enough to clear its warning quantity (`reorder_level − on_hand + 1`, at least 1). "Add all
+  suggestions" sits on Order now only; an item already on the list shows "On list" and Add all
+  skips it (its quantity is changed on the list page).
+- `order_lists` (a partial unique index keeps one `open`) + `order_list_lines` (quantity = still to
+  come, unique per list and item). Lines are added only by `add_to_order_list(p_lines)` (opens a
+  list if none, skips items already on it, so a replay changes nothing); the owner updates
+  `quantity` and deletes lines directly through `runWrite`.
+- `/movements/order-list` is a pushed owner page. Quantity changes show at once (the open-list
+  cache is patched) and are saved after a 600 ms pause, flushed on leaving the page. Share sends
+  "Order list — <date>" + "• Name (CODE) — 12 pc" lines (`utils/order.utils.ts`,
+  `hook/common/share.hook.ts`). Receive fills the delivery draft from the list, carries the list
+  id, and opens the review; the success sheet says the rest stays on the list.
+- Sweep: `FIXTURES` also answers a table read (`{ "order_lists": <row> }`); `order-list` screen and
+  the employee guard added.
 
 ### Phase 5: Employee and polish
 

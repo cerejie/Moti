@@ -124,6 +124,16 @@ export const protectedViewRoutes: IRoute[] = [
     },
   },
   {
+    key: "orderList",
+    label: "Order list",
+    path: ROUTES.orderList,
+    isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
+    can: "viewMovements",
+    loader: permissionLoader("viewMovements", ROUTES.transaction),
+    lazy: { Component: async () => (await import("../pages/OrderList/OrderListView")).default },
+  },
+  {
     key: "movementDetail",
     label: "Stock change",
     path: ROUTES.movementDetail,

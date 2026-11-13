@@ -107,17 +107,28 @@ const movementServices = {
       },
     }),
 
-  receiveDelivery: (lines: readonly IDeliveryLine[], note: string): Promise<IMutationResult> =>
-    runWrite({
-      kind: "rpc",
-      fn: "receive_delivery",
-      label: `Receive delivery of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
-      args: {
-        p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
-        p_note: note,
-        p_client_id: newWriteId(),
-      },
-    }),
+  // From an order list, the same save also takes what arrived off that list.
+  receiveDelivery: (
+    lines: readonly IDeliveryLine[],
+    note: string,
+    orderListId: string | null,
+  ): Promise<IMutationResult> => {
+    const args = {
+      p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
+      p_note: note,
+      p_client_id: newWriteId(),
+    };
+    const label = `Receive delivery of ${lines.length} item${lines.length === 1 ? "" : "s"}`;
+
+    return orderListId
+      ? runWrite({
+          kind: "rpc",
+          fn: "receive_order_list",
+          label,
+          args: { ...args, p_list_id: orderListId },
+        })
+      : runWrite({ kind: "rpc", fn: "receive_delivery", label, args });
+  },
 
   // Only the lines that differ are sent; on_hand_seen is what the screen showed.
   recordCount: (lines: readonly ICountLine[], note: string): Promise<IMutationResult> =>
