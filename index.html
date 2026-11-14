@@ -34,6 +34,13 @@
         // Storage blocked: start light; useApplyTheme corrects it once the app mounts.
       }
     </script>
+    <!-- Hidden until theme.css reveals it, so the splash text never shows unstyled in the
+         corner while the stylesheet is still loading (the dev server adds it from JavaScript). -->
+    <style>
+      #splash {
+        visibility: hidden;
+      }
+    </style>
   </head>
   <body>
     <!-- Launch splash: plain markup so it paints with the stylesheet, before the bundle

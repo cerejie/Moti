@@ -714,3 +714,8 @@
 @utility h-dvh-safe {
   height: 100dvh;
 }
+
+/* Unlayered and last, so it overrides index.html's hide once this stylesheet has loaded. */
+#splash {
+  visibility: visible;
+}
