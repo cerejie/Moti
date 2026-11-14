@@ -7,15 +7,19 @@ import transactionServices from "../../../services/data/transaction.services";
 import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 export const useTransactionHistory = () => {
   const { filters } = useFilters<{ status?: TransactionStatus }>(transactionHistoryTableKey);
   const { pagination } = usePagination(transactionHistoryTableKey);
   const status = filters.status;
+  // Follows the header switcher; "All branches" lists every branch the account can see.
+  const branchId = useActiveBranch().branch?.id;
 
   return useQuery({
-    queryKey: [transactionListKey, status, pagination.pageNumber, pagination.pageSize],
-    queryFn: ({ signal }) => transactionServices.getList({ status }, pagination, signal),
+    queryKey: [transactionListKey, status, branchId, pagination.pageNumber, pagination.pageSize],
+    queryFn: ({ signal }) =>
+      transactionServices.getList({ status, branchId }, pagination, signal),
     placeholderData: keepPreviousData,
   });
 };
@@ -33,7 +37,7 @@ export const useTransaction = (transactionId: string | undefined) => {
   });
 };
 
-export const useTransactionLines =(transactionId: string | undefined, enabled: boolean) =>
+export const useTransactionLines = (transactionId: string | undefined, enabled: boolean) =>
   useQuery({
     queryKey: [transactionLinesKey, transactionId],
     queryFn: ({ signal }) => transactionServices.getLines(transactionId ?? "", signal),

@@ -29,6 +29,8 @@ type IProps = {
   actionTitle: string;
   renderAction: (item: IInventoryItem) => ReactNode;
   topSellersFirst?: boolean;
+  // Shows that branch's stock instead of the all-branches total.
+  branchId?: string;
 };
 
 const columnsWith = (
@@ -95,8 +97,9 @@ const ItemPickerTable = ({
   actionTitle,
   renderAction,
   topSellersFirst = false,
+  branchId,
 }: IProps) => {
-  const { query } = useItemPickList(tableKey, topSellersFirst);
+  const { query } = useItemPickList(tableKey, topSellersFirst, branchId);
   const { pagination, goToPage } = usePagination(tableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();

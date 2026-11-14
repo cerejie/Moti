@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { usePermissions } from "../../../hook/data/account/account.permission.hook";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useTransaction } from "../../../hook/data/transaction/transaction.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { ITransaction } from "../../../models/data/transaction/transaction.response";
@@ -29,6 +30,7 @@ const TransactionDetailPanel = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
   const query = useTransaction(transactionId);
   const { voidTransaction } = usePermissions();
+  const { multiple } = useActiveBranch();
   const transaction = query.data;
 
   if (query.isLoading) return <EmptyState loading description="Loading sale…" />;
@@ -49,7 +51,13 @@ const TransactionDetailPanel = () => {
       <div className={detailPageHeading}>
         <h1 className={detailPageTitle}>Sale #{transaction.number}</h1>
         <p className={detailPageMeta}>
-          {formatDateTime(transaction.created_at)} · {transaction.created_by_name}
+          {[
+            formatDateTime(transaction.created_at),
+            transaction.created_by_name,
+            multiple ? transaction.branch?.name : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
       </div>
 

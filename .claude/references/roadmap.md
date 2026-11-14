@@ -27,7 +27,7 @@ SaaS build, which comes later.
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
-- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phase 1 coded
+- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phases 1–2 coded
       2026-11-14 (v1.57, migration 13 waits to be applied); next up: Phase 2 (Transaction)
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
@@ -566,15 +566,29 @@ Notes (2026-11-14):
 - [x] Header switcher: desktop `AppHeader`, phone `AppBar`; hidden when the account can see only
       one branch. Nothing is filtered by it yet.
 
-### Phase 2: Transaction
+### Phase 2: Transaction — coded 2026-11-14 (v1.58, no migration)
 
-- [ ] Sell picker shows the active branch's stock (`branch_stock`); the cart belongs to one
+Notes (2026-11-14):
+- `useActiveBranch()` (in `branch.scope.hook.ts`): `branch` = the switcher's pick, `writeBranch` =
+  that pick or the only active branch in reach, `multiple` = more than one branch (archived count).
+  `useBranchScope.setBranch` confirms before a switch that changes the cart's branch, and resets
+  every `branchScopedTableKeys` page.
+- The pick in `BranchPickPanel` (`components/branch/panels/`) sets the header switcher; Phase 3's
+  writes reuse it. History has no in-table branch filter: the switcher is the filter.
+- `inventoryServices.getList({ branchId })` left-joins `branch_stock` filtered to the branch; an
+  item the branch does not carry reads 0 / Out. Only the Sell picker passes it so far; top sellers
+  still rank by all-branch sales.
+- Visual test: owner + employee sweep of Sell / cart / History / detail (54 captures, only the
+  known 36 px search input), plus a faked second branch (pick panel, switch-clears-cart confirm,
+  North picker all Out, Branch column, detail meta) at phone light and desktop dark.
+
+- [x] Sell picker shows the active branch's stock (`branch_stock`); the cart belongs to one
       branch and is cleared (after a confirm) when the branch changes; checkout sends the branch.
-- [ ] With "All branches" selected, New transaction asks for a branch first.
-- [ ] History: **Branch** column (hidden when a single branch is selected), list follows the
+- [x] With "All branches" selected, New transaction asks for a branch first.
+- [x] History: **Branch** column (hidden when a single branch is selected), list follows the
       switcher; server-side filter on `branch_id`.
-- [ ] Transaction detail page: branch in the heading meta; void unchanged.
-- [ ] Offline queue: the queued payload carries the branch.
+- [x] Transaction detail page: branch in the heading meta; void unchanged.
+- [x] Offline queue: the queued payload carries the branch.
 
 ### Phase 3: Inventory and Stock history
 

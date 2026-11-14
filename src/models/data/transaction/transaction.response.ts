@@ -3,6 +3,9 @@ import type { TransactionStatus } from "../../../enums/transaction.enum";
 export interface ITransaction {
   id: string;
   number: number;
+  branch_id: string;
+  // null when RLS hides the branch row.
+  branch: { name: string } | null;
   status: TransactionStatus;
   line_count: number;
   total_quantity: number;

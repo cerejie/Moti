@@ -4,6 +4,7 @@ import {
 } from "../../../enums/transaction.enum";
 import { useFilters } from "../../../hook/common/filter.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useTransactionHistory } from "../../../hook/data/transaction/transaction.list.hook";
 import { transactionHistoryTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
@@ -44,6 +45,16 @@ const columns: IDataTableColumn<ITransaction>[] = [
     listRender: (transaction) => transaction.created_by_name,
   },
   {
+    key: "branch",
+    title: "Branch",
+    collapse: "xl",
+    mobile: "meta",
+    render: (_, transaction) => (
+      <span className={mutedText}>{transaction.branch?.name ?? "—"}</span>
+    ),
+    listRender: (transaction) => transaction.branch?.name ?? "—",
+  },
+  {
     key: "items",
     title: "Items",
     mobile: "amount",
@@ -80,7 +91,11 @@ const TransactionHistoryTable = () => {
     transactionHistoryTableKey,
   );
   const navigate = useTransitionNavigate();
+  const { branch, multiple } = useActiveBranch();
   const page = query.data;
+  // The Branch column says nothing when one branch is picked or the shop has only one.
+  const visibleColumns =
+    multiple && !branch ? columns : columns.filter((column) => column.key !== "branch");
 
   return (
     <TablePanel
@@ -97,7 +112,7 @@ const TransactionHistoryTable = () => {
     >
       <DataTable<ITransaction>
         label="Sales"
-        columns={columns}
+        columns={visibleColumns}
         data={page?.data ?? []}
         loading={query.isLoading}
         refreshing={query.isFetching && !query.isLoading}

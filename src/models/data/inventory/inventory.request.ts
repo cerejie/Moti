@@ -38,4 +38,6 @@ export interface IInventoryFilters {
   search: string;
   // The Sell picker lists what sells most first; everything else reads A–Z.
   topSellersFirst?: boolean;
+  // Set: on_hand and status are that branch's. Unset: the all-branches total.
+  branchId?: string;
 }

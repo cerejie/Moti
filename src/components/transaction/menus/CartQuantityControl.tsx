@@ -13,11 +13,12 @@ import {
 import AppButton from "../../common/button/AppButton";
 
 type IProps = {
+  branchId: string;
   item: IInventoryItem;
 };
 
 // "Add" until the item is in the cart, then − qty + capped at the stock left.
-const CartQuantityControl = ({ item }: IProps) => {
+const CartQuantityControl = ({ branchId, item }: IProps) => {
   const { add, setQuantity, remove } = useCart();
   const quantity = useCartStore(selectCartQuantity(item.id));
 
@@ -27,7 +28,7 @@ const CartQuantityControl = ({ item }: IProps) => {
         size="lg"
         className={addButton}
         disabled={item.on_hand === 0}
-        onPress={() => add(item)}
+        onPress={() => add(branchId, item)}
       >
         <Plus />
         {item.on_hand === 0 ? "Out of stock" : "Add"}
@@ -53,7 +54,7 @@ const CartQuantityControl = ({ item }: IProps) => {
         variant="outline"
         aria-label={`One more ${item.name}`}
         disabled={quantity >= item.on_hand}
-        onPress={() => add(item)}
+        onPress={() => add(branchId, item)}
       >
         <Plus />
       </AppButton>

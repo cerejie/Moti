@@ -34,7 +34,7 @@ const noteField: IFieldConfig<ICheckoutFormInput> = {
 };
 
 const CartModal = () => {
-  const { open, cart, form, mutation, onSubmit, onOpenChange } = useCheckoutForm();
+  const { open, cart, branchName, form, mutation, onSubmit, onOpenChange } = useCheckoutForm();
   const empty = cart.itemCount === 0;
 
   return (
@@ -42,7 +42,11 @@ const CartModal = () => {
       open={open}
       onOpenChange={onOpenChange}
       title="Review sale"
-      description="Check the items and quantities, then complete the sale."
+      description={
+        branchName
+          ? `Selling from ${branchName}. Check the items and quantities, then complete the sale.`
+          : "Check the items and quantities, then complete the sale."
+      }
       size="md"
       footer={
         <>

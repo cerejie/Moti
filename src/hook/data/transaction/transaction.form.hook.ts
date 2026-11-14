@@ -15,9 +15,14 @@ import {
 } from "../../../models/data/transaction/transaction.request";
 import type { ITransaction } from "../../../models/data/transaction/transaction.response";
 import transactionServices from "../../../services/data/transaction.services";
-import { selectCartLines, useCartStore } from "../../../store/data/transaction/transaction.store";
+import {
+  selectCartBranch,
+  selectCartLines,
+  useCartStore,
+} from "../../../store/data/transaction/transaction.store";
 import { useModal, useModalActions } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 // What the success prompt shows once the cart is gone.
 export interface ICheckoutReceipt {
@@ -28,12 +33,14 @@ export interface ICheckoutReceipt {
 
 export const useCart = () => {
   const lines = useCartStore(selectCartLines);
+  const branchId = useCartStore(selectCartBranch);
   const add = useCartStore((state) => state.add);
   const setQuantity = useCartStore((state) => state.setQuantity);
   const remove = useCartStore((state) => state.remove);
   const clear = useCartStore((state) => state.clear);
 
   return {
+    branchId,
     lines,
     itemCount: lines.length,
     totalQuantity: lines.reduce((sum, line) => sum + line.quantity, 0),
@@ -48,6 +55,11 @@ export const useCheckoutForm = () => {
   const { modal, closeModal } = useModal(cartModalKey);
   const { openModal } = useModalActions();
   const cart = useCart();
+  const { branches, multiple } = useActiveBranch();
+  // Named only when the shop has more than one branch.
+  const branchName = multiple
+    ? (branches.find((branch) => branch.id === cart.branchId)?.name ?? null)
+    : null;
 
   const form = useForm<ICheckoutFormInput>({
     resolver: zodResolver(checkoutFormSchema),
@@ -60,7 +72,10 @@ export const useCheckoutForm = () => {
   }, [modal.visible, reset]);
 
   const mutation = useAppMutation(
-    (values: ICheckoutFormInput) => transactionServices.checkout(cart.lines, values.note),
+    (values: ICheckoutFormInput) =>
+      cart.branchId
+        ? transactionServices.checkout(cart.branchId, cart.lines, values.note)
+        : Promise.reject(new Error("Pick a branch to sell from")),
     {
       silentError: true,
       invalidate: stockQueryKeys,
@@ -80,6 +95,7 @@ export const useCheckoutForm = () => {
   return {
     open: modal.visible,
     cart,
+    branchName,
     form,
     mutation,
     onSubmit: (values: ICheckoutFormInput) => mutation.mutate(values),

@@ -25,4 +25,5 @@ export interface ICartLine {
 
 export interface ITransactionFilters {
   status?: TransactionStatus;
+  branchId?: string;
 }

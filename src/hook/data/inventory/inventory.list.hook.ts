@@ -60,7 +60,12 @@ type IPickFilterValues = {
 
 // The items a sale, delivery, count or write-off picks from: every active item, out-of-stock
 // ones included. Each picker keeps its own search, filters and page under its table key.
-export const useItemPickList = (tableKey: string, topSellersFirst = false) => {
+// With a branch, the stock shown is that branch's (the Sell picker); without, the total.
+export const useItemPickList = (
+  tableKey: string,
+  topSellersFirst = false,
+  branchId?: string,
+) => {
   const { filters } = useFilters<IPickFilterValues>(tableKey);
   const search = useDebouncedSearch(tableKey, tableKey);
   const { pagination } = usePagination(tableKey);
@@ -72,6 +77,7 @@ export const useItemPickList = (tableKey: string, topSellersFirst = false) => {
       "pick",
       tableKey,
       topSellersFirst,
+      branchId,
       categoryId,
       brandId,
       search,
@@ -80,7 +86,7 @@ export const useItemPickList = (tableKey: string, topSellersFirst = false) => {
     ],
     queryFn: ({ signal }) =>
       inventoryServices.getList(
-        { view: "all", categoryId, brandId, search, topSellersFirst },
+        { view: "all", categoryId, brandId, search, topSellersFirst, branchId },
         pagination,
         signal,
       ),

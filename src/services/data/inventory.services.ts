@@ -22,8 +22,20 @@ import brandServices from "./brand.services";
 const table = "inventory_items";
 const columns =
   "id, item_code, name, category_id, category:categories(name), brand_id, brand:brands(name), unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
+// One left-joined row per item; an item the branch does not carry has none and reads as 0.
+const branchStockColumns = "branch_stock(on_hand, stock_status)";
 const alertLimit = 50;
 const categoryCountLimit = 200;
+
+type IBranchStockRow = IInventoryItem & {
+  branch_stock: Pick<IInventoryItem, "on_hand" | "stock_status">[];
+};
+
+const withBranchStock = ({ branch_stock, ...item }: IBranchStockRow): IInventoryItem => ({
+  ...item,
+  on_hand: branch_stock[0]?.on_hand ?? 0,
+  stock_status: branch_stock[0]?.stock_status ?? "out",
+});
 
 const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
 
@@ -44,7 +56,11 @@ const inventoryServices = {
     signal?: AbortSignal,
   ): Promise<IPaginationResponse<IInventoryItem>> => {
     const [from, to] = pageRange(pagination);
-    let query = supabase.from(table).select(columns, { count: "exact" });
+    const { branchId } = filters;
+    let query = supabase
+      .from(table)
+      .select(branchId ? `${columns}, ${branchStockColumns}` : columns, { count: "exact" });
+    if (branchId) query = query.eq("branch_stock.branch_id", branchId);
 
     if (filters.view === "archived") query = query.not("archived_at", "is", null);
     else query = query.is("archived_at", null);
@@ -69,7 +85,10 @@ const inventoryServices = {
     const { data, error, count } = await query.order("name").range(from, to);
     if (error) throw toError(error);
 
-    return toPage((data ?? []) as unknown as IInventoryItem[], count ?? 0, pagination);
+    const rows = branchId
+      ? ((data ?? []) as unknown as IBranchStockRow[]).map(withBranchStock)
+      : ((data ?? []) as unknown as IInventoryItem[]);
+    return toPage(rows, count ?? 0, pagination);
   },
 
   getById: async (id: string, signal?: AbortSignal): Promise<IInventoryItem> => {

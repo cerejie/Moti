@@ -19,7 +19,7 @@ import { newWriteId } from "../../utils/write.utils";
 
 const table = "transactions";
 const columns =
-  "id, number, status, line_count, total_quantity, total_amount, note, created_by_name, created_at, voided_at, voided_by_name, void_reason";
+  "id, number, branch_id, branch:branches(name), status, line_count, total_quantity, total_amount, note, created_by_name, created_at, voided_at, voided_by_name, void_reason";
 const lineColumns = "id, item_id, item:inventory_items(name, item_code, unit), quantity, unit_price";
 
 const transactionServices = {
@@ -31,6 +31,7 @@ const transactionServices = {
     const [from, to] = pageRange(pagination);
     let query = supabase.from(table).select(columns, { count: "exact" });
     if (filters.status) query = query.eq("status", filters.status);
+    if (filters.branchId) query = query.eq("branch_id", filters.branchId);
     if (signal) query = query.abortSignal(signal);
 
     const { data, error, count } = await query
@@ -38,7 +39,7 @@ const transactionServices = {
       .range(from, to);
     if (error) throw toError(error);
 
-    return toPage((data ?? []) as ITransaction[], count ?? 0, pagination);
+    return toPage((data ?? []) as unknown as ITransaction[], count ?? 0, pagination);
   },
 
   getById: async (id: string, signal?: AbortSignal): Promise<ITransaction> => {
@@ -49,7 +50,7 @@ const transactionServices = {
     // RLS hides another shop's transaction exactly like a missing id.
     if (!data) throw new Error("This sale doesn't exist or was removed.");
 
-    return data as ITransaction;
+    return data as unknown as ITransaction;
   },
 
   getLines: async (transactionId: string, signal?: AbortSignal): Promise<ITransactionLine[]> => {
@@ -65,8 +66,8 @@ const transactionServices = {
     return (data ?? []) as unknown as ITransactionLine[];
   },
 
-  // The client id is fixed here, so a queued replay after a lost response is ignored.
-  checkout: (lines: ICartLine[], note: string): Promise<IMutationResult> =>
+  // The client id and branch are fixed here, so a queued replay sells from the same branch once.
+  checkout: (branchId: string, lines: ICartLine[], note: string): Promise<IMutationResult> =>
     runWrite({
       kind: "rpc",
       fn: "record_transaction",
@@ -75,6 +76,7 @@ const transactionServices = {
         p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
         p_note: note,
         p_client_id: newWriteId(),
+        p_branch_id: branchId,
       },
     }),
 
