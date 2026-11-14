@@ -8,6 +8,7 @@ const StockCountView = () => (
     title="Check stock count"
     subtitle="Pick products or a whole category, then type the actual quantity you count"
     back={{ label: "Stocks", path: ROUTES.inventory }}
+    layout="fill"
   >
     <CountPanel />
 

@@ -1,7 +1,17 @@
 import { cva } from "class-variance-authority";
 
 // DataTable, ported from TARTAR: a ruled grid on wide screens, a native list on compact.
-export const dataTableRoot = "flex min-w-0 flex-col";
+export const dataTableRoot = cva("flex min-w-0 flex-col", {
+  variants: {
+    fill: { true: "wide:min-h-0 wide:flex-1", false: "" },
+  },
+  defaultVariants: { fill: false },
+});
+
+// Wide fill: this box scrolls the rows and the load-more sentinel. The table's own container
+// stops clipping, so the sticky head pins to this box instead of to it.
+export const dataTableScroll =
+  "min-h-0 flex-1 overflow-auto overscroll-contain [&>[data-slot=table-container]]:overflow-visible";
 
 export const dataTableGrid = "border-collapse";
 
@@ -10,8 +20,13 @@ export const dataTableHeader = "[&_tr]:border-border";
 export const dataTableHead = cva("h-11 px-3 text-label font-medium text-muted-foreground", {
   variants: {
     align: { left: "", center: "text-center", right: "text-right" },
+    // The row rule scrolls away with a sticky head, so the head draws its own.
+    sticky: {
+      true: "sticky top-0 z-10 bg-panel shadow-[inset_0_-1px_0_var(--color-border)]",
+      false: "",
+    },
   },
-  defaultVariants: { align: "left" },
+  defaultVariants: { align: "left", sticky: false },
 });
 
 export const dataTableCollapse = cva("", {
@@ -99,9 +114,19 @@ export const dataListSkeletonAmount = "h-4 w-16";
 
 export const dataListSkeletonMeta = "h-3 w-3/5";
 
-export const tablePanel = "flex min-w-0 flex-col gap-3";
+export const tablePanel = cva("flex min-w-0 flex-col gap-3", {
+  variants: {
+    fill: { true: "wide:min-h-0 wide:flex-1", false: "" },
+  },
+  defaultVariants: { fill: false },
+});
 
-export const tablePanelBody = "min-w-0";
+export const tablePanelBody = cva("min-w-0", {
+  variants: {
+    fill: { true: "wide:flex wide:min-h-0 wide:flex-1 wide:flex-col", false: "" },
+  },
+  defaultVariants: { fill: false },
+});
 
 export const tablePanelTitle = "font-heading text-base font-semibold text-foreground";
 

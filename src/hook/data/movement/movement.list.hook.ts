@@ -21,13 +21,10 @@ type IMovementFilterValues = {
 
 const recentLimit = 5;
 
-// A ledger is read in long runs, so Stock history pages wider than the other tables.
-export const movementPageDefaults = { pageSize: 20 } as const;
-
 export const useMovementList = () => {
   const { filters, setFilters } = useFilters<IMovementFilterValues>(movementTableKey);
   const search = useDebouncedSearch(movementTableKey, movementTableKey);
-  const { pagination } = usePagination(movementTableKey, movementPageDefaults);
+  const { pagination } = usePagination(movementTableKey);
 
   // Follows the header switcher; "All branches" lists every branch the account can see.
   const branchId = useActiveBranch().branch?.id;

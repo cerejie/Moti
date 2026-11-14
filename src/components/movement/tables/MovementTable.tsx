@@ -7,10 +7,7 @@ import {
 } from "../../../enums/stock.enum";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
-import {
-  movementPageDefaults,
-  useMovementList,
-} from "../../../hook/data/movement/movement.list.hook";
+import { useMovementList } from "../../../hook/data/movement/movement.list.hook";
 import { useUserOptions } from "../../../hook/data/user/user.list.hook";
 import { movementTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
@@ -136,7 +133,7 @@ const pathOf = (movement: IStockMovement) =>
 const MovementTable = () => {
   const { query, view, setView, narrowed } = useMovementList();
   const navigate = useTransitionNavigate();
-  const { pagination, goToPage } = usePagination(movementTableKey, movementPageDefaults);
+  const { pagination, goToPage } = usePagination(movementTableKey);
   const { options: personOptions } = useUserOptions();
   const { branch, multiple } = useActiveBranch();
   const page = query.data;
@@ -146,6 +143,7 @@ const MovementTable = () => {
 
   return (
     <TablePanel
+      fill
       toolbar={
         <>
           <ContextSwitch
@@ -186,6 +184,7 @@ const MovementTable = () => {
         onPageChange={goToPage}
         emptyText={narrowed ? "Nothing matches. Try another item or person." : emptyTextByView[view]}
         onRowClick={(movement) => void navigate(pathOf(movement))}
+        fill
       />
     </TablePanel>
   );

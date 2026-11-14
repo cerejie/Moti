@@ -21,6 +21,7 @@ const CountPanel = () => (
           actionTitle="Count"
           branchId={branchId}
           renderAction={(item) => <CountPickControl branchId={branchId} item={item} />}
+          fill
         />
         <CountBar />
       </div>

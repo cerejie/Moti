@@ -16,9 +16,10 @@ export const appShellContent =
   "min-h-0 flex-1 overflow-y-auto overscroll-contain [view-transition-name:page]";
 
 // A column at least as tall as the scroll box, so a short page can hold a
-// footer at its foot. Both shells use it.
+// footer at its foot. Both shells use it. A fill page pins it to the panel height instead,
+// so the page's own list is the only thing that scrolls.
 export const appShellContentInner =
-  "flex min-h-full w-full flex-col px-4 pt-4 pb-6 wide:px-6 wide:pt-6 wide:pb-10 lg:px-8";
+  "flex min-h-full w-full flex-col px-4 pt-4 pb-6 wide:px-6 wide:pt-6 wide:pb-10 lg:px-8 wide:has-[[data-view-layout=fill]]:h-full";
 
 // The exact inverse of the column's gutters, for a surface that runs to the
 // panel edges and sets its own margin instead (the ContentView card).

@@ -12,6 +12,7 @@ const MasterfileView = () => (
     back={{ label: "Stocks", path: ROUTES.inventory }}
     tabs={<MasterfileTabSwitch />}
     actions={<MasterfileHeaderActions />}
+    layout="fill"
   >
     <MasterfilePanel />
     <CategoryFormModal />

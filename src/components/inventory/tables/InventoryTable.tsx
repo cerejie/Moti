@@ -13,6 +13,7 @@ import {
 } from "../../../hook/data/inventory/inventory.list.hook";
 import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 import { inventoryTableKey } from "../../../keys/table.keys";
+import type { IFilterControl } from "../../../models/common/filter.model";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -29,6 +30,7 @@ import { isShowingPausedRows } from "../../../utils/query.utils";
 import { itemPath } from "../../../utils/route.utils";
 import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
+import ColumnFilterMenu from "../../common/table/ColumnFilterMenu";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
@@ -43,26 +45,39 @@ const renderAvailable = (item: IInventoryItem) => (
   </span>
 );
 
+const renderIdentity = (item: IInventoryItem, meta: string) => (
+  <span className={itemIdentity}>
+    <span className={itemName}>{item.name}</span>
+    <span className={itemMeta}>{meta}</span>
+  </span>
+);
+
 // A row opens the product; every stock action lives there, not on the row.
-const columns: IDataTableColumn<IInventoryItem>[] = [
+// Category and Brand titles filter their column, sharing the toolbar's filter values.
+const columnsWith = (
+  categoryControl: IFilterControl,
+  brandControl: IFilterControl,
+): IDataTableColumn<IInventoryItem>[] => [
   {
     key: "item",
     title: "Product",
-    render: (_, item) => (
-      <span className={itemIdentity}>
-        <span className={itemName}>{item.name}</span>
-        <span className={itemMeta}>
-          {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
-        </span>
-      </span>
-    ),
+    render: (_, item) => renderIdentity(item, item.item_code),
+    // Phones have no Brand column, so the brand stays beside the code.
+    listRender: (item) =>
+      renderIdentity(item, [item.item_code, item.brand?.name].filter(Boolean).join(" · ")),
   },
   {
     key: "category",
-    title: "Category",
+    title: <ColumnFilterMenu filterKey={inventoryTableKey} control={categoryControl} />,
     collapse: "xl",
     listHidden: true,
     render: (_, item) => <span className={mutedText}>{item.category?.name ?? "—"}</span>,
+  },
+  {
+    key: "brand",
+    title: <ColumnFilterMenu filterKey={inventoryTableKey} control={brandControl} />,
+    listHidden: true,
+    render: (_, item) => <span className={mutedText}>{item.brand?.name ?? "—"}</span>,
   },
   {
     key: "on_hand",
@@ -106,6 +121,19 @@ const InventoryTable = () => {
   const navigate = useTransitionNavigate();
   const page = query.data;
 
+  const categoryControl: IFilterControl = {
+    key: "categoryId",
+    label: "Category",
+    placeholder: "All categories",
+    options: categoryOptions,
+  };
+  const brandControl: IFilterControl = {
+    key: "brandId",
+    label: "Brand",
+    placeholder: "All brands",
+    options: brandOptions,
+  };
+
   // The counts are the summary: tapping one filters to it. They describe active products only,
   // and a zero is left off so only a real problem draws the eye.
   const countOf: Partial<Record<InventoryView, number | undefined>> = archived
@@ -118,6 +146,7 @@ const InventoryTable = () => {
 
   return (
     <TablePanel
+      fill
       toolbar={
         <>
           <ContextSwitch
@@ -133,18 +162,8 @@ const InventoryTable = () => {
               searchKey={inventoryTableKey}
               searchPlaceholder="Search product, code or brand"
               controls={[
-                {
-                  key: "categoryId",
-                  label: "Category",
-                  placeholder: "All categories",
-                  options: categoryOptions,
-                },
-                {
-                  key: "brandId",
-                  label: "Brand",
-                  placeholder: "All brands",
-                  options: brandOptions,
-                },
+                categoryControl,
+                brandControl,
                 {
                   key: "show",
                   label: "Show",
@@ -159,7 +178,7 @@ const InventoryTable = () => {
     >
       <DataTable<IInventoryItem>
         label={archived ? "Archived products" : "Products"}
-        columns={columns}
+        columns={columnsWith(categoryControl, brandControl)}
         data={page?.data ?? []}
         loading={query.isLoading}
         refreshing={query.isFetching && !query.isLoading}
@@ -171,6 +190,7 @@ const InventoryTable = () => {
         onPageChange={goToPage}
         onRowClick={(item) => void navigate(itemPath(item.id))}
         emptyText={archived ? "No archived products." : emptyTextByView[view]}
+        fill
       />
     </TablePanel>
   );

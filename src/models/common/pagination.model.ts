@@ -1,3 +1,5 @@
+export const defaultPageSize = 8;
+
 export interface IPaginationRequest {
   pageNumber: number;
   pageSize: number;
@@ -7,7 +9,7 @@ export interface IPaginationRequest {
 
 export class IPaginationFormValue implements IPaginationRequest {
   pageNumber: number = 1;
-  pageSize: number = 8;
+  pageSize: number = defaultPageSize;
   search?: string;
   sort?: string;
 
@@ -60,8 +62,8 @@ export type IPageItem = number | "gap-start" | "gap-end";
 // Phones load more rows by growing the page instead of stepping through pages.
 export const loadMoreStep = 20;
 
-export const grownPageSize = (pagination: IPaginationRequest) =>
-  pagination.pageNumber * pagination.pageSize + loadMoreStep;
+export const grownPageSize = (pagination: IPaginationRequest, step: number = loadMoreStep) =>
+  pagination.pageNumber * pagination.pageSize + step;
 
 export const pageItems = (current: number, last: number): IPageItem[] => {
   const siblings = [current - 1, current, current + 1].filter(

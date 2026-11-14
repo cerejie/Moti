@@ -59,7 +59,7 @@ const BrandTable = () => {
   ];
 
   return (
-    <TablePanel>
+    <TablePanel fill>
       <DataTable<IBrand>
         label="Brands"
         columns={buildColumns(actionsOf)}
@@ -68,6 +68,7 @@ const BrandTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No brands yet. Add one here or type a new brand on the item form."
+        fill
       />
     </TablePanel>
   );

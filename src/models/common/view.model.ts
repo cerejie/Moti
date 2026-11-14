@@ -1,4 +1,4 @@
-export type ViewLayout = "stack" | "bento";
+export type ViewLayout = "stack" | "bento" | "fill";
 
 export type BentoSpan = "quarter" | "third" | "half" | "twoThirds" | "full";
 

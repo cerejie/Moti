@@ -8,6 +8,7 @@ const InventoryView = () => (
     title="Stocks"
     subtitle="What you have left, and what is running low"
     actions={<InventoryHeaderActions />}
+    layout="fill"
   >
     <InventoryTable />
 

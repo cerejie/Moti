@@ -4,7 +4,17 @@ import { pageTitle } from "../common/typography.styles";
 
 // TARTAR's page header: the large title is visible at every width; the app
 // bar picks the title up once it scrolls away on compact screens.
-export const contentViewRoot = "flex min-w-0 flex-col gap-6";
+export const contentViewRoot = cva("flex min-w-0 flex-col gap-6", {
+  variants: {
+    layout: {
+      stack: "",
+      bento: "",
+      // Wide screens hold the page to the panel so only its list scrolls (appShellContentInner).
+      fill: "wide:min-h-0 wide:flex-1",
+    },
+  },
+  defaultVariants: { layout: "stack" },
+});
 
 export const contentViewHead = "flex flex-wrap items-center gap-3";
 
@@ -36,6 +46,7 @@ export const contentViewBody = cva("flex min-w-0 flex-col", {
     layout: {
       stack: "gap-6",
       bento: "gap-4",
+      fill: "gap-6 wide:min-h-0 wide:flex-1",
     },
   },
   defaultVariants: { layout: "stack" },

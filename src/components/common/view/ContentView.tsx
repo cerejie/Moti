@@ -54,7 +54,7 @@ const ContentView = ({
   const { pushed, goBack } = usePushedRoute();
 
   return (
-    <div className={cn(contentViewRoot, className)}>
+    <div data-view-layout={layout} className={cn(contentViewRoot({ layout }), className)}>
       {hasHeader && (
         <header className={contentViewHead}>
           <div className={contentViewHeading}>

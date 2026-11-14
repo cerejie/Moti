@@ -10,16 +10,18 @@ type IProps = {
   // Switches and the FilterToolbar, stacked above the table.
   toolbar?: ReactNode;
   footer?: ReactNode;
+  // In a fill page: take the height left, so the DataTable inside scrolls its rows alone.
+  fill?: boolean;
   children: ReactNode;
 };
 
-const TablePanel = ({ title, toolbar, footer, children }: IProps) => {
+const TablePanel = ({ title, toolbar, footer, fill = false, children }: IProps) => {
   return (
-    <div className={tablePanel}>
+    <div className={tablePanel({ fill })}>
       {title ? <h2 className={tablePanelTitle}>{title}</h2> : null}
       {toolbar}
 
-      <div className={tablePanelBody}>{children}</div>
+      <div className={tablePanelBody({ fill })}>{children}</div>
 
       {footer}
     </div>

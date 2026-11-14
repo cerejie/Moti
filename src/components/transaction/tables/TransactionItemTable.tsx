@@ -16,6 +16,7 @@ const TransactionItemTable = ({ branchId }: IProps) => (
     topSellersFirst
     branchId={branchId}
     hideStatus
+    fill
   />
 );
 

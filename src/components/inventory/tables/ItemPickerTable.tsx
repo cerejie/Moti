@@ -36,6 +36,8 @@ type IProps = {
   branchId?: string;
   // Sell drops it: the colour of the stock count already says Low or Out.
   hideStatus?: boolean;
+  // Set by a fill page: the rows scroll alone under the pinned search and column titles.
+  fill?: boolean;
 };
 
 type IColumnOptions = Pick<IProps, "tableKey" | "actionTitle" | "renderAction" | "hideStatus"> & {
@@ -133,6 +135,7 @@ const ItemPickerTable = ({
   topSellersFirst = false,
   branchId,
   hideStatus = false,
+  fill = false,
 }: IProps) => {
   const { query } = useItemPickList(tableKey, topSellersFirst, branchId);
   const { pagination, goToPage } = usePagination(tableKey);
@@ -155,6 +158,7 @@ const ItemPickerTable = ({
 
   return (
     <TablePanel
+      fill={fill}
       toolbar={
         <FilterToolbar>
           <FilterBar
@@ -187,6 +191,7 @@ const ItemPickerTable = ({
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
         emptyText="No product matches. Try another name, code, category or brand."
+        fill={fill}
       />
     </TablePanel>
   );

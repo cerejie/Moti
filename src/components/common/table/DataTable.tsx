@@ -14,7 +14,9 @@ import { cn } from "@/utils/cn.utils";
 import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import {
+  defaultPageSize,
   grownPageSize,
+  loadMoreStep,
   type IPaginationRequest,
 } from "../../../models/common/pagination.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
@@ -29,6 +31,7 @@ import {
   dataTableRoot,
   dataTableRow,
   dataTableRowClickable,
+  dataTableScroll,
   dataTableRowStatic,
   dataTableSkeletonBar,
   dataTableStaleNotice,
@@ -67,6 +70,8 @@ type IProps<T> = {
   onRowClick?: (row: T) => void;
   emptyText?: string;
   emptyHint?: string;
+  // Wide screens in a fill page: the rows scroll under a sticky head and load more at the end.
+  fill?: boolean;
 };
 
 const toCellContent = (value: unknown): ReactNode =>
@@ -92,9 +97,13 @@ const DataTable = <T extends object>({
   onRowClick,
   emptyText = "Nothing to show yet.",
   emptyHint,
+  fill = false,
 }: IProps<T>) => {
   const tableId = useId();
   const isCompact = useIsCompact();
+  // Phones and fill tables grow as they scroll; other wide tables step through pages.
+  const growing = isCompact || fill;
+  const growStep = isCompact ? loadMoreStep : defaultPageSize;
   const { pagination: clientPagination, setPagination: setClientPagination } =
     usePagination(tableId);
 
@@ -103,7 +112,7 @@ const DataTable = <T extends object>({
 
   const clientLastPage = Math.max(1, Math.ceil(data.length / pageSize));
   const clientPage = Math.min(clientPagination.pageNumber, clientLastPage);
-  const firstClientRow = isCompact ? 0 : (clientPage - 1) * pageSize;
+  const firstClientRow = growing ? 0 : (clientPage - 1) * pageSize;
   const rows = pagination ? data : data.slice(firstClientRow, clientPage * pageSize);
 
   const failed = Boolean(error);
@@ -196,7 +205,7 @@ const DataTable = <T extends object>({
             id={columnId(column, index)}
             isRowHeader={index === 0}
             className={cn(
-              dataTableHead({ align: column.align }),
+              dataTableHead({ align: column.align, sticky: fill }),
               dataTableCollapse({ collapse: column.collapse }),
             )}
           >
@@ -214,8 +223,32 @@ const DataTable = <T extends object>({
     </Table>
   );
 
+  const renderLoadMore = () => {
+    if (pagination) {
+      return onPageChange && !loading && rows.length > 0 ? (
+        <LoadMoreSentinel
+          loadedCount={rows.length}
+          totalCount={totalCount}
+          loading={refreshing}
+          failed={failed || isStale}
+          onRetry={onRetry}
+          onLoadMore={() => onPageChange(1, grownPageSize(pagination, growStep))}
+        />
+      ) : null;
+    }
+
+    return !loading && data.length > pageSize ? (
+      <LoadMoreSentinel
+        loadedCount={rows.length}
+        totalCount={data.length}
+        loading={false}
+        onLoadMore={() => setClientPagination({ pageNumber: clientPage + 1 })}
+      />
+    ) : null;
+  };
+
   return (
-    <div className={dataTableRoot}>
+    <div className={dataTableRoot({ fill })}>
       {showStale ? (
         <AppAlert
           tone="warning"
@@ -243,9 +276,17 @@ const DataTable = <T extends object>({
           onRowClick={onRowClick}
           className={cn(showStale && dataTableStaleRows)}
         />
-      ) : (
-        renderTable()
-      )}
+      ) : null}
+
+      {/* The sentinel sits inside the scroll box, so it only shows once the rows run out. */}
+      {!isCompact && fill ? (
+        <div className={dataTableScroll}>
+          {renderTable()}
+          {renderLoadMore()}
+        </div>
+      ) : null}
+
+      {!isCompact && !fill ? renderTable() : null}
 
       {loading || refreshing ? (
         <p role="status" className={dataTableLoadingAnnounce}>
@@ -253,18 +294,9 @@ const DataTable = <T extends object>({
         </p>
       ) : null}
 
-      {isCompact && pagination && onPageChange && !loading && rows.length > 0 ? (
-        <LoadMoreSentinel
-          loadedCount={rows.length}
-          totalCount={totalCount}
-          loading={refreshing}
-          failed={failed || isStale}
-          onRetry={onRetry}
-          onLoadMore={() => onPageChange(1, grownPageSize(pagination))}
-        />
-      ) : null}
+      {isCompact ? renderLoadMore() : null}
 
-      {!isCompact && pagination && onPageChange ? (
+      {!growing && pagination && onPageChange ? (
         <TablePagination
           pagination={pagination}
           totalCount={totalCount}
@@ -272,16 +304,7 @@ const DataTable = <T extends object>({
         />
       ) : null}
 
-      {isCompact && !pagination && !loading && data.length > pageSize ? (
-        <LoadMoreSentinel
-          loadedCount={rows.length}
-          totalCount={data.length}
-          loading={false}
-          onLoadMore={() => setClientPagination({ pageNumber: clientPage + 1 })}
-        />
-      ) : null}
-
-      {!isCompact && !pagination && data.length > pageSize ? (
+      {!growing && !pagination && data.length > pageSize ? (
         <TablePagination
           pagination={{ pageNumber: clientPage, pageSize }}
           totalCount={data.length}

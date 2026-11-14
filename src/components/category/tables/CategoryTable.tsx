@@ -59,7 +59,7 @@ const CategoryTable = () => {
   ];
 
   return (
-    <TablePanel>
+    <TablePanel fill>
       <DataTable<ICategory>
         label="Categories"
         columns={buildColumns(actionsOf)}
@@ -68,6 +68,7 @@ const CategoryTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No categories yet. Add one to group your items."
+        fill
       />
     </TablePanel>
   );

@@ -16,6 +16,7 @@ const DamagedPanel = () => (
         actionTitle="Pick"
         branchId={branchId}
         renderAction={(item) => <DamagedPickButton item={item} />}
+        fill
       />
     )}
   </BranchWriteGate>

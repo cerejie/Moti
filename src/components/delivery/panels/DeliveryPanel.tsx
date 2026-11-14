@@ -20,6 +20,7 @@ const DeliveryPanel = () => (
           actionTitle="Add"
           branchId={branchId}
           renderAction={(item) => <DeliveryQuantityControl branchId={branchId} item={item} />}
+          fill
         />
         <DeliveryBar />
       </div>

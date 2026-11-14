@@ -97,6 +97,7 @@ const TransactionHistoryTable = () => {
 
   return (
     <TablePanel
+      fill
       toolbar={
         <ContextSwitch
           label="Sale status"
@@ -122,6 +123,7 @@ const TransactionHistoryTable = () => {
         onPageChange={goToPage}
         onRowClick={(transaction) => void navigate(transactionPath(transaction.id))}
         emptyText="No sales yet."
+        fill
       />
     </TablePanel>
   );

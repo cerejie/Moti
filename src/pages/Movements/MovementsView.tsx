@@ -7,6 +7,7 @@ const MovementsView = () => (
     title="Stock history"
     subtitle="Every audited stock change: added stock, corrections, damage and sales"
     back={{ label: "Stocks", path: ROUTES.inventory }}
+    layout="fill"
   >
     <MovementTable />
   </ContentView>

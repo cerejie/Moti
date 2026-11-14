@@ -8,6 +8,7 @@ const DamagedStockView = () => (
     title="Record damaged or lost stock"
     subtitle="Pick the product that broke, expired or went missing"
     back={{ label: "Stocks", path: ROUTES.inventory }}
+    layout="fill"
   >
     <DamagedPanel />
 

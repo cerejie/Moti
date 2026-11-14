@@ -8,6 +8,7 @@ const TransactionView = () => (
     title="Sales"
     subtitle="Add the products sold, review, then save the sale"
     tabs={<TransactionTabSwitch />}
+    layout="fill"
   >
     <TransactionPanel />
 

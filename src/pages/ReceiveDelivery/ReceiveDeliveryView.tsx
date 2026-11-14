@@ -8,6 +8,7 @@ const ReceiveDeliveryView = () => (
     title="Add stock"
     subtitle="Pick the products that arrived, type how many, save once"
     back={{ label: "Stocks", path: ROUTES.inventory }}
+    layout="fill"
   >
     <DeliveryPanel />
 
