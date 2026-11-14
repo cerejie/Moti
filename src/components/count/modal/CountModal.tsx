@@ -50,12 +50,20 @@ const CountModal = () => {
   const reviewing = count.step === "review";
   const differenceCount = count.differences.length;
 
+  // Keyed apart from the counting buttons: reusing the pressed "Review corrections" button as
+  // the submit button let the same tap's click submit the form and skip the review.
   const footer = reviewing ? (
     <>
-      <AppButton variant="outline" disabled={mutation.isPending} onPress={back}>
+      <AppButton key="back" variant="outline" disabled={mutation.isPending} onPress={back}>
         Back to counts
       </AppButton>
-      <AppButton type="submit" form={formId} loading={mutation.isPending} disabled={mutation.isPending}>
+      <AppButton
+        key="save"
+        type="submit"
+        form={formId}
+        loading={mutation.isPending}
+        disabled={mutation.isPending}
+      >
         {differenceCount > 0 ? "Save stock correction" : "Finish"}
       </AppButton>
     </>

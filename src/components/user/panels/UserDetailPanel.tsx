@@ -4,17 +4,12 @@ import { useCanManageUser } from "../../../hook/data/user/user.form.hook";
 import { useUser } from "../../../hook/data/user/user.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IUser } from "../../../models/data/user/user.response";
-import {
-  detailPage,
-  detailPageHeading,
-  detailPageMeta,
-  detailPageSurface,
-  detailPageTitle,
-} from "../../../styles/view/detailPage.styles";
+import { detailPageSurface } from "../../../styles/view/detailPage.styles";
 import { formatDateTime, formatShortDate } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import DetailPageLayout from "../../common/view/DetailPageLayout";
 import DetailPageSection from "../../common/view/DetailPageSection";
 import UserManageActions from "../menus/UserManageActions";
 import UserStatusBadges from "../status/UserStatusBadges";
@@ -46,24 +41,23 @@ const UserDetailPanel = () => {
   }
 
   return (
-    <div className={detailPage}>
-      <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>{user.full_name}</h1>
-        <p className={detailPageMeta}>{user.email}</p>
-      </div>
-
+    <DetailPageLayout
+      title={user.full_name}
+      meta={user.email}
+      aside={
+        canManage(user) && (
+          <DetailPageSection title="Manage">
+            <UserManageActions user={user} />
+          </DetailPageSection>
+        )
+      }
+    >
       <DetailPageSection title="Details">
         <div className={detailPageSurface}>
           <DetailRows record={user} items={detailItems} />
         </div>
       </DetailPageSection>
-
-      {canManage(user) && (
-        <DetailPageSection title="Manage">
-          <UserManageActions user={user} />
-        </DetailPageSection>
-      )}
-    </div>
+    </DetailPageLayout>
   );
 };
 

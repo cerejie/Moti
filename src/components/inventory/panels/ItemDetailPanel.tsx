@@ -4,17 +4,12 @@ import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useInventoryItem } from "../../../hook/data/inventory/inventory.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
-import {
-  detailPage,
-  detailPageHeading,
-  detailPageMeta,
-  detailPageSurface,
-  detailPageTitle,
-} from "../../../styles/view/detailPage.styles";
+import { detailPageSurface } from "../../../styles/view/detailPage.styles";
 import { formatDateTime } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import DetailPageLayout from "../../common/view/DetailPageLayout";
 import DetailPageSection from "../../common/view/DetailPageSection";
 import ItemSalesPaceCard from "../cards/ItemSalesPaceCard";
 import ItemStockCard from "../cards/ItemStockCard";
@@ -45,14 +40,32 @@ const ItemDetailPanel = () => {
   }
 
   return (
-    <div className={detailPage}>
-      <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>{item.name}</h1>
-        <p className={detailPageMeta}>
-          {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
-        </p>
-      </div>
+    <DetailPageLayout
+      title={item.name}
+      meta={[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
+      aside={
+        <>
+          {isOwner && (
+            <DetailPageSection title="Sales pace">
+              <ItemSalesPaceCard itemId={item.id} />
+            </DetailPageSection>
+          )}
 
+          <DetailPageSection title="Details">
+            <div className={detailPageSurface}>
+              <DetailRows record={item} items={detailItems} />
+            </div>
+          </DetailPageSection>
+
+          {/* Edit and Archive sit last, apart from everyday stock work. */}
+          {isOwner && (
+            <DetailPageSection title="Manage product">
+              <ItemManageActions item={item} />
+            </DetailPageSection>
+          )}
+        </>
+      }
+    >
       <ItemStockCard item={item} pending={query.isPlaceholderData} />
 
       {multiple && (
@@ -66,26 +79,7 @@ const ItemDetailPanel = () => {
           <ItemMovementList itemId={item.id} />
         </DetailPageSection>
       )}
-
-      {isOwner && (
-        <DetailPageSection title="Sales pace">
-          <ItemSalesPaceCard itemId={item.id} />
-        </DetailPageSection>
-      )}
-
-      <DetailPageSection title="Details">
-        <div className={detailPageSurface}>
-          <DetailRows record={item} items={detailItems} />
-        </div>
-      </DetailPageSection>
-
-      {/* Edit and Archive sit last, apart from everyday stock work. */}
-      {isOwner && (
-        <DetailPageSection title="Manage product">
-          <ItemManageActions item={item} />
-        </DetailPageSection>
-      )}
-    </div>
+    </DetailPageLayout>
   );
 };
 

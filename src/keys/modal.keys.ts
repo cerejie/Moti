@@ -1,15 +1,12 @@
 export const itemFormModalKey = "item-form";
 export const damagedStockModalKey = "damaged-stock";
 export const deliveryReviewModalKey = "delivery-review";
-export const deliverySuccessModalKey = "delivery-success";
 export const countModalKey = "stock-count";
-export const countSuccessModalKey = "stock-count-success";
 export const notificationCenterModalKey = "notification-center";
 export const categoryFormModalKey = "category-form";
 export const brandFormModalKey = "brand-form";
 export const branchFormModalKey = "branch-form";
 export const cartModalKey = "transaction-cart";
-export const checkoutSuccessModalKey = "transaction-success";
 export const transactionVoidModalKey = "transaction-void";
 export const userCreateModalKey = "user-create";
 export const userPasswordModalKey = "user-password";

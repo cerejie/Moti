@@ -4,17 +4,12 @@ import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useTransaction } from "../../../hook/data/transaction/transaction.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { ITransaction } from "../../../models/data/transaction/transaction.response";
-import {
-  detailPage,
-  detailPageHeading,
-  detailPageMeta,
-  detailPageSurface,
-  detailPageTitle,
-} from "../../../styles/view/detailPage.styles";
+import { detailPageSurface } from "../../../styles/view/detailPage.styles";
 import { formatDateTime } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import DetailPageLayout from "../../common/view/DetailPageLayout";
 import DetailPageSection from "../../common/view/DetailPageSection";
 import TransactionTotalCard from "../cards/TransactionTotalCard";
 import TransactionLineList from "../lists/TransactionLineList";
@@ -47,40 +42,37 @@ const TransactionDetailPanel = () => {
   const voided = transaction.status === "voided";
 
   return (
-    <div className={detailPage}>
-      <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>Sale #{transaction.number}</h1>
-        <p className={detailPageMeta}>
-          {[
-            formatDateTime(transaction.created_at),
-            transaction.created_by_name,
-            multiple ? transaction.branch?.name : null,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-      </div>
-
+    <DetailPageLayout
+      title={`Sale #${transaction.number}`}
+      meta={[
+        formatDateTime(transaction.created_at),
+        transaction.created_by_name,
+        multiple ? transaction.branch?.name : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")}
+      aside={
+        voided ? (
+          <DetailPageSection title="Cancelled">
+            <div className={detailPageSurface}>
+              <DetailRows record={transaction} items={voidItems} />
+            </div>
+          </DetailPageSection>
+        ) : (
+          voidTransaction && (
+            <DetailPageSection title="Manage">
+              <TransactionManageActions transaction={transaction} />
+            </DetailPageSection>
+          )
+        )
+      }
+    >
       <TransactionTotalCard transaction={transaction} />
 
       <DetailPageSection title="Items sold">
         <TransactionLineList transactionId={transaction.id} />
       </DetailPageSection>
-
-      {voided && (
-        <DetailPageSection title="Cancelled">
-          <div className={detailPageSurface}>
-            <DetailRows record={transaction} items={voidItems} />
-          </div>
-        </DetailPageSection>
-      )}
-
-      {voidTransaction && !voided && (
-        <DetailPageSection title="Manage">
-          <TransactionManageActions transaction={transaction} />
-        </DetailPageSection>
-      )}
-    </div>
+    </DetailPageLayout>
   );
 };
 

@@ -1,8 +1,14 @@
 import { cn } from "../../utils/cn.utils";
 import { pageSubtitle, pageTitle } from "../common/typography.styles";
 
-// Pushed detail page: one readable column of grouped sections, like a native detail screen.
-export const detailPage = "flex w-full flex-col gap-6 wide:max-w-2xl";
+// Pushed detail page: one readable column of grouped sections, like a native detail screen;
+// a desktop wide enough for two columns gets the side column beside the main one.
+export const detailPage = "flex w-full flex-col gap-6 wide:max-w-2xl wide:xl:max-w-6xl";
+
+export const detailPageColumns =
+  "flex flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start";
+
+export const detailPageColumn = "flex min-w-0 flex-col gap-6";
 
 // The record's name is the page title and wraps rather than truncates.
 export const detailPageHeading = "flex min-w-0 flex-col gap-1";

@@ -22,8 +22,9 @@ SaaS build, which comes later.
 - [x] V1.4: Autopilot loop (below): critique → decide → fix, round after round, until a round finds
       nothing left to fix (2026-10-03: converged after round 2; 4 questions wait in
       `.claude/state/autopilot/USER-DECISIONS.md`)
-- [ ] V1.8: UX overhaul (below) — coded 2026-11-14 on `moti-ux-overhaul`; migration 14 waits
-      to be applied; delete the superseded files once confirmed
+- [ ] V1.8: UX overhaul (below) — coded 2026-11-14 on `moti-ux-overhaul`; migration 14 applied
+      and checked live 2026-11-14; superseded files deleted; next up: the user's check on a real
+      phone (keyboard over Review sale, iPhone safe areas)
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
@@ -61,15 +62,20 @@ table above for everything a user reads; routes, tables and reason values keep t
 - What to buy: one ranked list per view (Buy soon / Most sold), period 7 · 30 · 90, "How
   suggestions work" with the cover target (7/14/21/30 days, per device, `moti.analysis`).
   Migration **14** scopes `stock_analysis` to the branch (adds `p_branch_id`, `short_branches`)
-  and rewrites the Low / Out alert text and link. **Waits to be applied**; until then What to buy
-  errors whenever a single branch is in scope.
-- Superseded but kept (repo rule: no deletes without confirmation), unreferenced:
-  `pages/Dashboard/DashboardView.tsx`, `components/dashboard/**`,
-  `components/transaction/modal/CheckoutSuccessModal.tsx`,
-  `components/delivery/modal/DeliverySuccessModal.tsx`,
-  `components/count/modal/CountSuccessModal.tsx`, `components/inventory/menus/InventoryRowActions.tsx`,
-  `components/movement/menus/StockTabSwitch.tsx`, `components/movement/panels/StockPanel.tsx`,
-  and their modal keys (`checkoutSuccessModalKey`, `deliverySuccessModalKey`, `countSuccessModalKey`).
+  and rewrites the Low / Out alert text and link. Applied; checked live 2026-11-14 (All branches
+  and Main list the same Buy soon item; Agdao carries no products yet, so its list is empty).
+- Superseded files deleted 2026-11-14 (user's go-ahead): the Dashboard page and
+  `components/dashboard/**`, the three success modals and their keys, `InventoryRowActions`,
+  `StockTabSwitch`, `movement/panels/StockPanel`, and the then-unused `common/modal/SuccessModal`
+  and `common/card/StatCard` with their style files. `utils/haptics.utils.ts` (`vibrateSuccess`)
+  is now unused and kept.
+- Detail pages (`common/view/DetailPageLayout`): one column on phones; from `xl` a side column
+  holds the facts and Manage actions (Sale, Product, Stock change, Team member).
+- Follow-up fixes 2026-11-14: Most sold rows kept their text beside the rank; Check stock count's
+  "Review corrections" no longer saves straight away (the tap's click hit the swapped-in submit
+  button).
+- Live phone-emulation test 2026-11-14 (owner, Main, Brake Lever 54 → 54): sale #12 saved and
+  cancelled, Add stock +1, count back −1. Real-phone check is still the user's.
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 

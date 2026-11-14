@@ -70,13 +70,12 @@ export const statValue = "text-2xl font-semibold tabular-nums";
 | Bento / dashboard layout | `view/BentoGrid` + `view/BentoCell` |
 | Page-level switch or tabs (segmented ≤ 4 options, chips beyond) | `view/ContextSwitch` — page tabs go in ContentView `tabs` (a small `menus/<Domain>TabSwitch` reading a keyed filter), list switches in `TablePanel` `toolbar` |
 | Content panel | `card/SectionCard` — `subtitle`, `extra`, `flush`, `dense`, and `loading` / `error` / `onRetry` instead of hand-rolled states |
-| Metric tile | `card/StatCard` — `variant` tone, `icon`, `caption`, `href`; pesos by default (`raw` for counts); `loading` / `error` per tile |
 | Money | `moneyLevel({ level })` from `styles/common/money.styles.ts` (`primary` / `amount` / `supporting` / `meta`) — never a hand-sized amount class |
 | Records list | `table/DataTable` inside `table/TablePanel`, with `table/TablePagination`. **A list row opens a pushed page; never a drawer, sheet or detail modal** — `onRowClick` navigates to `<thing>Path(id)` (roadmap V1.5 reference: the item page). A row without a page shows what fits (`mobile` roles, `listRender`, `listHidden`) and keeps its actions in `RowActionMenu` |
-| Record detail page | `pages/<Thing>Detail/` = `ContentView back` + a panel of `view/DetailPageSection`s, `table/DetailRows` for labelled facts, `view/RowLink` for rows that open another page |
+| Record detail page | `pages/<Thing>Detail/` = `ContentView back` + a panel in `view/DetailPageLayout` (`title`, `meta`, main sections, `aside` for facts and Manage — beside the main column from `xl`) of `view/DetailPageSection`s, `table/DetailRows` for labelled facts, `view/RowLink` for rows that open another page |
 | Toolbar above a list | `filter/FilterToolbar` (+ `filter/SegmentedControl`) |
 | Row actions | `table/RowActionMenu` |
-| Any modal | `modal/AppModal`; forms `form/EntityFormModal`; done `modal/SuccessModal`. A read-only record is a pushed page, not a modal |
+| Any modal | `modal/AppModal`; forms `form/EntityFormModal`; a finished write ends with a toast. A read-only record is a pushed page, not a modal |
 | Confirm / delete | `useConfirm()` + the single `modal/ConfirmationModal` in `App.tsx` |
 | Form building blocks | `form/FormRoot`, `FormField` (textarea, checkbox, select… by `type`), `FormSection`, `FormFieldGrid`, `TextInput`, `SelectInput`, `PasswordInput` |
 | Status pill | `status/StatusBadge` fed by an enum label + tone map |
@@ -112,7 +111,7 @@ it is the maximum.
 
 Every data view renders **loading, empty, error and success**:
 
-- Loading: `SectionCard` / `StatCard` `loading`, or `EmptyState loading`; `DataTable` carries its own skeleton rows.
+- Loading: `SectionCard` `loading`, or `EmptyState loading`; `DataTable` carries its own skeleton rows.
 - Empty: `EmptyState` with a title and, where it makes sense, the primary action.
 - Error: `ErrorState` with a retry (`onRetry={refetch}`).
 - Offline with cached data: show the data plus the offline indicator (`pwa-conventions` § 4).
@@ -121,7 +120,7 @@ Dates, money and numbers go through `utils/format.utils.ts` — never format at 
 
 ## 6. Modals — one frame, never rebuilt
 
-- Every overlay is `AppModal` (or `EntityFormModal` / `SuccessModal`, which sit
+- Every overlay is `AppModal` (or `EntityFormModal`, which sits
   on it) or `useConfirm`. `AppModal` is an aria `dialog` on `wide` and an aria `sheet` from the
   bottom on `compact`, and it draws TARTAR's frame: ruled header, scrolling body, optional
   `pinned` row, tinted ruled footer. `kind` (`action` / `form` / `flow`) sets the sheet height.

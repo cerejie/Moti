@@ -7,6 +7,7 @@
 //           FIXTURES=<file.json>: { "<rpc or table>": <response body> } for a read RPC or table
 //           not yet migrated (a table fixture is one row; .single() reads get it bare, lists as [row])
 //           ORDER_STRIP=<column>: drop a sort on a column whose migration is not applied yet
+//           BRANCH=<branch id>|all: the branch picked on the device before each page loads
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -94,6 +95,8 @@ const SHEETS = {
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
     { name: "item-page", path: "/inventory", open: openItem },
+    { name: "movement-detail", path: "/movements", open: (p) => openFirstRow(p, /\/movements\/(?!receive|count|damaged|order-list)[^/]+$/) },
+    { name: "user-detail", path: "/users", open: (p) => openFirstRow(p, /\/users\/[^/]+$/) },
     { name: "delivery-review", path: "/movements/receive", open: (p) => openPicked(p, /Review added stock/) },
     { name: "count-sheet", path: "/movements/count", open: (p) => openPicked(p, /Enter counts/) },
     { name: "damaged-sheet", path: "/movements/damaged", open: openDamaged },
@@ -107,6 +110,9 @@ const SHEETS = {
     { name: "txn-detail", path: "/transaction", open: openTransaction },
   ],
 };
+
+// Loading skeleton rows are role=row too; never click one.
+const DATA_ROWS = "main [role=row]:not([data-key^=skeleton])";
 
 // With several branches and "All branches" picked, a write screen asks which branch first.
 async function pickBranchIfAsked(page) {
@@ -139,9 +145,19 @@ async function openTransaction(page) {
   else await page.goto(new URL("/transaction/history", page.url()).toString());
   // Phone draws cards, wider screens a table; wait for whichever arrives instead of guessing early.
   const card = page.locator("main button").filter({ hasText: /^#\d+/ }).first();
-  const row = page.locator("main [role=row]").nth(1);
+  const row = page.locator(DATA_ROWS).nth(1);
   await card.or(row).first().waitFor({ timeout: 15000 });
   await card.or(row).first().click();
+  await page.waitForURL(/\/transaction\/(?!history)[^/]+$/, { timeout: 15000 });
+}
+
+// The first row's pushed page on a list (Stock history, Team).
+async function openFirstRow(page, landing) {
+  const card = page.locator("main li button, main li a").first();
+  const row = page.locator(DATA_ROWS).nth(1);
+  await card.or(row).first().waitFor({ timeout: 15000 });
+  await card.or(row).first().click();
+  await page.waitForURL(landing, { timeout: 15000 });
 }
 
 // Receive and Count: add the first item, then open the sheet from the bar.
@@ -161,7 +177,7 @@ async function openDamaged(page) {
 async function openItem(page) {
   // A phone card's title is the first button in its row.
   const card = page.locator("main li button").first();
-  const row = page.locator("main [role=row]").nth(1);
+  const row = page.locator(DATA_ROWS).nth(1);
   await card.or(row).first().waitFor({ timeout: 15000 });
   await card.or(row).first().click();
   await page.waitForURL(/\/inventory\/(?!masterfile)[^/]+$/, { timeout: 15000 });
@@ -401,9 +417,10 @@ const main = async () => {
           faked.add(`${method} ${request.url().split("?")[0].replace(/^.*\/v1/, "")}`);
           return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
         });
-        await context.addInitScript((t) => {
+        await context.addInitScript(([t, branch]) => {
           localStorage.setItem("moti.theme", JSON.stringify({ state: { theme: t }, version: 0 }));
-        }, theme);
+          if (branch) localStorage.setItem("moti.branch", JSON.stringify({ state: { branchFilter: branch === "all" ? null : branch }, version: 0 }));
+        }, [theme, process.env.BRANCH]);
         const page = await context.newPage();
         page.on("console", (msg) => {
           if (msg.type() === "error" && !/favicon|DevTools/.test(msg.text())) errors.push({ ...ctx, url: page.url(), text: msg.text().slice(0, 200) });

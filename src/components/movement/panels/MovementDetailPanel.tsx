@@ -3,17 +3,12 @@ import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useMovement } from "../../../hook/data/movement/movement.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
-import {
-  detailPage,
-  detailPageHeading,
-  detailPageMeta,
-  detailPageSurface,
-  detailPageTitle,
-} from "../../../styles/view/detailPage.styles";
+import { detailPageSurface } from "../../../styles/view/detailPage.styles";
 import { formatDateTime } from "../../../utils/format.utils";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import DetailRows from "../../common/table/DetailRows";
+import DetailPageLayout from "../../common/view/DetailPageLayout";
 import DetailPageSection from "../../common/view/DetailPageSection";
 import MovementQuantityCard from "../cards/MovementQuantityCard";
 import MovementLinkList from "../lists/MovementLinkList";
@@ -49,18 +44,17 @@ const MovementDetailPanel = () => {
   }
 
   return (
-    <div className={detailPage}>
-      <div className={detailPageHeading}>
-        <h1 className={detailPageTitle}>{movement.item?.name ?? "Deleted item"}</h1>
-        {(movement.item || multiple) && (
-          <p className={detailPageMeta}>
-            {[movement.item?.item_code, multiple ? movement.branch?.name : null]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-        )}
-      </div>
-
+    <DetailPageLayout
+      title={movement.item?.name ?? "Deleted item"}
+      meta={[movement.item?.item_code, multiple ? movement.branch?.name : null]
+        .filter(Boolean)
+        .join(" · ")}
+      aside={
+        <DetailPageSection title="Related">
+          <MovementLinkList movement={movement} />
+        </DetailPageSection>
+      }
+    >
       <MovementQuantityCard movement={movement} />
 
       <DetailPageSection title="Details">
@@ -68,11 +62,7 @@ const MovementDetailPanel = () => {
           <DetailRows record={movement} items={detailItems} />
         </div>
       </DetailPageSection>
-
-      <DetailPageSection title="Related">
-        <MovementLinkList movement={movement} />
-      </DetailPageSection>
-    </div>
+    </DetailPageLayout>
   );
 };
 

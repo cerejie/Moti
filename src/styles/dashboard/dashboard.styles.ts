@@ -6,7 +6,8 @@ export const dashboardList = "flex flex-col divide-y";
 // Positioned, so a RowLink inside takes the whole row.
 export const dashboardRow = "relative flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0";
 
-export const dashboardRowText = "flex min-w-0 flex-col gap-0.5";
+// Grows, so a row without an end action keeps its text beside the rank, not pushed right.
+export const dashboardRowText = "flex min-w-0 flex-1 flex-col gap-0.5";
 
 export const dashboardRowEnd = "flex shrink-0 items-center gap-2";
 
