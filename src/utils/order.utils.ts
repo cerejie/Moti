@@ -11,7 +11,7 @@ export const orderQuantityFor = (row: IStockAnalysisRow): number => {
 // Plain text a supplier can read in any chat app.
 export const toOrderListText = (lines: readonly IOrderListLine[], date: string): string =>
   [
-    `Order list — ${formatLongDate(date)}`,
+    `Buying list — ${formatLongDate(date)}`,
     "",
     ...lines.map(
       ({ item, quantity }) =>

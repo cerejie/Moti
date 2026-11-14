@@ -59,7 +59,7 @@ const OrderLineList = ({ lines }: IProps) => {
                   <Minus />
                 </AppButton>
                 <QuantityInput
-                  label={`Quantity of ${item.name} to order`}
+                  label={`Quantity of ${item.name} to buy`}
                   value={quantity}
                   min={1}
                   max={99_999}

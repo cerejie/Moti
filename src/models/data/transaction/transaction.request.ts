@@ -8,7 +8,7 @@ export const checkoutFormSchema = z.object({
 export type ICheckoutFormInput = z.infer<typeof checkoutFormSchema>;
 
 export const voidFormSchema = z.object({
-  reason: z.string().trim().min(3, "Say why, e.g. customer returned the items").max(200),
+  reason: z.string().trim().min(3, "Say why, e.g. customer returned the products").max(200),
 });
 export type IVoidFormInput = z.infer<typeof voidFormSchema>;
 

@@ -30,7 +30,7 @@ const ItemStockCard = ({ item, pending }: IProps) => {
       <div className={detailHeroBody}>
         <div className={detailHeroTop}>
           <div className={detailHeroFigure}>
-            <span className={detailHeroLabel}>{scope ? `On hand · ${scope}` : "On hand"}</span>
+            <span className={detailHeroLabel}>{scope ? `Available · ${scope}` : "Available"}</span>
             <span>
               <span className={onHandValue({ status: item.stock_status, size: "xl" })}>
                 {formatNumber(item.on_hand)}
@@ -38,7 +38,7 @@ const ItemStockCard = ({ item, pending }: IProps) => {
               <span className={onHandUnit}>{item.unit}</span>
             </span>
             <span className={detailHeroHint}>
-              Low stock warning at {formatNumber(item.reorder_level)} {item.unit}
+              Low-stock alert at {formatNumber(item.reorder_level)} {item.unit}
             </span>
           </div>
           <StockStatusBadge status={item.stock_status} archived={archived} />

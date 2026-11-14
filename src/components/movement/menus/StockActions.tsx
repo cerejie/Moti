@@ -6,13 +6,13 @@ import { stockActionButton, stockActions } from "../../../styles/movement/moveme
 import AppButton from "../../common/button/AppButton";
 
 type IProps = {
-  // On an item's page the same three open with that item already picked.
+  // On a product's page the three open with that product already picked.
   item?: IInventoryItem;
   // While the item's count is still loading, so an action never starts from a stale number.
   disabled?: boolean;
 };
 
-// Where stock changes are made: what arrived, what is on the shelf, what is gone.
+// Add stock is the one primary action; the count and write-off are secondary.
 const StockActions = ({ item, disabled = false }: IProps) => {
   const { isOwner } = usePermissions();
   const { receive, count, damaged } = useStockActions();
@@ -28,7 +28,7 @@ const StockActions = ({ item, disabled = false }: IProps) => {
         onPress={() => receive(item)}
       >
         <PackagePlus data-icon="inline-start" aria-hidden />
-        Receive delivery
+        Add stock
       </AppButton>
       <AppButton
         size="lg"
@@ -38,7 +38,7 @@ const StockActions = ({ item, disabled = false }: IProps) => {
         onPress={() => count(item)}
       >
         <ClipboardCheck data-icon="inline-start" aria-hidden />
-        Count stock
+        Check stock count
       </AppButton>
       <AppButton
         size="lg"
@@ -48,7 +48,7 @@ const StockActions = ({ item, disabled = false }: IProps) => {
         onPress={() => damaged(item)}
       >
         <PackageMinus data-icon="inline-start" aria-hidden />
-        Damaged or lost
+        Record damaged or lost
       </AppButton>
     </div>
   );

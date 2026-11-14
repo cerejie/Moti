@@ -18,23 +18,32 @@ type IProps = {
   actions: readonly IRowAction[];
   // Names the menu for screen readers, e.g. "Manage Bosch".
   label?: string;
+  // A visible word beside the ⋮ for a page-level menu ("More"); rows stay icon-only.
+  triggerLabel?: string;
 };
 
-const RowActionMenu = ({ actions, label = "Row actions" }: IProps) => {
+const RowActionMenu = ({ actions, label = "Row actions", triggerLabel }: IProps) => {
   if (!actions.some((action) => !action.disabled)) return null;
 
   const firstDangerIndex = actions.findIndex((action) => action.danger);
 
   return (
     <DropdownMenuTrigger>
-      <Button
-        variant="outline"
-        size="icon-sm"
-        className={rowActionTrigger}
-        aria-label={label}
-      >
-        <EllipsisVertical />
-      </Button>
+      {triggerLabel ? (
+        <Button variant="outline" size="lg" aria-label={label}>
+          <EllipsisVertical data-icon="inline-start" aria-hidden />
+          {triggerLabel}
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          size="icon-sm"
+          className={rowActionTrigger}
+          aria-label={label}
+        >
+          <EllipsisVertical />
+        </Button>
+      )}
       <DropdownMenu placement="bottom end" aria-label={label} className={rowActionMenu}>
         {actions.map((action, index) => (
           <Fragment key={action.key}>

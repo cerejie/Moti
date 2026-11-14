@@ -2,42 +2,29 @@ import { ClipboardCheck } from "lucide-react";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useCount } from "../../../hook/data/count/count.form.hook";
 import { countModalKey } from "../../../keys/modal.keys";
-import { itemMeta } from "../../../styles/inventory/inventory.styles";
-import {
-  cartBar,
-  cartBarText,
-  cartBarTotal,
-} from "../../../styles/transaction/transaction.styles";
+import { reviewBar, reviewBarButton } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
-import CountUp from "../../common/view/CountUp";
 
-const formatItems = (count: number) => formatCount(count, "item");
-
-// Shows once something is picked; the shelf counts are typed in the count sheet.
+// Shows once something is picked; the actual quantities are typed in the count sheet.
 const CountBar = () => {
-  const { itemCount, uncountedCount, setStep } = useCount();
+  const { itemCount, setStep } = useCount();
   const { openModal } = useModal(countModalKey);
 
   if (itemCount === 0) return null;
 
-  const countedCount = itemCount - uncountedCount;
-
   return (
-    <div className={cartBar}>
-      <span className={cartBarText}>
-        <CountUp value={itemCount} format={formatItems} bump className={cartBarTotal} />
-        <span className={itemMeta}>{countedCount} counted</span>
-      </span>
+    <div className={reviewBar}>
       <AppButton
         size="lg"
+        className={reviewBarButton}
         onPress={() => {
           setStep("count");
           openModal();
         }}
       >
-        <ClipboardCheck />
-        Enter counts
+        <ClipboardCheck data-icon="inline-start" aria-hidden />
+        Enter counts · {formatCount(itemCount, "product")}
       </AppButton>
     </div>
   );

@@ -14,23 +14,23 @@ import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
 import OrderLineList from "../lists/OrderLineList";
 
-// What to buy: adjusted here, shared with the supplier, then received in one save.
+// A planning list only: it never adds stock or places an order. Add stock records what arrived.
 const OrderListPanel = () => {
   const { query, list, lines, itemCount } = useOrderList();
   const share = useShareOrderList();
   const receive = useReceiveOrderList();
 
-  if (query.isLoading) return <EmptyState loading description="Opening the order list…" />;
+  if (query.isLoading) return <EmptyState loading description="Opening the buying list…" />;
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
   if (!list || itemCount === 0) {
     return (
       <EmptyState
         icon={<ClipboardList />}
-        title="The order list is empty"
-        description="Add items from Stock · Reorder. Each one comes with its suggested quantity."
+        title="The buying list is empty"
+        description="Add products from What to buy. Each one comes with its suggested quantity."
         action={
-          <AppButton variant="outline" href={ROUTES.movements}>
-            Go to Reorder
+          <AppButton variant="outline" href={ROUTES.whatToBuy}>
+            Go to What to buy
           </AppButton>
         }
       />
@@ -44,20 +44,17 @@ const OrderListPanel = () => {
       <div className={cartBar}>
         <span className={cartBarText}>
           <span className={cartBarTotal}>
-            {formatCount(
-              lines.reduce((sum, line) => sum + line.quantity, 0),
-              "pc",
-            )}
+            Buying list
           </span>
-          <span className={itemMeta}>{formatCount(itemCount, "item")}</span>
+          <span className={itemMeta}>{formatCount(itemCount, "product")} to buy</span>
         </span>
         <span className={orderBarActions}>
-          <AppButton size="icon-lg" variant="outline" aria-label="Share the order list" onPress={() => share(lines)}>
+          <AppButton size="icon-lg" variant="outline" aria-label="Share the buying list" onPress={() => share(lines)}>
             <Share2 />
           </AppButton>
           <AppButton size="lg" onPress={() => receive(list)}>
             <PackageCheck />
-            Receive
+            Add stock
           </AppButton>
         </span>
       </div>

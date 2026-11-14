@@ -1,16 +1,14 @@
 import ContentView from "../../components/common/view/ContentView";
-import StockActions from "../../components/movement/menus/StockActions";
-import StockTabSwitch from "../../components/movement/menus/StockTabSwitch";
-import StockPanel from "../../components/movement/panels/StockPanel";
+import MovementTable from "../../components/movement/tables/MovementTable";
+import { ROUTES } from "../../routes/route.paths";
 
 const MovementsView = () => (
   <ContentView
-    title="Stock"
-    subtitle="Receive, count and write off stock; see what to order next"
-    actions={<StockActions />}
-    tabs={<StockTabSwitch />}
+    title="Stock history"
+    subtitle="Every audited stock change: added stock, corrections, damage and sales"
+    back={{ label: "Stocks", path: ROUTES.inventory }}
   >
-    <StockPanel />
+    <MovementTable />
   </ContentView>
 );
 

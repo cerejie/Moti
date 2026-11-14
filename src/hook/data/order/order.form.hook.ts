@@ -25,7 +25,7 @@ export const useAddToOrderList = () => {
   const { isOnList } = useOrderList();
   const mutation = useAppMutation(orderServices.addLines, {
     invalidate: orderInvalidations,
-    successMessage: "Added to the order list",
+    successMessage: "Added to the buying list",
   });
 
   const toLines = (rows: readonly IStockAnalysisRow[]) =>
@@ -40,7 +40,7 @@ export const useAddToOrderList = () => {
     addAll: (rows: readonly IStockAnalysisRow[]) => {
       const lines = toLines(rows);
       if (lines.length === 0) {
-        toast.info("Everything here is already on the order list.");
+        toast.info("Everything here is already on the buying list.");
         return;
       }
       mutation.mutate(lines);
@@ -77,7 +77,7 @@ export const useOrderLineActions = () => {
   );
   const removeMutation = useAppMutation(orderServices.removeLine, {
     invalidate: orderInvalidations,
-    successMessage: "Removed from the order list",
+    successMessage: "Removed from the buying list",
   });
   const { mutate: saveQuantity } = quantityMutation;
 
@@ -104,7 +104,7 @@ export const useOrderLineActions = () => {
       confirm({
         kind: "delete",
         title: `Remove ${line.item.name}?`,
-        message: "It comes off the order list. Its stock does not change.",
+        message: "It comes off the buying list. Its stock does not change.",
         itemName: line.item.name,
         okText: "Remove",
         onConfirm: async () => {
@@ -120,10 +120,10 @@ export const useShareOrderList = () => {
   const share = useShareText();
 
   return (lines: readonly IOrderListLine[]) =>
-    void share("Order list", toOrderListText(lines, new Date().toISOString()));
+    void share("Buying list", toOrderListText(lines, new Date().toISOString()));
 };
 
-// Receive delivery opens on its review with the list as the expected quantities.
+// Add stock opens on its review with the list as the expected quantities.
 export const useReceiveOrderList = () => {
   const navigate = useTransitionNavigate();
   const { openModal } = useModalActions();

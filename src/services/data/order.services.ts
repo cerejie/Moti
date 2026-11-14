@@ -29,7 +29,7 @@ const orderServices = {
     runWrite({
       kind: "rpc",
       fn: "add_to_order_list",
-      label: `Add ${lines.length} item${lines.length === 1 ? "" : "s"} to the order list`,
+      label: `Add ${lines.length} product${lines.length === 1 ? "" : "s"} to the buying list`,
       args: { p_lines: lines },
     }),
 
@@ -37,7 +37,7 @@ const orderServices = {
     runWrite({
       kind: "update",
       table: linesTable,
-      label: `Order ${quantity} × ${line.item.name}`,
+      label: `Buying list: ${quantity} × ${line.item.name}`,
       values: { quantity },
       match: { id: line.id },
     }),
@@ -46,7 +46,7 @@ const orderServices = {
     runWrite({
       kind: "delete",
       table: linesTable,
-      label: `Remove ${line.item.name} from the order list`,
+      label: `Remove ${line.item.name} from the buying list`,
       match: { id: line.id },
     }),
 };

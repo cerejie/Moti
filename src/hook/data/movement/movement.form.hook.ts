@@ -55,7 +55,8 @@ export const useDamagedStockForm = () => {
     {
       silentError: true,
       invalidate: stockQueryKeys,
-      successMessage: "Recorded as damaged or lost",
+      successMessage: "Recorded as damaged or lost. Stock updated.",
+      queuedMessage: "Saved on this device. Waiting to sync.",
       onSuccess: closeModal,
     },
   );
@@ -76,8 +77,8 @@ export const useDamagedStockForm = () => {
   };
 };
 
-// The Stock tab's three actions, and the same three from an item with that item picked.
-// Receive and Count are pages; with an item they open straight on its quantities.
+// Add stock, Check stock count and Damaged or lost, from Stocks or with a product picked.
+// Add stock and the count are pages; with a product they open straight on its quantities.
 // The item's on_hand must be the branch's, so on "All branches" the page asks for one first.
 export const useStockActions = () => {
   const navigate = useTransitionNavigate();

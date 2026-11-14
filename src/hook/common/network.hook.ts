@@ -49,6 +49,18 @@ export const useSyncStatus = () => {
   return { online, waiting, failed, flushing };
 };
 
+const isSale = (entry: IQueueEntry) => entry.kind === "rpc" && entry.fn === "record_transaction";
+
+// Sales still on this device: waiting to send, or refused and waiting for Retry or Discard.
+export const usePendingSales = () => {
+  const failed = useSyncStore(
+    (state) => state.queue.filter((entry) => isSale(entry) && isFailed(entry)).length,
+  );
+  const total = useSyncStore((state) => state.queue.filter(isSale).length);
+
+  return { waiting: total - failed, failed };
+};
+
 export const useSyncQueue = () => {
   const online = useNetworkStore(selectOnline);
   const queue = useSyncStore((state) => state.queue);

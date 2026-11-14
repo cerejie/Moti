@@ -67,14 +67,15 @@ const ScopeMenu = ({ title, allLabel, options, selectedId, onSelect, extraAction
 
     return (
       <>
+        {/* The name stays visible on phones too: which branch you are looking at is never hidden. */}
         <AppButton
           variant="ghost"
-          size="icon"
           aria-label={triggerLabel}
           className={scopeMenuTriggerCompact}
           onPress={() => openModal()}
         >
           <Store />
+          <span className={scopeMenuLabel}>{selectedLabel}</span>
         </AppButton>
 
         <AppSheet open={modal.visible} title={title} onClose={closeModal}>

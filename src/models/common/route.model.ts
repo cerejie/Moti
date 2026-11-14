@@ -13,8 +13,13 @@ export type IRoute = {
   isNotNav?: boolean;
   // Keeps the route in the sidebar but off the phone tab bar; that tab stays lit on it.
   tabParent?: string;
+  // A sub-page outside its nav item's path (Stock history under Stocks) lights that item and
+  // falls back to it when there is no history to pop.
+  section?: string;
   // Hides the route from navigation unless the signed-in role has this permission.
   can?: keyof IPermissions;
+  // A nav route that is a phone tab only for roles with this permission.
+  tabCan?: keyof IPermissions;
   children?: IRoute[];
 } & RouteObject;
 

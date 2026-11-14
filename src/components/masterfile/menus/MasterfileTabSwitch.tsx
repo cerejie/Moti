@@ -14,7 +14,7 @@ const MasterfileTabSwitch = () => {
 
   return (
     <ContextSwitch
-      label="Masterfile"
+      label="Categories & brands"
       value={filters.tab ?? "categories"}
       options={tabOptions}
       onChange={(next) => setFilters({ tab: next })}

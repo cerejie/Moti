@@ -22,6 +22,8 @@ SaaS build, which comes later.
 - [x] V1.4: Autopilot loop (below): critique → decide → fix, round after round, until a round finds
       nothing left to fix (2026-10-03: converged after round 2; 4 questions wait in
       `.claude/state/autopilot/USER-DECISIONS.md`)
+- [ ] V1.8: UX overhaul (below) — coded 2026-11-14 on `moti-ux-overhaul`; migration 14 waits
+      to be applied; delete the superseded files once confirmed
 - [ ] LATER: SaaS build (multi-shop), analyzer, pgTAP tests
 - [x] TARTAR redesign (phases below), one conversation per phase (2026-10-07: all 7 phases done)
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
@@ -33,6 +35,41 @@ SaaS build, which comes later.
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
       Phase 2 done 2026-11-13 (v1.52, migration 9 applied); Phase 3 coded 2026-11-14 (v1.53,
       migration 10 waits to be applied); next up: Phase 4 (Order list)
+
+## V1.8: UX overhaul — task-first navigation (branch `moti-ux-overhaul`, 2026-11-14)
+
+From `.claude/references/Moti-UX-Overhaul-Claude-Prompt.md`. Replaces the V1.7 vocabulary
+table above for everything a user reads; routes, tables and reason values keep their names.
+
+- Owner tabs **Stocks · Sales · What to buy** (`/inventory`, `/transaction`, `/what-to-buy`);
+  `/` redirects by role (`homeLoader`). Account, Team, Branches sit in the header profile menu
+  and the sidebar's Settings group. Employee tabs **Sales · My sales · Account**
+  (`/transaction/history` is employee-only; owners read Sales history inside Sales).
+- `IRoute.section` lights a nav item for sub-pages outside its path (Stock history, Add stock…
+  under Stocks; Buying list under What to buy); `IRoute.tabCan` makes Account a phone tab only
+  for employees; the most specific nav path wins (My sales over Sales).
+- Stocks: status chips carry the Low / Out counts, archived products moved to the filter sheet,
+  rows open the product (no row menus), **Add stock** + a labelled **More** menu (New product,
+  Check stock count, Record damaged or lost, Stock history, Categories & brands). Dashboard is
+  no longer routed.
+- Sales: typed quantities in the picker, "Review sale · N products" bar on phones (full-height
+  review), persistent draft panel on desktop, **Save sale** → toast, no success modal. The cart
+  holds a `clientId` from the first product until saved/cleared, so retries are idempotent; a
+  refused save keeps the draft and refreshes availability. Units are never summed.
+- Add stock / Check stock count spell out Available → Received → After saving and App quantity
+  → Counted → Correction; both end with a toast and return where they started.
+- What to buy: one ranked list per view (Buy soon / Most sold), period 7 · 30 · 90, "How
+  suggestions work" with the cover target (7/14/21/30 days, per device, `moti.analysis`).
+  Migration **14** scopes `stock_analysis` to the branch (adds `p_branch_id`, `short_branches`)
+  and rewrites the Low / Out alert text and link. **Waits to be applied**; until then What to buy
+  errors whenever a single branch is in scope.
+- Superseded but kept (repo rule: no deletes without confirmation), unreferenced:
+  `pages/Dashboard/DashboardView.tsx`, `components/dashboard/**`,
+  `components/transaction/modal/CheckoutSuccessModal.tsx`,
+  `components/delivery/modal/DeliverySuccessModal.tsx`,
+  `components/count/modal/CountSuccessModal.tsx`, `components/inventory/menus/InventoryRowActions.tsx`,
+  `components/movement/menus/StockTabSwitch.tsx`, `components/movement/panels/StockPanel.tsx`,
+  and their modal keys (`checkoutSuccessModalKey`, `deliverySuccessModalKey`, `countSuccessModalKey`).
 
 ## V1.7: Stock analyzer, order list, receive stock, motion
 

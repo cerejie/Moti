@@ -18,6 +18,8 @@ type IProps<T extends string> = {
   options: readonly ISegmentOption<T>[];
   onChange: (value: T) => void;
   label: string;
+  // Chips keep every label whole when the options are long (Stocks' status filters with counts).
+  chips?: boolean;
 };
 
 // TARTAR's page-level switch, for ContentView's `tabs` slot or a toolbar.
@@ -26,8 +28,9 @@ const ContextSwitch = <T extends string>({
   options,
   onChange,
   label,
+  chips = false,
 }: IProps<T>) => {
-  const isSegmented = options.length <= segmentedOptionLimit;
+  const isSegmented = !chips && options.length <= segmentedOptionLimit;
   const presentation = isSegmented ? "segmented" : "chips";
   const dense = options.length === segmentedOptionLimit;
   const groupId = useId();

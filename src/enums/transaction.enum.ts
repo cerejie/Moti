@@ -5,7 +5,7 @@ export type TransactionStatus = (typeof transactionStatusValues)[number];
 
 export const transactionStatusLabels: Record<TransactionStatus, string> = {
   completed: "Completed",
-  voided: "Voided",
+  voided: "Cancelled",
 };
 
 export const transactionStatusTones: Record<TransactionStatus, Tone> = {
@@ -13,6 +13,6 @@ export const transactionStatusTones: Record<TransactionStatus, Tone> = {
   voided: "neutral",
 };
 
-// The Sell page's tabs; Sales history is the owner's.
+// The Sales page's tabs; Sales history is the owner's (employees have My sales).
 export const transactionTabValues = ["new", "history"] as const;
 export type TransactionTab = (typeof transactionTabValues)[number];

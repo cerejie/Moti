@@ -81,7 +81,7 @@ export const useItemForm = () => {
   const mutation = useAppMutation(save, {
     silentError: true,
     invalidate: itemInvalidations,
-    successMessage: item ? "Item updated" : "Item added",
+    successMessage: item ? "Product updated" : "Product added",
     onSuccess: closeModal,
   });
 
@@ -118,8 +118,8 @@ export const useItemArchive = () => {
         kind: "danger",
         title: `Archive ${item.name}?`,
         message:
-          "It disappears from the stock list and alerts. Its history is kept and you can restore it from the Archived tab.",
-        okText: "Archive",
+          "It leaves Stocks and alerts. Its history is kept, and you can restore it from Filters → Show archived products.",
+        okText: "Archive product",
         onConfirm: () => mutation.mutateAsync({ item, archived: true }),
       }),
     restore: (item: IInventoryItem) => mutation.mutate({ item, archived: false }),

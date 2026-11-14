@@ -7,11 +7,11 @@ import { formatCount } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import CountUp from "../../common/view/CountUp";
 
-const formatItems = (count: number) => formatCount(count, "item");
+const formatItems = (count: number) => formatCount(count, "product");
 
-// Shows once something is on the order list; the list itself is adjusted and shared on its page.
+// Shows once something is on the buying list; the list itself is adjusted and shared on its page.
 const OrderListBar = () => {
-  const { itemCount, lines } = useOrderList();
+  const { itemCount } = useOrderList();
 
   if (itemCount === 0) return null;
 
@@ -19,15 +19,9 @@ const OrderListBar = () => {
     <div className={cartBar}>
       <span className={cartBarText}>
         <span className={cartBarTotal}>
-          Order list · <CountUp value={itemCount} format={formatItems} bump />
+          Buying list · <CountUp value={itemCount} format={formatItems} bump />
         </span>
-        <span className={itemMeta}>
-          {formatCount(
-            lines.reduce((sum, line) => sum + line.quantity, 0),
-            "pc",
-          )}{" "}
-          to order
-        </span>
+        <span className={itemMeta}>Planning only</span>
       </span>
       <AppButton size="lg" href={ROUTES.orderList}>
         <ClipboardList />

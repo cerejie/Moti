@@ -10,7 +10,7 @@ const fields: IFieldConfig<IVoidFormInput>[] = [
     type: "textarea",
     span: "full",
     required: true,
-    placeholder: "e.g. Customer returned the items",
+    placeholder: "e.g. Customer returned the products",
   },
 ];
 
@@ -21,14 +21,14 @@ const VoidTransactionModal = () => {
     <EntityFormModal
       open={open}
       onOpenChange={onOpenChange}
-      title={transaction ? `Void sale #${transaction.number}` : "Void sale"}
-      description="Every item goes back into stock. The sale stays in history, marked voided."
+      title={transaction ? `Cancel sale #${transaction.number}?` : "Cancel sale?"}
+      description="This restores the stock: every product goes back to the branch that sold it. The sale stays in history, marked cancelled, with your reason."
       size="sm"
       form={form}
       fields={fields}
       onSubmit={onSubmit}
       submitting={mutation.isPending}
-      submitLabel="Void sale"
+      submitLabel="Cancel sale"
       submitKind="danger"
       error={mutation.error?.message}
     />

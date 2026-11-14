@@ -1,5 +1,4 @@
 import {
-  analysisCoverDays,
   analysisMinSales,
   analysisPeriodLabels,
   defaultAnalysisPeriod,
@@ -32,10 +31,10 @@ const daysLeftText = (row: IStockAnalysisRow) => {
   return row.days_left === null ? "—" : formatDaysLeft(row.days_left);
 };
 
-const paceItems: IDetailItem<IStockAnalysisRow>[] = [
+const paceItemsFor = (coverDays: number): IDetailItem<IStockAnalysisRow>[] => [
   {
     key: "sold",
-    label: `Sold in ${analysisPeriodLabels[defaultAnalysisPeriod]}`,
+    label: `Sold in the last ${analysisPeriodLabels[defaultAnalysisPeriod]}`,
     render: (row) =>
       `${formatNumber(row.sold_units)} ${row.unit} in ${formatCount(row.sale_count, "sale")}`,
   },
@@ -47,7 +46,7 @@ const paceItems: IDetailItem<IStockAnalysisRow>[] = [
   { key: "daysLeft", label: "Days left", render: daysLeftText },
   {
     key: "suggested",
-    label: `To order (${analysisCoverDays} days)`,
+    label: `Suggested to buy (${coverDays} days)`,
     render: (row) =>
       row.suggested_quantity === null ? "—" : `${formatNumber(row.suggested_quantity)} ${row.unit}`,
   },
@@ -59,19 +58,19 @@ const paceItems: IDetailItem<IStockAnalysisRow>[] = [
 ];
 
 const ItemSalesPaceCard = ({ itemId }: IProps) => {
-  const pace = useItemSalesPace(itemId, true);
+  const { query: pace, coverDays } = useItemSalesPace(itemId, true);
 
   if (pace.isLoading) return <EmptyState compact loading description="Working out the pace…" />;
   if (pace.isError) {
     return <ErrorState compact error={pace.error} onRetry={() => void pace.refetch()} />;
   }
   // Archived items are left out of the analysis.
-  if (!pace.data) return <EmptyState compact description="No sales pace for this item." />;
+  if (!pace.data) return <EmptyState compact description="No sales pace for this product here." />;
 
   return (
     <div className={orderPaceStack}>
       <div className={detailPageSurface}>
-        <DetailRows record={pace.data} items={paceItems} />
+        <DetailRows record={pace.data} items={paceItemsFor(coverDays)} />
       </div>
       <OrderAddButton row={pace.data} full />
     </div>

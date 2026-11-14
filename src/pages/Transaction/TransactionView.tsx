@@ -1,19 +1,17 @@
 import ContentView from "../../components/common/view/ContentView";
 import CartModal from "../../components/transaction/modal/CartModal";
-import CheckoutSuccessModal from "../../components/transaction/modal/CheckoutSuccessModal";
 import TransactionTabSwitch from "../../components/transaction/menus/TransactionTabSwitch";
 import TransactionPanel from "../../components/transaction/panels/TransactionPanel";
 
 const TransactionView = () => (
   <ContentView
-    title="Sell"
-    subtitle="Find the items, add them, then check out"
+    title="Sales"
+    subtitle="Add the products sold, review, then save the sale"
     tabs={<TransactionTabSwitch />}
   >
     <TransactionPanel />
 
     <CartModal />
-    <CheckoutSuccessModal />
   </ContentView>
 );
 

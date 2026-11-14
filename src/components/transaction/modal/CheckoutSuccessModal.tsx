@@ -1,9 +1,15 @@
 import { useModal } from "../../../hook/common/modal.hook";
-import type { ICheckoutReceipt } from "../../../hook/data/transaction/transaction.form.hook";
 import { checkoutSuccessModalKey } from "../../../keys/modal.keys";
 import { receiptLine } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import SuccessModal from "../../common/modal/SuccessModal";
+
+// Superseded by the "Sale saved" toast (V1.8); no screen mounts it.
+interface ICheckoutReceipt {
+  itemCount: number;
+  totalQuantity: number;
+  queued: boolean;
+}
 
 // Closing it leaves the seller on the item list, ready for the next sale.
 const CheckoutSuccessModal = () => {

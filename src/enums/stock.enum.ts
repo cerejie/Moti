@@ -17,16 +17,18 @@ export const stockStatusTones: Record<StockStatus, Tone> = {
   out: "danger",
 };
 
-// The inventory list's tabs: the three statuses plus archived items.
-export const inventoryViewValues = ["all", "low", "out", "archived"] as const;
+// The Stocks list's status chips; archived products sit behind the filter sheet instead.
+export const inventoryViewValues = ["all", "low", "out"] as const;
 export type InventoryView = (typeof inventoryViewValues)[number];
 
 export const inventoryViewLabels: Record<InventoryView, string> = {
   all: "All",
-  low: "Low",
-  out: "Out",
-  archived: "Archived",
+  low: "Low stock",
+  out: "Out of stock",
 };
+
+// The filter-sheet value that swaps the list to archived products.
+export const archivedShowValue = "archived";
 
 export const movementTypeValues = ["stock_in", "stock_out"] as const;
 export const movementTypeSchema = z.enum(movementTypeValues);
@@ -45,11 +47,11 @@ export type MovementReason = z.infer<typeof movementReasonSchema>;
 
 export const movementReasonLabels: Record<MovementReason, string> = {
   sale: "Sale",
-  void: "Voided sale",
-  restock: "Delivery",
+  void: "Cancelled sale",
+  restock: "Stock added",
   opening_balance: "Opening stock",
   damaged: "Damaged or lost",
-  correction: "Stock count",
+  correction: "Stock correction",
 };
 
 export const movementReasonTones: Record<MovementReason, Tone> = {
@@ -67,8 +69,8 @@ export type MovementView = (typeof movementViewValues)[number];
 
 export const movementViewLabels: Record<MovementView, string> = {
   changes: "Stock changes",
-  deliveries: "Deliveries",
-  counts: "Counts",
+  deliveries: "Stock added",
+  counts: "Corrections",
   damaged: "Damaged or lost",
   sales: "Sales",
 };

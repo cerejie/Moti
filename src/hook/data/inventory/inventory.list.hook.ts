@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { InventoryView } from "../../../enums/stock.enum";
+import { archivedShowValue, type InventoryView } from "../../../enums/stock.enum";
 import {
   inventoryListKey,
   inventorySummaryKey,
@@ -16,6 +16,7 @@ import { useActiveBranch } from "../branch/branch.scope.hook";
 
 type IInventoryFilterValues = {
   view?: InventoryView;
+  show?: string;
   categoryId?: string;
   brandId?: string;
 };
@@ -32,6 +33,7 @@ export const useInventoryList = () => {
   const branchId = useActiveBranch().writeBranch?.id;
 
   const view = filters.view ?? "all";
+  const archived = filters.show === archivedShowValue;
   const categoryId = filters.categoryId;
   const brandId = filters.brandId;
 
@@ -40,6 +42,7 @@ export const useInventoryList = () => {
       inventoryListKey,
       branchId,
       view,
+      archived,
       categoryId,
       brandId,
       search,
@@ -48,7 +51,7 @@ export const useInventoryList = () => {
     ],
     queryFn: ({ signal }) =>
       inventoryServices.getList(
-        { view, categoryId, brandId, search, branchId, carriedOnly: true },
+        { view, archived, categoryId, brandId, search, branchId, carriedOnly: true },
         pagination,
         signal,
       ),
@@ -58,6 +61,7 @@ export const useInventoryList = () => {
   return {
     query,
     view,
+    archived,
     setView: (next: InventoryView) => setFilters({ view: next }),
   };
 };

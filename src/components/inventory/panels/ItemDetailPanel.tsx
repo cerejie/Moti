@@ -37,10 +37,10 @@ const ItemDetailPanel = () => {
   const { multiple } = useActiveBranch();
   const item = query.data;
 
-  if (query.isLoading) return <EmptyState loading description="Loading item…" />;
+  if (query.isLoading) return <EmptyState loading description="Loading product…" />;
   if (!item) {
     return (
-      <ErrorState error={query.error} title="Item not found" onRetry={() => void query.refetch()} />
+      <ErrorState error={query.error} title="Product not found" onRetry={() => void query.refetch()} />
     );
   }
 
@@ -61,11 +61,11 @@ const ItemDetailPanel = () => {
         </DetailPageSection>
       )}
 
-      <DetailPageSection title="Details">
-        <div className={detailPageSurface}>
-          <DetailRows record={item} items={detailItems} />
-        </div>
-      </DetailPageSection>
+      {viewMovements && (
+        <DetailPageSection title="Recent stock history">
+          <ItemMovementList itemId={item.id} />
+        </DetailPageSection>
+      )}
 
       {isOwner && (
         <DetailPageSection title="Sales pace">
@@ -73,14 +73,15 @@ const ItemDetailPanel = () => {
         </DetailPageSection>
       )}
 
-      {viewMovements && (
-        <DetailPageSection title="Stock history">
-          <ItemMovementList itemId={item.id} />
-        </DetailPageSection>
-      )}
+      <DetailPageSection title="Details">
+        <div className={detailPageSurface}>
+          <DetailRows record={item} items={detailItems} />
+        </div>
+      </DetailPageSection>
 
+      {/* Edit and Archive sit last, apart from everyday stock work. */}
       {isOwner && (
-        <DetailPageSection title="Manage">
+        <DetailPageSection title="Manage product">
           <ItemManageActions item={item} />
         </DetailPageSection>
       )}

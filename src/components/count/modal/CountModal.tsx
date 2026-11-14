@@ -12,10 +12,9 @@ import {
   cartForm,
   cartList,
   cartRow,
-  cartRowBottom,
   cartRowTop,
 } from "../../../styles/transaction/transaction.styles";
-import { formatCount, formatNumber, formatSignedQuantity } from "../../../utils/format.utils";
+import { formatCount, formatSignedQuantity, formatQuantity } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
 import FormField from "../../common/form/FormField";
 import FormRoot from "../../common/form/FormRoot";
@@ -23,18 +22,28 @@ import QuantityInput from "../../common/form/QuantityInput";
 import AppModal from "../../common/modal/AppModal";
 import AppAlert from "../../common/status/AppAlert";
 import EmptyState from "../../common/status/EmptyState";
+import DisclosureSection from "../../common/view/DisclosureSection";
+import StockMathRow from "../../inventory/cards/StockMathRow";
+import type { ICountLine } from "../../../models/data/count/count.request";
 
 const formId = "stock-count-form";
 
 const noteField: IFieldConfig<ICountFormInput> = {
   name: "note",
-  label: "Note",
+  label: "Reason or note",
   type: "textarea",
   span: "full",
-  placeholder: "Optional, e.g. shelf A or monthly count",
+  placeholder: "e.g. shelf A, monthly check",
 };
 
-// Two steps in one sheet: type what is on the shelf, then save only the differences.
+const correctionText = (line: ICountLine) => {
+  if (line.counted === null) return "—";
+  const difference = countDifference(line);
+  return difference === 0 ? "None" : formatSignedQuantity(difference);
+};
+
+// An absolute count, never an increment: type what is really there, the app works out the
+// correction. Only the differences are saved, and the review shows exactly those.
 const CountModal = () => {
   const { open, count, form, mutation, canReview, review, back, close, onSubmit, onOpenChange } =
     useStockCountForm();
@@ -44,34 +53,36 @@ const CountModal = () => {
   const footer = reviewing ? (
     <>
       <AppButton variant="outline" disabled={mutation.isPending} onPress={back}>
-        Back
+        Back to counts
       </AppButton>
-      <AppButton type="submit" form={formId} loading={mutation.isPending}>
-        {differenceCount > 0 ? "Save count" : "Finish"}
+      <AppButton type="submit" form={formId} loading={mutation.isPending} disabled={mutation.isPending}>
+        {differenceCount > 0 ? "Save stock correction" : "Finish"}
       </AppButton>
     </>
   ) : (
     <>
       <AppButton variant="outline" onPress={close}>
-        Add more
+        Add more products
       </AppButton>
       <AppButton disabled={!canReview} onPress={review}>
-        Review
+        Review corrections
       </AppButton>
     </>
   );
 
   const renderCounting = () =>
     count.itemCount === 0 ? (
-      <EmptyState description="Nothing picked yet. Add the items to count from the list." />
+      <EmptyState description="Nothing picked yet. Add the products to check from the list." />
     ) : (
       <>
-        <ul className={cartList}>
+        <ul className={cartList} aria-label="Products to check">
           {count.lines.map((line) => (
             <li key={line.item.id} className={cartRow}>
               <div className={cartRowTop}>
                 <span className={itemIdentity}>
-                  <span className={itemName}>{line.item.name}</span>
+                  <span className={itemName} title={line.item.name}>
+                    {line.item.name}
+                  </span>
                   <span className={itemMeta}>{line.item.item_code}</span>
                 </span>
                 <AppButton
@@ -83,25 +94,34 @@ const CountModal = () => {
                   <Trash2 />
                 </AppButton>
               </div>
-              <div className={cartRowBottom}>
-                <span className={itemMeta}>
-                  The app says {formatNumber(line.item.on_hand)} {line.item.unit}
-                </span>
-                <QuantityInput
-                  label={`${line.item.name} on the shelf`}
-                  placeholder="Shelf"
-                  value={line.counted}
-                  min={0}
-                  allowEmpty
-                  onChange={(next) => count.setCounted(line.item.id, next)}
-                />
-              </div>
+              <StockMathRow
+                cells={[
+                  {
+                    label: "App quantity",
+                    content: formatQuantity(line.item.on_hand, line.item.unit),
+                  },
+                  {
+                    label: "Actual counted",
+                    content: (
+                      <QuantityInput
+                        label={`Actual quantity of ${line.item.name} counted, in ${line.item.unit}`}
+                        placeholder="Count"
+                        value={line.counted}
+                        min={0}
+                        allowEmpty
+                        onChange={(next) => count.setCounted(line.item.id, next)}
+                      />
+                    ),
+                  },
+                  { label: "Correction", content: correctionText(line) },
+                ]}
+              />
             </li>
           ))}
         </ul>
         {count.uncountedCount > 0 && (
           <p className={itemMeta}>
-            Type what is on the shelf for {formatCount(count.uncountedCount, "more item")}, or
+            Type the actual quantity for {formatCount(count.uncountedCount, "more product")}, or
             remove {count.uncountedCount === 1 ? "it" : "them"}.
           </p>
         )}
@@ -110,32 +130,42 @@ const CountModal = () => {
 
   const renderReview = () => (
     <>
-      {mutation.error && <AppAlert tone="danger">{mutation.error.message}</AppAlert>}
+      {mutation.error && (
+        <AppAlert tone="danger" title="Not saved. Your counts are still here.">
+          {mutation.error.message}
+        </AppAlert>
+      )}
 
       {differenceCount === 0 ? (
         <EmptyState
-          description={`All ${formatCount(count.itemCount, "item")} match the app. Nothing to record.`}
+          description={`All ${formatCount(count.itemCount, "product")} match the app. Nothing to correct.`}
         />
       ) : (
         <>
           <p className={itemMeta}>
-            {formatCount(differenceCount, "difference")} found in{" "}
-            {formatCount(count.itemCount, "item")} counted. Matching items record nothing.
+            {formatCount(differenceCount, "correction")} in{" "}
+            {formatCount(count.itemCount, "product")} checked. Products that match record nothing.
+            Sales made while you counted are kept.
           </p>
-          <ul className={cartList}>
+          <ul className={cartList} aria-label="Stock corrections">
             {count.differences.map((line) => {
               const difference = countDifference(line);
               return (
                 <li key={line.item.id} className={cartRow}>
                   <div className={cartRowTop}>
                     <span className={itemIdentity}>
-                      <span className={itemName}>{line.item.name}</span>
+                      <span className={itemName} title={line.item.name}>
+                        {line.item.name}
+                      </span>
                       <span className={itemMeta}>
-                        {formatNumber(line.item.on_hand)} → {formatNumber(line.counted ?? 0)}{" "}
-                        {line.item.unit}
+                        App quantity {formatQuantity(line.item.on_hand, line.item.unit)} · Counted{" "}
+                        {formatQuantity(line.counted ?? 0, line.item.unit)}
                       </span>
                     </span>
-                    <span className={historyQuantity({ direction: difference > 0 ? "in" : "out" })}>
+                    <span
+                      className={historyQuantity({ direction: difference > 0 ? "in" : "out" })}
+                      aria-label={`Correction ${formatSignedQuantity(difference)} ${line.item.unit}`}
+                    >
                       {formatSignedQuantity(difference)}
                     </span>
                   </div>
@@ -146,7 +176,9 @@ const CountModal = () => {
         </>
       )}
 
-      <FormField config={noteField} />
+      <DisclosureSection title="Add reason or note (optional)">
+        <FormField config={noteField} />
+      </DisclosureSection>
     </>
   );
 
@@ -154,13 +186,14 @@ const CountModal = () => {
     <AppModal
       open={open}
       onOpenChange={onOpenChange}
-      title={reviewing ? "Review count" : "Count stock"}
+      title={reviewing ? "Review corrections" : "Check stock count"}
       description={
         reviewing
-          ? "Only the differences are saved."
-          : "Type what is on the shelf beside what the app says."
+          ? "Only the differences are saved, each as an audited stock correction."
+          : "Type the actual quantity you counted beside the app's quantity."
       }
       size="md"
+      kind="form"
       footer={footer}
     >
       <FormRoot form={form} onSubmit={onSubmit} id={formId} className={cartForm}>

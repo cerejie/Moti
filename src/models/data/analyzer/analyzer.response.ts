@@ -16,5 +16,7 @@ export interface IStockAnalysisRow {
   days_left: number | null;
   suggested_quantity: number | null;
   last_sold_at: string | null;
+  // All branches: how many branches are Low or Out on it. Undefined before migration 14.
+  short_branches?: number;
   analysis_group: AnalysisGroup;
 }

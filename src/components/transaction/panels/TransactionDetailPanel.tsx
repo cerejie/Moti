@@ -68,7 +68,7 @@ const TransactionDetailPanel = () => {
       </DetailPageSection>
 
       {voided && (
-        <DetailPageSection title="Voided">
+        <DetailPageSection title="Cancelled">
           <div className={detailPageSurface}>
             <DetailRows record={transaction} items={voidItems} />
           </div>

@@ -29,7 +29,7 @@ const ItemManageActions = ({ item }: IProps) => {
         className={detailManageButton}
       >
         <Pencil data-icon="inline-start" aria-hidden />
-        Edit item
+        Edit product
       </AppButton>
 
       {archived ? (
@@ -40,7 +40,7 @@ const ItemManageActions = ({ item }: IProps) => {
           className={detailManageButton}
         >
           <ArchiveRestore data-icon="inline-start" aria-hidden />
-          Restore item
+          Restore product
         </AppButton>
       ) : (
         <AppButton
@@ -51,14 +51,14 @@ const ItemManageActions = ({ item }: IProps) => {
           className={detailManageButton}
         >
           <Archive data-icon="inline-start" aria-hidden />
-          Archive item
+          Archive product
         </AppButton>
       )}
 
       <p className={detailManageHint}>
         {archived
-          ? "Restoring puts the item back on the list and on sale."
-          : "Archived items leave the list and can't be sold. You can restore them anytime."}
+          ? "Restoring puts the product back on Stocks and on sale."
+          : "Archived products leave Stocks and can't be sold. Their history is kept, and you can restore them anytime."}
       </p>
     </div>
   );

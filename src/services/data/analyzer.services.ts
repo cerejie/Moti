@@ -1,8 +1,4 @@
-import {
-  analysisCoverDays,
-  analysisMinSales,
-  analysisSlowDays,
-} from "../../enums/analyzer.enum";
+import { analysisMinSales, analysisSlowDays } from "../../enums/analyzer.enum";
 import type { IStockAnalysisFilters } from "../../models/data/analyzer/analyzer.request";
 import type { IStockAnalysisRow } from "../../models/data/analyzer/analyzer.response";
 import { supabase, toError } from "../../utils/supabase.utils";
@@ -22,10 +18,12 @@ const analyzerServices = {
   ): Promise<IStockAnalysisRow[]> => {
     let query = supabase.rpc("stock_analysis", {
       p_days: Number(filters.period),
-      p_cover_days: analysisCoverDays,
+      p_cover_days: filters.coverDays,
       p_slow_days: analysisSlowDays,
       p_min_sales: analysisMinSales,
       p_item_id: filters.itemId ?? null,
+      // Sent only with a branch, so All branches still resolves before migration 14 is applied.
+      ...(filters.branchId ? { p_branch_id: filters.branchId } : {}),
     });
     if (signal) query = query.abortSignal(signal);
     const { data, error } = await query;

@@ -1,8 +1,9 @@
 // The header's scope switcher (which branch the screens show): a dropdown on
-// wide screens, an icon and a sheet on compact ones.
+// wide screens, a sheet on compact ones; both triggers carry the branch name.
 export const scopeMenuTrigger = "h-11 max-w-56 gap-2 rounded-pill px-3 text-sm font-medium";
 
-export const scopeMenuTriggerCompact = "size-11 [&_svg:not([class*='size-'])]:size-5";
+export const scopeMenuTriggerCompact =
+  "h-11 max-w-36 gap-1.5 rounded-pill px-2.5 text-sm font-medium [&_svg:not([class*='size-'])]:size-5";
 
 export const scopeMenuLabel = "min-w-0 truncate";
 

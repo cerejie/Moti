@@ -46,7 +46,7 @@ const buildColumns = (
     title: "Items",
     render: (_, branch) => <span className={mutedText}>{formatNumber(itemCountOf(branch))}</span>,
     listRender: (branch) => (
-      <span className={mutedText}>{formatCount(itemCountOf(branch), "item")}</span>
+      <span className={mutedText}>{formatCount(itemCountOf(branch), "product")}</span>
     ),
   },
   {

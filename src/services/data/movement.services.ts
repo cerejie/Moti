@@ -133,7 +133,7 @@ const movementServices = {
       p_client_id: newWriteId(),
       p_branch_id: branchId,
     };
-    const label = `Receive delivery of ${lines.length} item${lines.length === 1 ? "" : "s"}`;
+    const label = `Add stock for ${lines.length} product${lines.length === 1 ? "" : "s"}`;
 
     return orderListId
       ? runWrite({
@@ -154,7 +154,7 @@ const movementServices = {
     runWrite({
       kind: "rpc",
       fn: "record_stock_count",
-      label: `Stock count of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
+      label: `Stock correction for ${lines.length} product${lines.length === 1 ? "" : "s"}`,
       args: {
         p_lines: lines.map((line) => ({
           item_id: line.item.id,

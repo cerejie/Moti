@@ -5,9 +5,9 @@ import { ROUTES } from "../../routes/route.paths";
 
 const DamagedStockView = () => (
   <ContentView
-    title="Damaged or lost"
-    subtitle="Pick the item that broke, expired or went missing"
-    back={{ label: "Stock", path: ROUTES.movements }}
+    title="Record damaged or lost stock"
+    subtitle="Pick the product that broke, expired or went missing"
+    back={{ label: "Stocks", path: ROUTES.inventory }}
   >
     <DamagedPanel />
 

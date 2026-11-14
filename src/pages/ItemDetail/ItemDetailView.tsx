@@ -5,7 +5,7 @@ import DamagedStockModal from "../../components/movement/modal/DamagedStockModal
 import { ROUTES } from "../../routes/route.paths";
 
 const ItemDetailView = () => (
-  <ContentView back={{ label: "Inventory", path: ROUTES.inventory }}>
+  <ContentView back={{ label: "Stocks", path: ROUTES.inventory }}>
     <ItemDetailPanel />
     <ItemFormModal />
     <DamagedStockModal />

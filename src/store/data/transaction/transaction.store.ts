@@ -2,11 +2,15 @@ import type {
   ICartItem,
   ICartLine,
 } from "../../../models/data/transaction/transaction.request";
+import { newWriteId } from "../../../utils/write.utils";
 import { create } from "../../common/reset.store";
 
 type States = {
   // The branch the cart sells from; set by the first item added.
   branchId: string | null;
+  // The sale's idempotency key: fixed from the first product until the sale is saved or cleared,
+  // so a double tap or a retry after a lost response never records it twice.
+  clientId: string | null;
   lines: ICartLine[];
 };
 
@@ -19,6 +23,7 @@ type Actions = {
 
 const initialValues: States = {
   branchId: null,
+  clientId: null,
   lines: [],
 };
 
@@ -36,10 +41,11 @@ export const useCartStore = create<States & Actions>()((set) => ({
     set((state) => {
       // The switcher clears the cart first; this only catches a branch archived mid-sale.
       if (state.branchId !== null && state.branchId !== branchId) {
-        return { branchId, lines: [{ item, quantity: 1 }] };
+        return { branchId, clientId: newWriteId(), lines: [{ item, quantity: 1 }] };
       }
+      const clientId = state.clientId ?? newWriteId();
       const existing = state.lines.find((line) => line.item.id === item.id);
-      if (!existing) return { branchId, lines: [...state.lines, { item, quantity: 1 }] };
+      if (!existing) return { branchId, clientId, lines: [...state.lines, { item, quantity: 1 }] };
 
       return {
         lines: state.lines.map((line) =>
@@ -62,7 +68,7 @@ export const useCartStore = create<States & Actions>()((set) => ({
   remove: (itemId) =>
     set((state) => {
       const lines = state.lines.filter((line) => line.item.id !== itemId);
-      return { lines, branchId: lines.length === 0 ? null : state.branchId };
+      return lines.length === 0 ? { ...initialValues } : { lines };
     }),
 
   clear: () => set({ ...initialValues }),
@@ -71,6 +77,8 @@ export const useCartStore = create<States & Actions>()((set) => ({
 export const selectCartLines = (state: States) => state.lines;
 
 export const selectCartBranch = (state: States) => state.branchId;
+
+export const selectCartClientId = (state: States) => state.clientId;
 
 export const selectCartQuantity = (itemId: string) => (state: States) =>
   state.lines.find((line) => line.item.id === itemId)?.quantity ?? 0;

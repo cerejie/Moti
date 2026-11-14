@@ -9,6 +9,7 @@ export interface IAppMutationOptions<TResult> {
   // Forms show the error inline instead of a toast.
   silentError?: boolean;
   onSuccess?: (result: TResult) => void | Promise<void>;
+  onError?: (error: Error) => void;
 }
 
 const defaultQueuedMessage = "Saved offline — will sync when you're back online.";
@@ -46,6 +47,7 @@ export const useAppMutation = <TArgs = void, TResult = unknown>(
     },
     onError: (error) => {
       if (!options.silentError) toast.error(error.message);
+      options.onError?.(error);
     },
   });
 };

@@ -106,6 +106,12 @@ export function formatCount(count: number, singular: string, plural = `${singula
   return `${formatNumber(count)} ${count === 1 ? singular : plural}`;
 }
 
+// A stock quantity with its unit as stored, e.g. "8 pc", "12 box": units are abbreviations
+// shown after the number, never pluralised ("boxs").
+export function formatQuantity(value: number, unit: string): string {
+  return `${formatNumber(value)} ${unit}`;
+}
+
 const paceFormatter = new Intl.NumberFormat("en-PH", { maximumFractionDigits: 1 });
 
 // Units sold per day, e.g. "1.4 a day"; a trickle reads "Under 0.1 a day".
@@ -113,9 +119,10 @@ export function formatPace(pace: number): string {
   return pace > 0 && pace < 0.1 ? "Under 0.1 a day" : `${paceFormatter.format(pace)} a day`;
 }
 
-// Days of stock at the current pace, e.g. "12 days left", "Under 1 day left".
+// Days of stock at the current pace, e.g. "About 12 days left", "Under 1 day left".
+// An estimate from past sales, so it never reads as exact.
 export function formatDaysLeft(days: number): string {
-  return days < 1 ? "Under 1 day left" : `${formatCount(Math.floor(days), "day")} left`;
+  return days < 1 ? "Under 1 day left" : `About ${formatCount(Math.floor(days), "day")} left`;
 }
 
 // A signed ledger quantity, e.g. +12 or −3.

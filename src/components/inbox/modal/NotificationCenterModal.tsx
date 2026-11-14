@@ -23,9 +23,9 @@ const NotificationCenterModal = () => {
   const hasAlerts = (alerts.data?.length ?? 0) > 0;
   const navigate = useTransitionNavigate();
 
-  const goToDashboard = () => {
+  const goToStocks = () => {
     closeModal();
-    navigate(ROUTES.home);
+    navigate(ROUTES.inventory);
   };
 
   return (
@@ -48,8 +48,8 @@ const NotificationCenterModal = () => {
             <div className={inboxSectionHeader}>
               <h3 className={inboxSectionTitle}>Stock alerts</h3>
               {hasAlerts && (
-                <AppButton variant="ghost" size="sm" onPress={goToDashboard}>
-                  Add stock
+                <AppButton variant="ghost" size="sm" onPress={goToStocks}>
+                  View stocks
                 </AppButton>
               )}
             </div>

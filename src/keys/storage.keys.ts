@@ -4,3 +4,4 @@ export const accountStorageKey = "moti.account";
 export const pushPromptStorageKey = "moti.push-prompt";
 export const queryCacheStorageKey = "moti.query-cache";
 export const branchStorageKey = "moti.branch";
+export const analysisStorageKey = "moti.analysis";

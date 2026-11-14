@@ -6,18 +6,18 @@ import CountCategoryButton from "../menus/CountCategoryButton";
 import CountPickControl from "../menus/CountPickControl";
 import CountBar from "./CountBar";
 
-// Pick items, or filter to a category and take it whole; the bar opens the shelf counts.
+// Pick products, or filter to a category and take it whole; the bar opens the counts.
 const CountPanel = () => (
   <BranchWriteGate
-    title="Which branch are you counting?"
-    description="A count checks one branch's shelves against what the app says it holds."
+    title="Which branch are you checking?"
+    description="A stock count compares one branch's shelves with the quantity in the app."
   >
     {(branchId) => (
       <div className={pickerStack}>
         <CountCategoryButton />
         <ItemPickerTable
           tableKey={countPickTableKey}
-          label="Items to count"
+          label="Products to check"
           actionTitle="Count"
           branchId={branchId}
           renderAction={(item) => <CountPickControl branchId={branchId} item={item} />}

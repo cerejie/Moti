@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { stockQueryKeys } from "../../../keys/query.keys";
-import { deliveryReviewModalKey, deliverySuccessModalKey } from "../../../keys/modal.keys";
+import { deliveryReviewModalKey } from "../../../keys/modal.keys";
 import {
   deliveryFormSchema,
   type IDeliveryFormInput,
@@ -14,17 +14,10 @@ import {
   selectDeliveryOrderListId,
   useDeliveryStore,
 } from "../../../store/data/delivery/delivery.store";
-import { useModal, useModalActions } from "../../common/modal.hook";
+import { usePushedRoute } from "../../layout/navigation.hook";
+import { useModal } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
 import { useActiveBranch } from "../branch/branch.scope.hook";
-
-// What the success prompt shows once the delivery list is gone.
-export interface IDeliveryReceipt {
-  itemCount: number;
-  totalQuantity: number;
-  queued: boolean;
-  fromOrderList: boolean;
-}
 
 export const useDelivery = () => {
   const lines = useDeliveryStore(selectDeliveryLines);
@@ -52,7 +45,7 @@ export const useDelivery = () => {
 
 export const useReceiveDeliveryForm = () => {
   const { modal, closeModal } = useModal(deliveryReviewModalKey);
-  const { openModal } = useModalActions();
+  const { goBack } = usePushedRoute();
   const delivery = useDelivery();
 
   const form = useForm<IDeliveryFormInput>({
@@ -74,20 +67,20 @@ export const useReceiveDeliveryForm = () => {
             values.note,
             delivery.orderListId,
           )
-        : Promise.reject(new Error("Pick the branch receiving this delivery")),
+        : Promise.reject(new Error("Pick the branch this stock is for")),
     {
       silentError: true,
       invalidate: stockQueryKeys,
-      onSuccess: (result) => {
-        const receipt: IDeliveryReceipt = {
-          itemCount: delivery.itemCount,
-          totalQuantity: delivery.totalQuantity,
-          queued: result.queued,
-          fromOrderList: delivery.orderListId !== null,
-        };
+      successMessage:
+        delivery.orderListId !== null
+          ? "Stock added. Anything that did not arrive stays on the buying list."
+          : "Stock added.",
+      queuedMessage: "Saved on this device. Waiting to sync.",
+      // Back to where Add stock was started; a toast says it worked, nothing to dismiss.
+      onSuccess: () => {
         delivery.clear();
         closeModal();
-        openModal(deliverySuccessModalKey, receipt);
+        goBack();
       },
     },
   );
@@ -99,10 +92,7 @@ export const useReceiveDeliveryForm = () => {
     mutation,
     onSubmit: (values: IDeliveryFormInput) => mutation.mutate(values),
     onOpenChange: (open: boolean) => {
-      if (!open) {
-        mutation.reset();
-        closeModal();
-      }
+      if (!open) closeModal();
     },
   };
 };

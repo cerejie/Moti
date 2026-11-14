@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { stockQueryKeys } from "../../../keys/query.keys";
-import { countModalKey, countSuccessModalKey } from "../../../keys/modal.keys";
+import { countModalKey } from "../../../keys/modal.keys";
 import {
   countFormSchema,
   type ICountFormInput,
@@ -20,17 +20,11 @@ import {
 import { countPickTableKey } from "../../../keys/table.keys";
 import { formatCount } from "../../../utils/format.utils";
 import { useFilters } from "../../common/filter.hook";
-import { useModal, useModalActions } from "../../common/modal.hook";
+import { usePushedRoute } from "../../layout/navigation.hook";
+import { useModal } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
 import { useActiveBranch } from "../branch/branch.scope.hook";
 import { useCategoryOptions } from "../category/category.list.hook";
-
-// What the success prompt shows once the count is gone.
-export interface ICountReceipt {
-  itemCount: number;
-  differenceCount: number;
-  queued: boolean;
-}
 
 export const countDifference = (line: ICountLine) =>
   line.counted === null ? 0 : line.counted - line.item.on_hand;
@@ -66,7 +60,7 @@ export const useCount = () => {
 
 export const useStockCountForm = () => {
   const { modal, closeModal } = useModal(countModalKey);
-  const { openModal } = useModalActions();
+  const { goBack } = usePushedRoute();
   const count = useCount();
 
   const form = useForm<ICountFormInput>({
@@ -90,15 +84,16 @@ export const useStockCountForm = () => {
     {
       silentError: true,
       invalidate: stockQueryKeys,
-      onSuccess: (result) => {
-        const receipt: ICountReceipt = {
-          itemCount: count.itemCount,
-          differenceCount: count.differences.length,
-          queued: result.queued,
-        };
+      successMessage:
+        count.differences.length === 0
+          ? "Every count matched the app. Nothing changed."
+          : `Stock corrected for ${formatCount(count.differences.length, "product")}.`,
+      queuedMessage: "Saved on this device. Waiting to sync.",
+      // Back to where the check was started; a toast says it worked, nothing to dismiss.
+      onSuccess: () => {
         count.clear();
         closeModal();
-        openModal(countSuccessModalKey, receipt);
+        goBack();
       },
     },
   );
@@ -143,7 +138,7 @@ export const useCountCategory = () => {
     {
       onSuccess: ({ items, branchId }) => {
         addMany(branchId, items);
-        toast.success(`${formatCount(items.length, "item")} added to the count`);
+        toast.success(`${formatCount(items.length, "product")} added to the check`);
       },
     },
   );

@@ -45,7 +45,7 @@ const DamagedStockModal = () => {
     <AppModal
       open={open}
       onOpenChange={onOpenChange}
-      title="Damaged or lost"
+      title="Record damaged or lost stock"
       size="sm"
       footer={
         <>
@@ -62,7 +62,7 @@ const DamagedStockModal = () => {
             loading={mutation.isPending}
             disabled={preview.insufficient || item.on_hand === 0}
           >
-            Save
+            Save damaged or lost
           </AppButton>
         </>
       }
@@ -85,7 +85,7 @@ const DamagedStockModal = () => {
         {/* Past zero there is no "after" worth showing, only the shortfall. */}
         {preview.insufficient ? (
           <AppAlert tone="danger">
-            Only {formatNumber(preview.before)} {item.unit} on hand —{" "}
+            Only {formatNumber(preview.before)} {item.unit} available —{" "}
             {formatNumber(-preview.after)} {item.unit} short.
           </AppAlert>
         ) : (

@@ -50,7 +50,7 @@ const StockAlertsList = ({ onOpen }: IProps) => {
               {[
                 acrossBranches && item.branch?.name,
                 item.item_code,
-                `warning at ${formatNumber(item.reorder_level)}`,
+                `alert at ${formatNumber(item.reorder_level)}`,
               ]
                 .filter(Boolean)
                 .join(" · ")}

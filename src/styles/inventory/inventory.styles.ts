@@ -64,6 +64,15 @@ export const stockPreviewArrow = "size-5 text-muted-foreground";
 
 export const stockForm = "flex flex-col gap-4";
 
+// Add stock and Check stock count spell the arithmetic out: before, the change, after.
+export const stockMath = "grid grid-cols-3 gap-2";
+
+export const stockMathCell = "flex min-w-0 flex-col items-start gap-1 rounded-lg bg-muted/60 p-2";
+
+export const stockMathLabel = "text-xs text-muted-foreground";
+
+export const stockMathValue = "min-h-touch content-center font-bold tabular-nums text-foreground";
+
 // The signed quantity of a stock movement; the sign carries direction as well as the colour.
 export const historyQuantity = cva("shrink-0 font-bold tabular-nums", {
   variants: {

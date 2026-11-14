@@ -2,7 +2,7 @@
 // Credentials come from env vars only (MOTI_OWNER, MOTI_EMPLOYEE, MOTI_PW) — never write them here.
 // Usage (from the scratchpad, where playwright-core is installed):
 //   OUT=<scratchpad>/shots PW=<scratchpad>/node_modules/playwright-core/index.js node sweep.mjs
-// Optional: ROLES=signed-out,owner,employee  SIZES=phone,tablet,desktop  THEMES=light,dark
+// Optional: ROLES=signed-out,owner,employee  SIZES=phone,tablet,desktop[,phone390,tablet768]  THEMES=light,dark
 //           SCREENS=transaction,inventory (screen names to keep)  BASE=http://127.0.0.1:4180
 //           FIXTURES=<file.json>: { "<rpc or table>": <response body> } for a read RPC or table
 //           not yet migrated (a table fixture is one row; .single() reads get it bare, lists as [row])
@@ -24,10 +24,13 @@ const SIZES = {
   phone: { width: 360, height: 780 },
   tablet: { width: 820, height: 1180 },
   desktop: { width: 1440, height: 900 },
+  // Opt-in only (SIZES=phone390,tablet768): the widths the UX brief names.
+  phone390: { width: 390, height: 844 },
+  tablet768: { width: 768, height: 1024 },
 };
 const pick = (env, all) => (env ? env.split(",").filter((x) => all.includes(x)) : all);
 const roles = pick(process.env.ROLES, ["signed-out", "owner", "employee"]);
-const sizes = pick(process.env.SIZES, Object.keys(SIZES));
+const sizes = process.env.SIZES ? pick(process.env.SIZES, Object.keys(SIZES)) : ["phone", "tablet", "desktop"];
 const themes = pick(process.env.THEMES, ["light", "dark"]);
 const onlyScreens = process.env.SCREENS?.split(",");
 
@@ -45,8 +48,10 @@ const SCREENS = {
     { name: "guard-inventory", path: "/inventory", expect: "/login" },
   ],
   owner: [
-    { name: "dashboard", path: "/" },
+    { name: "home", path: "/", expect: "/inventory" },
     { name: "transaction", path: "/transaction" },
+    { name: "what-to-buy", path: "/what-to-buy" },
+    { name: "guard-my-sales", path: "/transaction/history", expect: "/transaction" },
     { name: "inventory", path: "/inventory" },
     { name: "masterfile", path: "/inventory/masterfile" },
     { name: "movements", path: "/movements" },
@@ -60,8 +65,10 @@ const SCREENS = {
   ],
   employee: [
     { name: "transaction", path: "/transaction" },
+    { name: "my-sales", path: "/transaction/history" },
     { name: "account", path: "/account" },
     { name: "guard-dashboard", path: "/", expect: "/transaction" },
+    { name: "guard-what-to-buy", path: "/what-to-buy", expect: "/transaction" },
     { name: "guard-inventory", path: "/inventory", expect: "/transaction" },
     { name: "guard-masterfile", path: "/inventory/masterfile", expect: "/transaction" },
     { name: "guard-movements", path: "/movements", expect: "/transaction" },
@@ -79,16 +86,18 @@ const PAGE_TABS = "main [data-slot=view-tabs] [data-slot=toggle-group-item]";
 // Overlays opened on top of a screen; each closes with Escape.
 const SHEETS = {
   owner: [
-    { name: "bell", path: "/", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
-    { name: "account-menu", wideOnly: true, path: "/", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
-    { name: "item-form", path: "/inventory", open: (p) => p.getByRole("button", { name: "Add item" }).first().click() },
+    { name: "bell", path: "/inventory", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
+    // Owners have no Account tab, so the profile menu is in the header at every width.
+    { name: "account-menu", path: "/inventory", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
+    { name: "stocks-more", path: "/inventory", open: (p) => p.getByRole("button", { name: "More stock actions" }).first().click() },
+    { name: "item-form", path: "/inventory", open: openNewProduct },
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
     { name: "item-page", path: "/inventory", open: openItem },
-    { name: "delivery-review", path: "/movements/receive", open: (p) => openPicked(p, /Review delivery/) },
+    { name: "delivery-review", path: "/movements/receive", open: (p) => openPicked(p, /Review added stock/) },
     { name: "count-sheet", path: "/movements/count", open: (p) => openPicked(p, /Enter counts/) },
     { name: "damaged-sheet", path: "/movements/damaged", open: openDamaged },
-    { name: "branch-switcher", path: "/", open: (p) => p.getByRole("button", { name: /^Branch:/ }).first().click() },
+    { name: "branch-switcher", path: "/inventory", open: (p) => p.getByRole("button", { name: /^Branch:/ }).first().click() },
     { name: "branch-form", path: "/branches", open: (p) => p.getByRole("button", { name: "Add branch" }).first().click() },
   ],
   employee: [
@@ -99,14 +108,35 @@ const SHEETS = {
   ],
 };
 
-async function openCart(page) {
-  await page.locator("main").getByRole("button", { name: /^Add/ }).filter({ hasNot: page.locator("[disabled]") }).first().click();
-  await page.waitForTimeout(300);
-  await page.getByRole("button", { name: /Review & checkout/ }).click();
+// With several branches and "All branches" picked, a write screen asks which branch first.
+async function pickBranchIfAsked(page) {
+  const ask = page.getByText(/^Which branch /);
+  await ask.or(page.locator("main [role=row], main li").first()).first().waitFor({ timeout: 15000 });
+  if (await ask.isVisible()) {
+    await page.locator("main").getByRole("button", { name: /^Main$/ }).click();
+    await page.waitForTimeout(500);
+  }
 }
 
+// Phones open the full-height Review sale; wide screens already show the draft panel.
+async function openCart(page) {
+  await pickBranchIfAsked(page);
+  await page.locator("main").getByRole("button", { name: /^Add / }).filter({ hasNot: page.locator("[disabled]") }).first().click();
+  await page.waitForTimeout(300);
+  const review = page.getByRole("button", { name: /^Review sale/ });
+  if (await review.isVisible()) await review.click();
+}
+
+async function openNewProduct(page) {
+  await page.getByRole("button", { name: "More stock actions" }).first().click();
+  await page.getByRole("menuitem", { name: "New product" }).click();
+}
+
+// Owners read Sales history inside Sales; employees have My sales.
 async function openTransaction(page) {
-  await page.locator(PAGE_TABS).filter({ hasText: /^Sales history$/ }).click();
+  const historyTab = page.locator(PAGE_TABS).filter({ hasText: /^Sales history$/ });
+  if (await historyTab.count()) await historyTab.click();
+  else await page.goto(new URL("/transaction/history", page.url()).toString());
   // Phone draws cards, wider screens a table; wait for whichever arrives instead of guessing early.
   const card = page.locator("main button").filter({ hasText: /^#\d+/ }).first();
   const row = page.locator("main [role=row]").nth(1);
@@ -116,12 +146,14 @@ async function openTransaction(page) {
 
 // Receive and Count: add the first item, then open the sheet from the bar.
 async function openPicked(page, barButton) {
+  await pickBranchIfAsked(page);
   await page.locator("main").getByRole("button", { name: /^Add$/ }).first().click();
   await page.waitForTimeout(300);
   await page.getByRole("button", { name: barButton }).click();
 }
 
 async function openDamaged(page) {
+  await pickBranchIfAsked(page);
   await page.locator("main").getByRole("button", { name: /damaged or lost$/ }).filter({ hasNot: page.locator("[disabled]") }).first().click();
 }
 

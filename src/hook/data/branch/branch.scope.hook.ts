@@ -66,13 +66,13 @@ export const useBranchScope = () => {
   const resetPagination = usePaginationStore((state) => state.resetPagination);
   const drafts: IBranchDraft[] = [
     {
-      name: "cart",
+      name: "sale",
       size: useCartStore(selectCartLines).length,
       branchId: useCartStore(selectCartBranch),
       clear: useCartStore((state) => state.clear),
     },
     {
-      name: "delivery",
+      name: "added stock",
       size: useDeliveryStore(selectDeliveryLines).length,
       branchId: useDeliveryStore(selectDeliveryBranch),
       clear: useDeliveryStore((state) => state.clear),
@@ -107,10 +107,10 @@ export const useBranchScope = () => {
     const single = moved.length === 1 ? moved[0] : null;
     confirm({
       kind: "danger",
-      title: "Switch branch?",
+      title: "Switch branch and clear your draft?",
       message: single
-        ? `The ${single.name} holds ${single.size} item${single.size === 1 ? "" : "s"} from ${from}. Switching clears it.`
-        : `The ${joinNames(moved.map((draft) => draft.name))} hold items from ${from}. Switching clears them.`,
+        ? `The ${single.name} you started holds ${single.size} product${single.size === 1 ? "" : "s"} from ${from}. It is not moved to another branch: switching clears it.`
+        : `The ${joinNames(moved.map((draft) => draft.name))} you started hold products from ${from}. They are not moved to another branch: switching clears them.`,
       okText: single ? `Clear ${single.name} and switch` : "Clear and switch",
       onConfirm: () => {
         moved.forEach((draft) => draft.clear());

@@ -6,12 +6,12 @@ type IProps = {
   branchId: string;
 };
 
-// The seller searches, filters and adds from one branch's stock; the cart bar below collects the lines.
+// The seller searches the branch's products, best sellers first, and adds them to the draft.
 const TransactionItemTable = ({ branchId }: IProps) => (
   <ItemPickerTable
     tableKey={transactionPickTableKey}
-    label="Items to sell"
-    actionTitle="Add"
+    label="Products to sell"
+    actionTitle="Quantity"
     renderAction={(item) => <CartQuantityControl branchId={branchId} item={item} />}
     topSellersFirst
     branchId={branchId}

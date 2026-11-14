@@ -4,7 +4,7 @@ import TransactionDetailPanel from "../../components/transaction/panels/Transact
 import { ROUTES } from "../../routes/route.paths";
 
 const TransactionDetailView = () => (
-  <ContentView back={{ label: "Sell", path: ROUTES.transaction }}>
+  <ContentView back={{ label: "Sales", path: ROUTES.transaction }}>
     <TransactionDetailPanel />
     <VoidTransactionModal />
   </ContentView>

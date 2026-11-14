@@ -26,11 +26,11 @@ const TransactionManageActions = ({ transaction }: IProps) => {
         className={detailManageButton}
       >
         <Ban data-icon="inline-start" aria-hidden />
-        Void sale
+        Cancel sale
       </AppButton>
 
       <p className={detailManageHint}>
-        Every item goes back into stock. The sale stays in history, marked voided.
+        Cancelling restores the stock. The sale stays in history, marked cancelled.
       </p>
     </div>
   );

@@ -96,7 +96,7 @@ const inventoryServices = {
     let query = supabase.from(table).select(selectFor(branchId, carried), { count: "exact" });
     if (branchId) query = query.eq("branch_stock.branch_id", branchId);
 
-    if (filters.view === "archived") query = query.not("archived_at", "is", null);
+    if (filters.archived) query = query.not("archived_at", "is", null);
     else query = query.is("archived_at", null);
     if (byStatus) {
       query = branchId

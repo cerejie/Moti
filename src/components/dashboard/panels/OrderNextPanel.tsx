@@ -31,6 +31,7 @@ const OrderNextPanel = () => {
       <AnalyzerItemList
         rows={orderNext.data ?? []}
         kind="order"
+        periodLabel={analysisPeriodLabels[defaultAnalysisPeriod]}
         renderAction={renderOrderAction}
         emptyTitle="Nothing to order right now."
       />

@@ -21,10 +21,10 @@ const TransactionTotalCard = ({ transaction }: IProps) => (
       <div className={detailHeroTop}>
         <div className={detailHeroFigure}>
           <span className={detailHeroLabel}>Sold</span>
+          {/* Each line keeps its own unit below; mixed units are never summed. */}
           <span className={transactionTotal({ voided: transaction.status === "voided" })}>
-            {formatCount(transaction.total_quantity, "pc")}
+            {formatCount(transaction.line_count, "product")}
           </span>
-          <span className={detailHeroHint}>{formatCount(transaction.line_count, "item")}</span>
           {transaction.note && <span className={detailHeroHint}>{transaction.note}</span>}
         </div>
         <TransactionStatusBadge status={transaction.status} />

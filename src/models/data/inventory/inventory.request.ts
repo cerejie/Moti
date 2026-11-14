@@ -11,11 +11,11 @@ const optionalText = (max: number) => z.string().trim().max(max);
 // Category and brand are typed names; the form hook turns them into ids on save.
 // The item code is not here: the database builds it from category and brand.
 export const itemFormSchema = z.object({
-  name: z.string().trim().min(1, "Enter the item name").max(120),
+  name: z.string().trim().min(1, "Enter the product name").max(120),
   category: z.string().trim().min(1, "Pick or type a category").max(60),
   brand: z.string().trim().min(1, "Pick or type a brand").max(60),
   unit: z.enum(itemUnitValues, "Pick a unit"),
-  reorder_level: wholeNumber("Warning low stock quantity"),
+  reorder_level: wholeNumber("Low-stock alert at"),
   selling_price: z
     .string()
     .trim()
@@ -26,7 +26,7 @@ export const itemFormSchema = z.object({
   branch_id: z.string(),
 });
 export const newItemFormSchema = itemFormSchema.extend({
-  branch_id: z.string().min(1, "Pick the branch this item starts in"),
+  branch_id: z.string().min(1, "Pick the branch this product starts in"),
 });
 export type IItemFormInput = z.infer<typeof itemFormSchema>;
 
@@ -38,6 +38,8 @@ export type IItemSaveValues = Omit<IItemFormInput, "category" | "brand"> & {
 
 export interface IInventoryFilters {
   view: InventoryView;
+  // Archived products instead of active ones; the status chips still apply.
+  archived?: boolean;
   categoryId?: string;
   brandId?: string;
   search: string;

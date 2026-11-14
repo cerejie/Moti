@@ -29,7 +29,7 @@ const buildColumns = (
     title: "Items",
     mobile: "status",
     render: (_, category) => <span className={mutedText}>{formatNumber(itemCountOf(category))}</span>,
-    listRender: (category) => <span className={mutedText}>{formatCount(itemCountOf(category), "item")}</span>,
+    listRender: (category) => <span className={mutedText}>{formatCount(itemCountOf(category), "product")}</span>,
   },
   {
     key: "created",

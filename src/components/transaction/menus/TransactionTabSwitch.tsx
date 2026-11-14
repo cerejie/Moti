@@ -6,20 +6,20 @@ import type { ISegmentOption } from "../../../models/common/segment.model";
 import ContextSwitch from "../../common/view/ContextSwitch";
 
 const tabOptions: ISegmentOption<TransactionTab>[] = [
-  { key: "new", label: "New sale" },
+  { key: "new", label: "Record sale" },
   { key: "history", label: "Sales history" },
 ];
 
-// Only people who can see past sales get the switch; everyone else just sells.
+// The owner's way to past sales; employees have their own My sales tab instead.
 const TransactionTabSwitch = () => {
-  const { viewTransactions } = usePermissions();
+  const { isOwner } = usePermissions();
   const { filters, setFilters } = useFilters<{ tab?: TransactionTab }>(transactionTabKey);
 
-  if (!viewTransactions) return null;
+  if (!isOwner) return null;
 
   return (
     <ContextSwitch
-      label="Sell"
+      label="Sales"
       value={filters.tab ?? "new"}
       options={tabOptions}
       onChange={(next) => setFilters({ tab: next })}

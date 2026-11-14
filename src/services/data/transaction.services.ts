@@ -15,7 +15,6 @@ import {
 import type { IMutationResult } from "../../models/common/write.model";
 import { runWrite } from "../../store/common/sync.store";
 import { supabase, toError } from "../../utils/supabase.utils";
-import { newWriteId } from "../../utils/write.utils";
 
 const table = "transactions";
 const columns =
@@ -66,16 +65,22 @@ const transactionServices = {
     return (data ?? []) as unknown as ITransactionLine[];
   },
 
-  // The client id and branch are fixed here, so a queued replay sells from the same branch once.
-  checkout: (branchId: string, lines: ICartLine[], note: string): Promise<IMutationResult> =>
+  // The draft's client id makes the save idempotent: a retry or a queued replay of the same
+  // draft returns the sale already recorded instead of deducting stock again.
+  checkout: (
+    branchId: string,
+    lines: ICartLine[],
+    note: string,
+    clientId: string,
+  ): Promise<IMutationResult> =>
     runWrite({
       kind: "rpc",
       fn: "record_transaction",
-      label: `Sale of ${lines.length} item${lines.length === 1 ? "" : "s"}`,
+      label: `Sale of ${lines.length} product${lines.length === 1 ? "" : "s"}`,
       args: {
         p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
         p_note: note,
-        p_client_id: newWriteId(),
+        p_client_id: clientId,
         p_branch_id: branchId,
       },
     }),
@@ -84,7 +89,7 @@ const transactionServices = {
     runWrite({
       kind: "rpc",
       fn: "void_transaction",
-      label: `Void sale #${transaction.number}`,
+      label: `Cancel sale #${transaction.number}`,
       args: { p_transaction_id: transaction.id, p_reason: reason },
     }),
 };

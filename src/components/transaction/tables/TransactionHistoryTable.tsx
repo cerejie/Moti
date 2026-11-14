@@ -56,15 +56,13 @@ const columns: IDataTableColumn<ITransaction>[] = [
   },
   {
     key: "items",
-    title: "Items",
+    title: "Products",
     mobile: "amount",
+    // Units are not summed: pieces, liters and boxes do not add up.
     render: (_, transaction) => (
-      <span className={mutedText}>
-        {formatCount(transaction.line_count, "item")} ·{" "}
-        {formatCount(transaction.total_quantity, "pc")}
-      </span>
+      <span className={mutedText}>{formatCount(transaction.line_count, "product")}</span>
     ),
-    listRender: (transaction) => formatCount(transaction.total_quantity, "pc"),
+    listRender: (transaction) => formatCount(transaction.line_count, "product"),
   },
   {
     key: "status",

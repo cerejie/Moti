@@ -1,14 +1,17 @@
 // Route paths, referenced by the router, links, guards and push notifications.
+// Old paths stay: bookmarks and stored notification links still resolve.
 export const ROUTES = {
   home: "/",
   login: "/login",
   register: "/register",
   forgotPassword: "/forgot-password",
   transaction: "/transaction",
+  salesHistory: "/transaction/history",
   transactionDetail: "/transaction/:transactionId",
   inventory: "/inventory",
   masterfile: "/inventory/masterfile",
   item: "/inventory/:itemId",
+  whatToBuy: "/what-to-buy",
   movements: "/movements",
   receiveDelivery: "/movements/receive",
   stockCount: "/movements/count",

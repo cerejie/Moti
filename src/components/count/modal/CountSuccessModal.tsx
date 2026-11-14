@@ -1,10 +1,16 @@
 import { useModal } from "../../../hook/common/modal.hook";
-import type { ICountReceipt } from "../../../hook/data/count/count.form.hook";
 import { usePushedRoute } from "../../../hook/layout/navigation.hook";
 import { countSuccessModalKey } from "../../../keys/modal.keys";
 import { receiptLine } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import SuccessModal from "../../common/modal/SuccessModal";
+
+// Superseded by the "Stock corrected" toast (V1.8); no screen mounts it.
+interface ICountReceipt {
+  itemCount: number;
+  differenceCount: number;
+  queued: boolean;
+}
 
 const messageFor = (receipt: ICountReceipt | undefined) => {
   if (receipt?.queued) return "It will be recorded when you're back online.";

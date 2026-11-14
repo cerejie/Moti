@@ -15,16 +15,30 @@ import PhoneShell from "./PhoneShell";
 type IProps = {
   // Account-level controls for the header, supplied by the layout.
   actions?: ReactNode;
-  // Wide header only; phones reach the account from the Account tab.
+  // Always in the wide header; on phones only when the role has no Account tab.
   accountMenu?: ReactNode;
+  accountMenuOnPhone?: boolean;
   children?: ReactNode;
 };
 
 // Compact screens get TARTAR's PhoneShell; wide ones its floating-panel shell.
-const AppShell = ({ actions, accountMenu, children }: IProps) => {
+const AppShell = ({ actions, accountMenu, accountMenuOnPhone = false, children }: IProps) => {
   const isCompact = useIsCompact();
 
-  if (isCompact) return <PhoneShell actions={actions}>{children}</PhoneShell>;
+  if (isCompact) {
+    return (
+      <PhoneShell
+        actions={
+          <>
+            {actions}
+            {accountMenuOnPhone && accountMenu}
+          </>
+        }
+      >
+        {children}
+      </PhoneShell>
+    );
+  }
 
   return (
     <SidebarProvider className={appShellRoot}>

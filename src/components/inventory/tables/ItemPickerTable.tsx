@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { stockStatusLabels } from "../../../enums/stock.enum";
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
@@ -16,7 +17,7 @@ import {
   stockStatusText,
 } from "../../../styles/inventory/inventory.styles";
 import { nowrapCell } from "../../../styles/table/table.styles";
-import { formatNumber } from "../../../utils/format.utils";
+import { formatNumber, formatQuantity } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
@@ -42,6 +43,10 @@ type IColumnOptions = Pick<IProps, "tableKey" | "actionTitle" | "renderAction" |
   brandControl: IFilterControl;
 };
 
+// Where the status column is hidden, Low and Out still say so in words, never colour alone.
+const statusWord = (item: IInventoryItem) =>
+  item.stock_status === "in_stock" ? "" : ` · ${stockStatusLabels[item.stock_status]}`;
+
 const columnsWith = ({
   tableKey,
   actionTitle,
@@ -52,7 +57,7 @@ const columnsWith = ({
 }: IColumnOptions): IDataTableColumn<IInventoryItem>[] => [
   {
     key: "item",
-    title: "Item",
+    title: "Product",
     render: (_, item) => (
       <span className={itemIdentity}>
         <span className={itemName}>{item.name}</span>
@@ -77,18 +82,23 @@ const columnsWith = ({
   },
   {
     key: "on_hand",
-    title: "Stock left",
+    title: "Available",
     render: (_, item) => (
       <span>
         <span className={onHandValue({ status: item.stock_status })}>
           {formatNumber(item.on_hand)}
         </span>
         <span className={onHandUnit}>{item.unit}</span>
+        {hideStatus && <span className={stockStatusText({ status: item.stock_status })}>{statusWord(item)}</span>}
       </span>
     ),
+    // Phones: the code, then what is available, coloured and named only when Low or Out.
     listRender: (item) => (
-      <span className={stockStatusText({ status: item.stock_status })}>
-        {formatNumber(item.on_hand)} {item.unit} left
+      <span>
+        {item.item_code} ·{" "}
+        <span className={stockStatusText({ status: item.stock_status })}>
+          {formatQuantity(item.on_hand, item.unit)} available{statusWord(item)}
+        </span>
       </span>
     ),
   },
@@ -150,7 +160,7 @@ const ItemPickerTable = ({
           <FilterBar
             filterKey={tableKey}
             searchKey={tableKey}
-            searchPlaceholder="Name, code or brand"
+            searchPlaceholder="Search product, code or brand"
             inlineOnCompact
             controls={[categoryControl, brandControl]}
           />
@@ -176,7 +186,7 @@ const ItemPickerTable = ({
         pagination={pagination}
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
-        emptyText="No item matches. Try another name, category or brand."
+        emptyText="No product matches. Try another name, code, category or brand."
       />
     </TablePanel>
   );

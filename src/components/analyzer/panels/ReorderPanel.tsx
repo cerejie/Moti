@@ -1,13 +1,24 @@
 import {
-  analysisCoverDays,
   analysisMinSales,
   analysisPeriodLabels,
   analysisSlowDays,
+  coverDayValues,
+  type CoverDays,
 } from "../../../enums/analyzer.enum";
-import { useStockAnalysis } from "../../../hook/data/analyzer/analyzer.list.hook";
 import {
-  reorderGrid,
+  useAnalysisScope,
+  useStockAnalysis,
+} from "../../../hook/data/analyzer/analyzer.list.hook";
+import type { ISegmentOption } from "../../../models/common/segment.model";
+import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
+import { useAnalyzerStore } from "../../../store/data/analyzer/analyzer.store";
+import {
+  reorderListHead,
+  reorderListTitle,
   reorderRule,
+  reorderScope,
+  reorderScopeName,
+  reorderSetting,
   reorderStack,
   reorderToolbar,
   reorderToolbarLabel,
@@ -15,84 +26,89 @@ import {
 import SectionCard from "../../common/card/SectionCard";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
-import BentoCell from "../../common/view/BentoCell";
-import BentoGrid from "../../common/view/BentoGrid";
-import AnalyzerItemList from "../lists/AnalyzerItemList";
-import AnalyzerPeriodSwitch from "../menus/AnalyzerPeriodSwitch";
+import RefreshBar from "../../common/status/RefreshBar";
+import ContextSwitch from "../../common/view/ContextSwitch";
+import DisclosureSection from "../../common/view/DisclosureSection";
 import OrderAddAllButton from "../../order/menus/OrderAddAllButton";
 import OrderAddButton from "../../order/menus/OrderAddButton";
 import OrderListBar from "../../order/panels/OrderListBar";
-import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
+import AnalyzerItemList from "../lists/AnalyzerItemList";
+import AnalyzerPeriodSwitch from "../menus/AnalyzerPeriodSwitch";
 
 const renderOrderAction = (row: IStockAnalysisRow) => <OrderAddButton row={row} />;
 
-// What to order first, worked out from the period's sales; every rule is spelled out under it.
+const coverOptions: ISegmentOption<`${CoverDays}`>[] = coverDayValues.map((days) => ({
+  key: `${days}`,
+  label: `${days} days`,
+}));
+
+const isCoverDays = (value: number): value is CoverDays =>
+  coverDayValues.some((days) => days === value);
+
+// What to buy: Buy soon (what is running out) and Most sold (what sells) answer different
+// questions, so they are two views of one ranked list, never four panels at once.
 const ReorderPanel = () => {
-  const { query, period, setPeriod } = useStockAnalysis();
+  const { query, period, view, coverDays, setPeriod } = useStockAnalysis();
+  const { scopeLabel, aggregate } = useAnalysisScope();
+  const setCoverDays = useAnalyzerStore((state) => state.setCoverDays);
   const groups = query.data;
   const periodLabel = analysisPeriodLabels[period];
 
   const renderBody = () => {
-    if (query.isLoading) return <EmptyState loading description="Working out what to order…" />;
+    if (query.isLoading) {
+      return <EmptyState loading description={`Working out sales for the last ${periodLabel}…`} />;
+    }
     if (!groups) {
       return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
     }
 
+    if (view === "most_sold") {
+      return (
+        <SectionCard>
+          <div className={reorderListHead}>
+            <p className={reorderListTitle}>
+              Ranked by units sold in the last {periodLabel}. Selling well doesn't always mean
+              buy now: Buy soon also looks at what is available.
+            </p>
+          </div>
+          <AnalyzerItemList
+            rows={groups.mostSold}
+            kind="fast"
+            periodLabel={periodLabel}
+            emptyTitle={`No sales in the last ${periodLabel}.`}
+          />
+        </SectionCard>
+      );
+    }
+
     return (
       <>
-        <BentoGrid className={reorderGrid}>
-          <BentoCell span="half">
-            <SectionCard
-              title="Order now"
-              subtitle={`Out, low, or under ${analysisCoverDays} days left`}
-              extra={<OrderAddAllButton rows={groups.orderNow} />}
-              stackExtra
-            >
-              <AnalyzerItemList
-                rows={groups.orderNow}
-                kind="order"
-                renderAction={renderOrderAction}
-                emptyTitle="Nothing to order right now."
-              />
-            </SectionCard>
-          </BentoCell>
-          <BentoCell span="half">
-            <SectionCard
-              title="Running low soon"
-              subtitle={`Under ${analysisCoverDays * 2} days left`}
-            >
-              <AnalyzerItemList
-                rows={groups.lowSoon}
-                kind="order"
-                renderAction={renderOrderAction}
-                emptyTitle="Nothing is running low."
-              />
-            </SectionCard>
-          </BentoCell>
-          <BentoCell span="half">
-            <SectionCard title="Fast movers" subtitle={`Most sold in ${periodLabel}`}>
-              <AnalyzerItemList
-                rows={groups.fastMovers}
-                kind="fast"
-                emptyTitle={`No sales in ${periodLabel}.`}
-              />
-            </SectionCard>
-          </BentoCell>
-          <BentoCell span="half">
-            <SectionCard
-              title="Slow stock"
-              subtitle={`In stock, no sale in ${analysisSlowDays} days`}
-            >
-              <AnalyzerItemList rows={groups.slowStock} kind="slow" emptyTitle="No slow stock." />
-            </SectionCard>
-          </BentoCell>
-        </BentoGrid>
+        <SectionCard>
+          <div className={reorderListHead}>
+            <p className={reorderListTitle}>
+              Out, low, or about to run out within {coverDays} days, most urgent first.
+            </p>
+            <OrderAddAllButton rows={groups.buySoon} />
+          </div>
+          <AnalyzerItemList
+            rows={groups.buySoon}
+            kind="order"
+            periodLabel={periodLabel}
+            renderAction={renderOrderAction}
+            emptyTitle="Nothing needs buying right now."
+          />
+        </SectionCard>
 
-        <p className={reorderRule}>
-          Pace is the pieces sold in {periodLabel} divided by the days. Days left is on hand
-          divided by pace. To order is enough for {analysisCoverDays} days, minus what is on
-          hand. Items with fewer than {analysisMinSales} sales show “Not enough sales yet”.
-        </p>
+        {groups.slowStock.length > 0 && (
+          <DisclosureSection title={`Not selling (no sale in ${analysisSlowDays} days)`}>
+            <AnalyzerItemList
+              rows={groups.slowStock}
+              kind="slow"
+              periodLabel={periodLabel}
+              emptyTitle="Everything in stock has sold recently."
+            />
+          </DisclosureSection>
+        )}
       </>
     );
   };
@@ -100,10 +116,54 @@ const ReorderPanel = () => {
   return (
     <div className={reorderStack}>
       <div className={reorderToolbar}>
-        <span className={reorderToolbarLabel}>Sales over the last</span>
+        <span className={reorderToolbarLabel}>Sales in the last</span>
         <AnalyzerPeriodSwitch value={period} onChange={setPeriod} />
+        {scopeLabel && (
+          <span className={reorderScope}>
+            Branch: <span className={reorderScopeName}>{scopeLabel}</span>
+          </span>
+        )}
       </div>
+
+      {query.isFetching && !query.isLoading && <RefreshBar placement="above" />}
       {renderBody()}
+
+      <DisclosureSection title="How suggestions work">
+        <div className={reorderRule}>
+          <p>
+            Pace is the units sold in the last {periodLabel} divided by the days the product was
+            on sale in that time (a newer product uses its own age). Cancelled sales don't count.
+          </p>
+          <p>
+            Days left is what is available divided by the pace. The suggestion is enough for{" "}
+            {coverDays} days at that pace, minus what is available, rounded up.
+          </p>
+          <p>
+            With fewer than {analysisMinSales} sales there is no estimate, only the real number
+            sold. Estimates come from past sales, so they can't promise future demand, and a
+            product that was out of stock may have sold less than people wanted.
+          </p>
+          {aggregate && (
+            <p>
+              All branches adds every branch together. A product that is low in one branch is
+              still flagged here, even when the total looks fine.
+            </p>
+          )}
+          <div className={reorderSetting}>
+            <span className={reorderToolbarLabel}>Days of stock to cover</span>
+            <ContextSwitch
+              label="Days of stock to cover"
+              value={`${coverDays}`}
+              options={coverOptions}
+              onChange={(next) => {
+                const days = Number(next);
+                if (isCoverDays(days)) setCoverDays(days);
+              }}
+            />
+          </div>
+        </div>
+      </DisclosureSection>
+
       <OrderListBar />
     </div>
   );

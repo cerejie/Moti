@@ -1,4 +1,5 @@
 import {
+  archivedShowValue,
   inventoryViewLabels,
   inventoryViewValues,
   type InventoryView,
@@ -6,7 +7,11 @@ import {
 import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
-import { useInventoryList } from "../../../hook/data/inventory/inventory.list.hook";
+import {
+  useInventoryList,
+  useInventorySummary,
+} from "../../../hook/data/inventory/inventory.list.hook";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 import { inventoryTableKey } from "../../../keys/table.keys";
 import type { ISegmentOption } from "../../../models/common/segment.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
@@ -19,7 +24,6 @@ import {
   onHandUnit,
   onHandValue,
 } from "../../../styles/inventory/inventory.styles";
-import { nowrapCell } from "../../../styles/table/table.styles";
 import { formatNumber } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import { itemPath } from "../../../utils/route.utils";
@@ -28,14 +32,22 @@ import FilterToolbar from "../../common/filter/FilterToolbar";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
-import InventoryRowActions from "../menus/InventoryRowActions";
 import StockStatusBadge from "../status/StockStatusBadge";
-import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
+const renderAvailable = (item: IInventoryItem) => (
+  <span>
+    <span className={onHandValue({ status: item.stock_status })}>
+      {formatNumber(item.on_hand)}
+    </span>
+    <span className={onHandUnit}>{item.unit}</span>
+  </span>
+);
+
+// A row opens the product; every stock action lives there, not on the row.
 const columns: IDataTableColumn<IInventoryItem>[] = [
   {
     key: "item",
-    title: "Item",
+    title: "Product",
     render: (_, item) => (
       <span className={itemIdentity}>
         <span className={itemName}>{item.name}</span>
@@ -54,16 +66,9 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   },
   {
     key: "on_hand",
-    title: "On hand",
+    title: "Available",
     mobile: "amount",
-    render: (_, item) => (
-      <span>
-        <span className={onHandValue({ status: item.stock_status })}>
-          {formatNumber(item.on_hand)}
-        </span>
-        <span className={onHandUnit}>{item.unit}</span>
-      </span>
-    ),
+    render: (_, item) => renderAvailable(item),
   },
   {
     key: "status",
@@ -75,41 +80,41 @@ const columns: IDataTableColumn<IInventoryItem>[] = [
   },
   {
     key: "reorder",
-    title: "Warn at",
+    title: "Low-stock alert at",
     collapse: "xl",
     listHidden: true,
-    render: (_, item) => <span className={mutedText}>{formatNumber(item.reorder_level)}</span>,
-  },
-  {
-    key: "actions",
-    title: "Action",
-    align: "center",
-    className: nowrapCell,
-    // Compact opens the item page on tap, which carries the stock actions.
-    listHidden: true,
-    render: (_, item) => <InventoryRowActions item={item} />,
+    render: (_, item) => (
+      <span className={mutedText}>
+        {formatNumber(item.reorder_level)} {item.unit}
+      </span>
+    ),
   },
 ];
 
-const viewOptions: ISegmentOption<InventoryView>[] = inventoryViewValues.map((key) => ({
-  key,
-  label: inventoryViewLabels[key],
-}));
-
 const emptyTextByView: Record<InventoryView, string> = {
-  all: "No items yet. Add your first item to start tracking stock.",
+  all: "No products yet. Add your first product to start tracking stock.",
   low: "Nothing is running low.",
   out: "Nothing is out of stock.",
-  archived: "No archived items.",
 };
 
 const InventoryTable = () => {
-  const { query, view, setView } = useInventoryList();
+  const { query, view, archived, setView } = useInventoryList();
+  const summary = useInventorySummary();
   const { pagination, goToPage } = usePagination(inventoryTableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
   const navigate = useTransitionNavigate();
   const page = query.data;
+
+  // The counts are the summary: tapping one filters to it. They describe active products only,
+  // and a zero is left off so only a real problem draws the eye.
+  const countOf: Partial<Record<InventoryView, number | undefined>> = archived
+    ? {}
+    : { low: summary.data?.low_count, out: summary.data?.out_count };
+  const viewOptions: ISegmentOption<InventoryView>[] = inventoryViewValues.map((key) => {
+    const count = countOf[key];
+    return { key, label: inventoryViewLabels[key], count: count ? count : undefined };
+  });
 
   return (
     <TablePanel
@@ -120,12 +125,13 @@ const InventoryTable = () => {
             value={view}
             options={viewOptions}
             onChange={setView}
+            chips
           />
           <FilterToolbar>
             <FilterBar
               filterKey={inventoryTableKey}
               searchKey={inventoryTableKey}
-              searchPlaceholder="Name, code or brand"
+              searchPlaceholder="Search product, code or brand"
               controls={[
                 {
                   key: "categoryId",
@@ -139,6 +145,12 @@ const InventoryTable = () => {
                   placeholder: "All brands",
                   options: brandOptions,
                 },
+                {
+                  key: "show",
+                  label: "Show",
+                  placeholder: "Active products",
+                  options: [{ value: archivedShowValue, label: "Archived products" }],
+                },
               ]}
             />
           </FilterToolbar>
@@ -146,7 +158,7 @@ const InventoryTable = () => {
       }
     >
       <DataTable<IInventoryItem>
-        label="Inventory items"
+        label={archived ? "Archived products" : "Products"}
         columns={columns}
         data={page?.data ?? []}
         loading={query.isLoading}
@@ -158,7 +170,7 @@ const InventoryTable = () => {
         totalCount={page?.totalCount ?? 0}
         onPageChange={goToPage}
         onRowClick={(item) => void navigate(itemPath(item.id))}
-        emptyText={emptyTextByView[view]}
+        emptyText={archived ? "No archived products." : emptyTextByView[view]}
       />
     </TablePanel>
   );

@@ -9,7 +9,7 @@ import BentoGrid from "../../components/common/view/BentoGrid";
 import ContentView from "../../components/common/view/ContentView";
 
 const AccountView = () => (
-  <ContentView title="My account" subtitle="Profile, password and this device" layout="bento">
+  <ContentView title="Account" subtitle="Profile, password and this device" layout="bento">
     <BentoGrid>
       <BentoCell span="half">
         <AccountProfileCard />

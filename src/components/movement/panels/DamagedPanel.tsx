@@ -7,12 +7,12 @@ import DamagedPickButton from "../menus/DamagedPickButton";
 const DamagedPanel = () => (
   <BranchWriteGate
     title="Which branch lost it?"
-    description="A write-off comes off one branch's shelves. Pick it to see what it holds."
+    description="Damaged or lost stock comes off one branch. Pick it to see what it has."
   >
     {(branchId) => (
       <ItemPickerTable
         tableKey={damagedPickTableKey}
-        label="Items to write off"
+        label="Products"
         actionTitle="Pick"
         branchId={branchId}
         renderAction={(item) => <DamagedPickButton item={item} />}

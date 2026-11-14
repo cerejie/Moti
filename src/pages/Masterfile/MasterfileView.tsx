@@ -8,8 +8,8 @@ import { ROUTES } from "../../routes/route.paths";
 
 const MasterfileView = () => (
   <ContentView
-    title="Masterfile"
-    back={{ label: "Inventory", path: ROUTES.inventory }}
+    title="Categories & brands"
+    back={{ label: "Stocks", path: ROUTES.inventory }}
     tabs={<MasterfileTabSwitch />}
     actions={<MasterfileHeaderActions />}
   >

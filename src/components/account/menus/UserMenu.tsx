@@ -1,6 +1,7 @@
-import { LogOut, Moon, Sun, UserRound } from "lucide-react";
+import { LogOut, Moon, Store, Sun, UserRound, Users } from "lucide-react";
 import { effectiveRoleLabels } from "../../../enums/role.enum";
 import { useAccountLogoutHook } from "../../../hook/data/account/account.logout.hook";
+import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import type { IRowAction } from "../../../models/common/action.model";
 import { ROUTES } from "../../../routes/route.paths";
 import { selectTheme, useThemeStore } from "../../../store/common/theme.store";
@@ -21,15 +22,30 @@ const UserMenu = () => {
   const theme = useThemeStore(selectTheme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const { signOut, signingOut } = useAccountLogoutHook();
+  const { manageUsers, manageBranches } = usePermissions();
   const isDark = theme === "dark";
 
+  // Occasional administration lives here, off the primary navigation.
   const actions: IRowAction[] = [
     {
       key: "account",
-      label: "My account",
+      label: "Account",
       icon: <UserRound />,
       onSelect: () => navigate(ROUTES.account),
     },
+    ...(manageUsers
+      ? [{ key: "team", label: "Team", icon: <Users />, onSelect: () => navigate(ROUTES.users) }]
+      : []),
+    ...(manageBranches
+      ? [
+          {
+            key: "branches",
+            label: "Branches",
+            icon: <Store />,
+            onSelect: () => navigate(ROUTES.branches),
+          },
+        ]
+      : []),
     {
       key: "theme",
       label: isDark ? "Light mode" : "Dark mode",

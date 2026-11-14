@@ -34,6 +34,18 @@ Schema      supabase/migrations/20261002000002_create_inventory.sql
 Other modules: `category`, `brand`, `masterfile`, `movement`, `transaction`, `dashboard`,
 `user` (Team), `account`, `auth`.
 
+## Navigation (V1.8)
+
+```
+Tabs        src/routes/protected.view.routes.ts  Stocks · Sales · What to buy (owner),
+                                                 Sales · My sales · Account (employee)
+Home        src/routes/route.loader.ts           homeLoader: owner → /inventory, else /transaction
+Active nav  src/hook/layout/navigation.hook.ts   section → most specific path; tabCan per role
+What to buy src/pages/WhatToBuy/WhatToBuyView.tsx + components/analyzer/panels/ReorderPanel.tsx
+My sales    src/pages/SalesHistory/SalesHistoryView.tsx
+Draft sale  components/transaction/forms/SaleReviewForm.tsx (sheet: CartModal, desktop: SaleDraftPanel)
+```
+
 ## Transaction (multi-item checkout)
 
 ```

@@ -22,7 +22,7 @@ const MovementLinkList = ({ movement }: IProps) => (
       </span>
       <RowLink href={itemPath(movement.item_id)} className={detailPageRowText}>
         <span className={itemName}>{movement.item?.name ?? "Deleted item"}</span>
-        <span className={itemMeta}>Open item</span>
+        <span className={itemMeta}>Open product</span>
       </RowLink>
       <ChevronRight className={movementLinkChevron} aria-hidden />
     </li>

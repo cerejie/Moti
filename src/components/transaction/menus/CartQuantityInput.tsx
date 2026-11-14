@@ -7,13 +7,13 @@ type IProps = {
   quantity: number;
 };
 
-// The cart's quantity, typed, capped at the stock left.
+// The draft's quantity, typed, capped at what is available.
 const CartQuantityInput = ({ item, quantity }: IProps) => {
   const { setQuantity } = useCart();
 
   return (
     <QuantityInput
-      label={`Quantity of ${item.name}`}
+      label={`Quantity of ${item.name}, in ${item.unit}`}
       value={quantity}
       min={1}
       max={item.on_hand}

@@ -33,26 +33,43 @@ const navigationRoutes = protectedViewRoutes.filter(
     !route.isNotNav && Boolean(route.path && route.label && route.icon),
 );
 
+const pageRouteOf = (pathname: string) =>
+  matchRoutes(protectedViewRoutes, pathname)?.at(-1)?.route as IRoute | undefined;
+
+// The nav item a page belongs to: its declared section, else the most specific nav path
+// containing it (My sales over Sales on /transaction/history).
+const activeNavKey = (pathname: string) => {
+  const section = pageRouteOf(pathname)?.section;
+  if (section) return section;
+
+  return navigationRoutes
+    .filter((route) => isRouteActive(route.path, pathname))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.key;
+};
+
 // Only the routes the signed-in role may open appear in the sidebar and tab bar.
 export const useNavigationMenu = () => {
   const { pathname } = useLocation();
   const permissions = usePermissions();
+  const activeKey = activeNavKey(pathname);
 
   return navigationRoutes
     .filter((route) => !route.can || permissions[route.can])
     .map((route) => ({
       route,
-      active: isRouteActive(route.path, pathname),
+      active: route.key === activeKey,
     }));
 };
 
-// The phone tab bar: routes with a tabParent drop out and light their parent tab instead.
+// The phone tab bar: routes with a tabParent drop out and light their parent tab instead,
+// and a route with tabCan is a tab only for the roles that have it.
 export const useTabMenu = () => {
   const menu = useNavigationMenu();
+  const permissions = usePermissions();
   const hosted = menu.find(({ route, active }) => active && route.tabParent);
 
   return menu
-    .filter(({ route }) => !route.tabParent)
+    .filter(({ route }) => !route.tabParent && (!route.tabCan || permissions[route.tabCan]))
     .map(({ route, active }) => ({
       route,
       active: active || route.key === hosted?.route.tabParent,
@@ -61,10 +78,9 @@ export const useTabMenu = () => {
 
 export const useActiveNavRoute = () => {
   const { pathname } = useLocation();
+  const activeKey = activeNavKey(pathname);
 
-  return (
-    navigationRoutes.find((route) => isRouteActive(route.path, pathname)) ?? null
-  );
+  return navigationRoutes.find((route) => route.key === activeKey) ?? null;
 };
 
 // Topbar title: the nav section the page belongs to, then the page itself when it

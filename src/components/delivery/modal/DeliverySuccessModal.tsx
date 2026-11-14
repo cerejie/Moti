@@ -1,10 +1,17 @@
 import { useModal } from "../../../hook/common/modal.hook";
-import type { IDeliveryReceipt } from "../../../hook/data/delivery/delivery.form.hook";
 import { usePushedRoute } from "../../../hook/layout/navigation.hook";
 import { deliverySuccessModalKey } from "../../../keys/modal.keys";
 import { receiptLine } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import SuccessModal from "../../common/modal/SuccessModal";
+
+// Superseded by the "Stock added" toast (V1.8); no screen mounts it.
+interface IDeliveryReceipt {
+  itemCount: number;
+  totalQuantity: number;
+  queued: boolean;
+  fromOrderList: boolean;
+}
 
 // Closing it returns the owner to where the delivery was started.
 const DeliverySuccessModal = () => {

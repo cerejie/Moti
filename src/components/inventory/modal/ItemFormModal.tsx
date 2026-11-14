@@ -23,9 +23,9 @@ const ItemFormModal = () => {
   const sections: IFieldSection<IItemFormInput>[] = [
     {
       key: "item",
-      title: "Item",
+      title: "Product",
       fields: [
-        { name: "name", label: "Item name", type: "text", span: "full", required: true, placeholder: "e.g. Brake pad set, front" },
+        { name: "name", label: "Product name", type: "text", span: "full", required: true, placeholder: "e.g. Brake pad set, front" },
         {
           name: "category",
           label: "Category",
@@ -49,7 +49,7 @@ const ItemFormModal = () => {
     {
       key: "stock",
       title: "Stock",
-      description: "You get a low-stock alert when on-hand drops to this quantity.",
+      description: "Moti alerts you when a branch has this many or fewer left.",
       // The selling price has no field while prices are hidden; an edit carries the saved one through.
       fields: [
         {
@@ -62,12 +62,18 @@ const ItemFormModal = () => {
           description: "The branch that carries it and gets the opening stock.",
           hidden: () => !askBranch,
         },
-        { name: "reorder_level", label: "Warning low stock quantity", type: "number", required: true },
+        {
+          name: "reorder_level",
+          label: "Low-stock alert at",
+          type: "number",
+          required: true,
+          description: "Notify me when this many or fewer remain, e.g. 5.",
+        },
         {
           name: "opening_stock",
           label: "Opening stock",
           type: "number",
-          description: "How many are on the shelf right now.",
+          description: "How many are available right now.",
           hidden: () => isEdit,
         },
       ],
@@ -78,13 +84,13 @@ const ItemFormModal = () => {
     <EntityFormModal
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? "Edit item" : "Add item"}
+      title={isEdit ? "Edit product" : "New product"}
       size="lg"
       form={form}
       sections={sections}
       onSubmit={onSubmit}
       submitting={mutation.isPending}
-      submitLabel={isEdit ? "Save changes" : "Add item"}
+      submitLabel={isEdit ? "Save changes" : "Save new product"}
       error={mutation.error?.message}
     />
   );
