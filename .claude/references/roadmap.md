@@ -27,8 +27,8 @@ SaaS build, which comes later.
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
-- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phases 1–3 coded
-      2026-11-14 (v1.57–v1.59, migration 13 applied); next up: Phase 4 (Dashboard, alerts)
+- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phases 1–4 coded
+      2026-11-14 (v1.57–v1.60, migration 13 applied); next up: Phase 5 (Team)
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
       Phase 2 done 2026-11-13 (v1.52, migration 9 applied); Phase 3 coded 2026-11-14 (v1.53,
@@ -622,11 +622,30 @@ Notes (2026-11-14):
 - [x] New item: opening stock goes to the chosen branch.
 - [x] Stock history: Branch column + follows the switcher; movement detail page shows the branch.
 
-### Phase 4: Dashboard, alerts, notifications
+### Phase 4: Dashboard, alerts, notifications — coded 2026-11-14 (v1.60, no migration)
 
-- [ ] Summary cards, Attention panel and the bell's Stock alerts follow the switcher; in
+Decided 2026-11-14 ("A"): on "All branches" the summary cards stay on each item's total (like the
+Inventory Low / Out tabs, captioned "By total across branches"), while Attention and the bell list
+each branch's shelf (like the 08:00 digest), subtitled "N low or out across branches".
+
+Notes (2026-11-14):
+- Cards and alerts use `writeBranch` (like the inventory list); Home's recent stock changes use
+  `branch` (like Stock history). All three carry the branch in their query key under the old prefix.
+- `getAlerts` reads `branch_stock` (inner-joined item and branch, archived ones left out) and
+  returns `IStockAlert` (an `IInventoryItem` at the branch's count + `stock_id` / `branch`), so
+  Receive still takes it; on "All branches" Receive opens the page, which asks.
+- The branch leads the alert meta ("North · CODE · warning at 5"): after the code it was cut off
+  at phone width.
+- Push / inbox text needed no change: migration 13 already sends "Low stock" / "Out of stock" with
+  "<item> · <code> · <branch> · N left · warning at X" (branch only with 2+ active branches, one
+  tag per item and branch). The stored rows all predate it; first real check on a live stock change.
+- Visual test: owner at All branches / Main / faked North, Home + bell, phone light and desktop
+  dark (12 captures); real `branch_stock` alert query and `inventory_summary(p_branch_id)` ran clean.
+
+- [x] Summary cards, Attention panel and the bell's Stock alerts follow the switcher; in
       "All branches" each alert row names its branch.
-- [ ] Push and inbox text: "Low stock · <item> · <branch>".
+- [x] Push and inbox text: "Low stock · <item> · <branch>" (already in migration 13).
+- [x] Home's recent stock changes follow the switcher and name the branch on "All branches".
 
 ### Phase 5: Team
 

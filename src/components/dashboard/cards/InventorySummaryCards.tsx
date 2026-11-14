@@ -1,4 +1,5 @@
 import { Boxes, Layers, PackageX, TriangleAlert } from "lucide-react";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useInventorySummary } from "../../../hook/data/inventory/inventory.list.hook";
 import { summaryGrid } from "../../../styles/dashboard/dashboard.styles";
 import { formatNumber } from "../../../utils/format.utils";
@@ -7,6 +8,9 @@ import StatCard from "../../common/card/StatCard";
 // Counts come from inventory_summary, the same rule the inventory status tabs use.
 const InventorySummaryCards = () => {
   const summary = useInventorySummary();
+  const { writeBranch, multiple } = useActiveBranch();
+  // "All branches" judges Low / Out on each item's total, like the Inventory tabs.
+  const totals = multiple && !writeBranch;
 
   const data = summary.data;
   // Each tile carries the error so the grid keeps its shape.
@@ -41,7 +45,7 @@ const InventorySummaryCards = () => {
         value={count(data?.low_count)}
         raw
         {...state}
-        caption="At or below its warning quantity"
+        caption={totals ? "By total across branches" : "At or below its warning quantity"}
         icon={<TriangleAlert />}
         variant="warning"
       />
@@ -50,7 +54,7 @@ const InventorySummaryCards = () => {
         value={count(data?.out_count)}
         raw
         {...state}
-        caption="Nothing left on the shelf"
+        caption={totals ? "By total across branches" : "Nothing left on the shelf"}
         icon={<PackageX />}
         variant="danger"
       />

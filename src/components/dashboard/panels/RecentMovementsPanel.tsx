@@ -1,5 +1,6 @@
 import { History } from "lucide-react";
 import { movementReasonLabels } from "../../../enums/stock.enum";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import {
   useRecentMovements,
   useStockTab,
@@ -26,6 +27,9 @@ const RecentMovementsPanel = () => {
   const recent = useRecentMovements();
   const { setTab } = useStockTab();
   const movements = recent.data ?? [];
+  const { branch, multiple } = useActiveBranch();
+  // Same rule as Stock history's Branch column.
+  const showBranch = multiple && !branch;
 
   const renderBody = () => {
     if (movements.length === 0) {
@@ -47,9 +51,12 @@ const RecentMovementsPanel = () => {
               <span className={itemMeta}>
                 {[
                   movementReasonLabels[movement.reason],
+                  showBranch && movement.branch?.name,
                   movement.created_by_name,
                   formatDateTime(movement.created_at),
-                ].join(" · ")}
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </span>
             </RowLink>
             <span

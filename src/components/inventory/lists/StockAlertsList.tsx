@@ -1,4 +1,5 @@
 import { PackageCheck } from "lucide-react";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useStockAlerts } from "../../../hook/data/inventory/inventory.list.hook";
 import {
   dashboardList,
@@ -27,6 +28,9 @@ type IProps = {
 const StockAlertsList = ({ onOpen }: IProps) => {
   const alerts = useStockAlerts();
   const items = alerts.data ?? [];
+  const { writeBranch, multiple } = useActiveBranch();
+  // "All branches": each row is one branch's shelf, so it says which, first so a long code cannot hide it.
+  const acrossBranches = multiple && !writeBranch;
 
   if (alerts.isLoading) return <EmptyState loading description="Checking stock…" />;
   if (alerts.isError) {
@@ -39,11 +43,17 @@ const StockAlertsList = ({ onOpen }: IProps) => {
   return (
     <ul className={dashboardList}>
       {items.map((item) => (
-        <li key={item.id} className={dashboardRow}>
+        <li key={item.stock_id} className={dashboardRow}>
           <RowLink href={itemPath(item.id)} onPress={onOpen} className={dashboardRowText}>
             <span className={itemName}>{item.name}</span>
             <span className={itemMeta}>
-              {item.item_code} · warning at {formatNumber(item.reorder_level)}
+              {[
+                acrossBranches && item.branch?.name,
+                item.item_code,
+                `warning at ${formatNumber(item.reorder_level)}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </span>
           </RowLink>
           <span className={dashboardRowEnd}>

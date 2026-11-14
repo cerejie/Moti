@@ -27,6 +27,13 @@ export interface IItemBranchStock {
   branch: { name: string; sort: number } | null;
 }
 
+// One branch's low or out shelf: the item at that branch's count, status and warning level.
+export interface IStockAlert extends IInventoryItem {
+  stock_id: string;
+  branch_id: string;
+  branch: { name: string } | null;
+}
+
 export interface IInventorySummary {
   item_count: number;
   units_on_hand: number;

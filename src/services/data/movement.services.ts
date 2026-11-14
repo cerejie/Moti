@@ -57,8 +57,13 @@ const movementServices = {
   },
 
   // Home's recent list: the same rows Stock history opens on, sales left out.
-  getRecent: async (limit: number, signal?: AbortSignal): Promise<IStockMovement[]> => {
+  getRecent: async (
+    limit: number,
+    branchId?: string,
+    signal?: AbortSignal,
+  ): Promise<IStockMovement[]> => {
     let query = supabase.from(table).select(columns).in("reason", movementViewReasons.changes);
+    if (branchId) query = query.eq("branch_id", branchId);
     if (signal) query = query.abortSignal(signal);
     const { data, error } = await query.order("created_at", { ascending: false }).limit(limit);
     if (error) throw toError(error);

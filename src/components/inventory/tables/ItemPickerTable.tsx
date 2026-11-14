@@ -3,6 +3,7 @@ import { usePagination } from "../../../hook/common/pagination.hook";
 import { useBrandOptions } from "../../../hook/data/brand/brand.list.hook";
 import { useCategoryOptions } from "../../../hook/data/category/category.list.hook";
 import { useItemPickList } from "../../../hook/data/inventory/inventory.list.hook";
+import type { IFilterControl } from "../../../models/common/filter.model";
 import type { IDataTableColumn } from "../../../models/common/table.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import {
@@ -19,6 +20,7 @@ import { formatNumber } from "../../../utils/format.utils";
 import { isShowingPausedRows } from "../../../utils/query.utils";
 import FilterBar from "../../common/filter/FilterBar";
 import FilterToolbar from "../../common/filter/FilterToolbar";
+import ColumnFilterMenu from "../../common/table/ColumnFilterMenu";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import StockStatusBadge from "../status/StockStatusBadge";
@@ -31,31 +33,47 @@ type IProps = {
   topSellersFirst?: boolean;
   // Shows that branch's stock instead of the all-branches total.
   branchId?: string;
+  // Sell drops it: the colour of the stock count already says Low or Out.
+  hideStatus?: boolean;
 };
 
-const columnsWith = (
-  actionTitle: string,
-  renderAction: IProps["renderAction"],
-): IDataTableColumn<IInventoryItem>[] => [
+type IColumnOptions = Pick<IProps, "tableKey" | "actionTitle" | "renderAction" | "hideStatus"> & {
+  categoryControl: IFilterControl;
+  brandControl: IFilterControl;
+};
+
+const columnsWith = ({
+  tableKey,
+  actionTitle,
+  renderAction,
+  hideStatus,
+  categoryControl,
+  brandControl,
+}: IColumnOptions): IDataTableColumn<IInventoryItem>[] => [
   {
     key: "item",
     title: "Item",
     render: (_, item) => (
       <span className={itemIdentity}>
         <span className={itemName}>{item.name}</span>
-        <span className={itemMeta}>
-          {[item.item_code, item.brand?.name].filter(Boolean).join(" · ")}
-        </span>
+        <span className={itemMeta}>{item.item_code}</span>
       </span>
     ),
     listRender: (item) => item.name,
   },
   {
     key: "category",
-    title: "Category",
+    title: <ColumnFilterMenu filterKey={tableKey} control={categoryControl} />,
     collapse: "xl",
     listHidden: true,
     render: (_, item) => <span className={mutedText}>{item.category?.name ?? "—"}</span>,
+  },
+  {
+    key: "brand",
+    title: <ColumnFilterMenu filterKey={tableKey} control={brandControl} />,
+    collapse: "xl",
+    listHidden: true,
+    render: (_, item) => <span className={mutedText}>{item.brand?.name ?? "—"}</span>,
   },
   {
     key: "on_hand",
@@ -74,12 +92,18 @@ const columnsWith = (
       </span>
     ),
   },
-  {
-    key: "status",
-    title: "Status",
-    listHidden: true,
-    render: (_, item) => <StockStatusBadge status={item.stock_status} />,
-  },
+  ...(hideStatus
+    ? []
+    : [
+        {
+          key: "status",
+          title: "Status",
+          listHidden: true,
+          render: (_: unknown, item: IInventoryItem) => (
+            <StockStatusBadge status={item.stock_status} />
+          ),
+        },
+      ]),
   {
     key: "actions",
     title: actionTitle,
@@ -98,12 +122,26 @@ const ItemPickerTable = ({
   renderAction,
   topSellersFirst = false,
   branchId,
+  hideStatus = false,
 }: IProps) => {
   const { query } = useItemPickList(tableKey, topSellersFirst, branchId);
   const { pagination, goToPage } = usePagination(tableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
   const page = query.data;
+
+  const categoryControl: IFilterControl = {
+    key: "categoryId",
+    label: "Category",
+    placeholder: "All categories",
+    options: categoryOptions,
+  };
+  const brandControl: IFilterControl = {
+    key: "brandId",
+    label: "Brand",
+    placeholder: "All brands",
+    options: brandOptions,
+  };
 
   return (
     <TablePanel
@@ -114,27 +152,21 @@ const ItemPickerTable = ({
             searchKey={tableKey}
             searchPlaceholder="Name, code or brand"
             inlineOnCompact
-            controls={[
-              {
-                key: "categoryId",
-                label: "Category",
-                placeholder: "All categories",
-                options: categoryOptions,
-              },
-              {
-                key: "brandId",
-                label: "Brand",
-                placeholder: "All brands",
-                options: brandOptions,
-              },
-            ]}
+            controls={[categoryControl, brandControl]}
           />
         </FilterToolbar>
       }
     >
       <DataTable<IInventoryItem>
         label={label}
-        columns={columnsWith(actionTitle, renderAction)}
+        columns={columnsWith({
+          tableKey,
+          actionTitle,
+          renderAction,
+          hideStatus,
+          categoryControl,
+          brandControl,
+        })}
         data={page?.data ?? []}
         loading={query.isLoading}
         refreshing={query.isFetching && !query.isLoading}

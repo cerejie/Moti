@@ -144,3 +144,18 @@ export const rowActionTrigger = "compact:rounded-full";
 export const rowActionMenu = "w-auto min-w-48";
 
 export const rowActionItem = "whitespace-nowrap";
+
+// A column title that opens a filter menu; it lines up with the plain titles beside it.
+export const columnFilterTrigger = cva(
+  "-ml-2 h-8 gap-1 px-2 text-label font-medium [&_svg]:size-3.5",
+  {
+    variants: {
+      active: { true: "text-primary", false: "text-muted-foreground" },
+    },
+    defaultVariants: { active: false },
+  },
+);
+
+export const columnFilterMenu = "w-auto min-w-48 max-h-80";
+
+export const columnFilterItem = "whitespace-nowrap";

@@ -125,17 +125,25 @@ export const useItemBranchStock = (itemId: string) =>
     queryFn: ({ signal }) => inventoryServices.getBranchStock(itemId, signal),
   });
 
-export const useInventorySummary = (enabled = true) =>
-  useQuery({
-    queryKey: [inventorySummaryKey],
-    queryFn: ({ signal }) => inventoryServices.getSummary(signal),
+// The same branch as the inventory list: one branch's carried items, else the totals.
+export const useInventorySummary = (enabled = true) => {
+  const branchId = useActiveBranch().writeBranch?.id;
+
+  return useQuery({
+    queryKey: [inventorySummaryKey, branchId],
+    queryFn: ({ signal }) => inventoryServices.getSummary(branchId, signal),
     enabled,
   });
+};
 
-export const useStockAlerts = (enabled = true) =>
-  useQuery({
-    queryKey: [stockAlertsKey],
-    queryFn: ({ signal }) => inventoryServices.getAlerts(signal),
+// Without a branch, one row per low or out shelf in every branch in reach.
+export const useStockAlerts = (enabled = true) => {
+  const branchId = useActiveBranch().writeBranch?.id;
+
+  return useQuery({
+    queryKey: [stockAlertsKey, branchId],
+    queryFn: ({ signal }) => inventoryServices.getAlerts(branchId, signal),
     enabled,
     refetchInterval: alertsRefreshMs,
   });
+};

@@ -15,6 +15,7 @@ const TransactionItemTable = ({ branchId }: IProps) => (
     renderAction={(item) => <CartQuantityControl branchId={branchId} item={item} />}
     topSellersFirst
     branchId={branchId}
+    hideStatus
   />
 );
 

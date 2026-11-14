@@ -73,12 +73,16 @@ export const useStockTab = () => {
   };
 };
 
-export const useRecentMovements = (enabled = true) =>
-  useQuery({
-    queryKey: [movementListKey, "recent"],
-    queryFn: ({ signal }) => movementServices.getRecent(recentLimit, signal),
+// Follows the switcher like Stock history.
+export const useRecentMovements = (enabled = true) => {
+  const branchId = useActiveBranch().branch?.id;
+
+  return useQuery({
+    queryKey: [movementListKey, "recent", branchId],
+    queryFn: ({ signal }) => movementServices.getRecent(recentLimit, branchId, signal),
     enabled,
   });
+};
 
 // Keyed under the list prefix, so the invalidations after a stock change refresh it too.
 export const useMovement = (movementId: string | undefined) => {

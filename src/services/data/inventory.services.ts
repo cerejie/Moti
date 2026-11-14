@@ -6,6 +6,7 @@ import type {
   IInventoryItem,
   IInventorySummary,
   IItemBranchStock,
+  IStockAlert,
 } from "../../models/data/inventory/inventory.response";
 import {
   pageRange,
@@ -29,6 +30,7 @@ const branchStockColumns = "branch_stock(on_hand, stock_status)";
 const carriedStockColumns = "branch_stock!inner(on_hand, stock_status)";
 const itemBranchColumns =
   "branch_id, on_hand, stock_status, branch:branches!inner(name, sort, archived_at)";
+const alertColumns = `id, branch_id, on_hand, reorder_level, stock_status, branch:branches!inner(name, archived_at), item:inventory_items!inner(${columns})`;
 const alertLimit = 50;
 const categoryCountLimit = 200;
 
@@ -52,7 +54,23 @@ const toItems = (data: unknown, branchId: string | undefined): IInventoryItem[] 
     ? ((data ?? []) as IBranchStockRow[]).map(withBranchStock)
     : ((data ?? []) as IInventoryItem[]);
 
-const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
+type IAlertRow = Pick<
+  IStockAlert,
+  "branch_id" | "on_hand" | "reorder_level" | "stock_status"
+> & {
+  id: string;
+  branch: { name: string } | null;
+  item: IInventoryItem;
+};
+
+const toAlert = ({ id, item, branch, ...stock }: IAlertRow): IStockAlert => ({
+  ...item,
+  ...stock,
+  stock_id: id,
+  branch: branch ? { name: branch.name } : null,
+});
+
+const textOrNull =(value: string) => (value.trim() === "" ? null : value.trim());
 
 const editableValues = (values: IItemSaveValues) => ({
   name: values.name.trim(),
@@ -140,8 +158,9 @@ const inventoryServices = {
     );
   },
 
-  getSummary: async (signal?: AbortSignal): Promise<IInventorySummary> => {
-    let query = supabase.rpc("inventory_summary");
+  // Without a branch: the all-branches totals.
+  getSummary: async (branchId?: string, signal?: AbortSignal): Promise<IInventorySummary> => {
+    let query = supabase.rpc("inventory_summary", { p_branch_id: branchId ?? null });
     if (signal) query = query.abortSignal(signal);
     const { data, error } = await query.single();
     if (error) throw toError(error);
@@ -171,18 +190,23 @@ const inventoryServices = {
     return toItems(data, branchId);
   },
 
-  // Emptiest shelves first, so out-of-stock items lead.
-  getAlerts: async (signal?: AbortSignal): Promise<IInventoryItem[]> => {
+  // One row per low or out shelf, emptiest first; without a branch, every branch in reach.
+  getAlerts: async (branchId?: string, signal?: AbortSignal): Promise<IStockAlert[]> => {
     let query = supabase
-      .from(table)
-      .select(columns)
-      .is("archived_at", null)
+      .from("branch_stock")
+      .select(alertColumns)
+      .is("item.archived_at", null)
+      .is("branch.archived_at", null)
       .in("stock_status", ["out", "low"]);
+    if (branchId) query = query.eq("branch_id", branchId);
     if (signal) query = query.abortSignal(signal);
-    const { data, error } = await query.order("on_hand").order("name").limit(alertLimit);
+    const { data, error } = await query.order("on_hand").limit(alertLimit);
     if (error) throw toError(error);
 
-    return (data ?? []) as unknown as IInventoryItem[];
+    // PostgREST cannot order rows by the embedded item's name, so ties are sorted here.
+    return ((data ?? []) as unknown as IAlertRow[])
+      .map(toAlert)
+      .sort((a, b) => a.on_hand - b.on_hand || a.name.localeCompare(b.name));
   },
 
   create: (values: IItemSaveValues): Promise<IMutationResult> => {
