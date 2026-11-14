@@ -9,12 +9,14 @@ import {
 } from "../../../models/data/delivery/delivery.request";
 import movementServices from "../../../services/data/movement.services";
 import {
+  selectDeliveryBranch,
   selectDeliveryLines,
   selectDeliveryOrderListId,
   useDeliveryStore,
 } from "../../../store/data/delivery/delivery.store";
 import { useModal, useModalActions } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 // What the success prompt shows once the delivery list is gone.
 export interface IDeliveryReceipt {
@@ -26,14 +28,18 @@ export interface IDeliveryReceipt {
 
 export const useDelivery = () => {
   const lines = useDeliveryStore(selectDeliveryLines);
+  const storedBranchId = useDeliveryStore(selectDeliveryBranch);
   const orderListId = useDeliveryStore(selectDeliveryOrderListId);
   const add = useDeliveryStore((state) => state.add);
   const setQuantity = useDeliveryStore((state) => state.setQuantity);
   const remove = useDeliveryStore((state) => state.remove);
   const clear = useDeliveryStore((state) => state.clear);
+  const { writeBranch } = useActiveBranch();
 
   return {
     lines,
+    // An order list fill has no branch of its own; it goes where the owner is receiving.
+    branchId: storedBranchId ?? writeBranch?.id ?? null,
     orderListId,
     itemCount: lines.length,
     totalQuantity: lines.reduce((sum, line) => sum + line.quantity, 0),
@@ -60,7 +66,15 @@ export const useReceiveDeliveryForm = () => {
   }, [modal.visible, reset]);
 
   const mutation = useAppMutation(
-    (values: IDeliveryFormInput) => movementServices.receiveDelivery(delivery.lines, values.note, delivery.orderListId),
+    (values: IDeliveryFormInput) =>
+      delivery.branchId
+        ? movementServices.receiveDelivery(
+            delivery.branchId,
+            delivery.lines,
+            values.note,
+            delivery.orderListId,
+          )
+        : Promise.reject(new Error("Pick the branch receiving this delivery")),
     {
       silentError: true,
       invalidate: stockQueryKeys,

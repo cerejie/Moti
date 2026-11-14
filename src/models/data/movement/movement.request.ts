@@ -14,4 +14,6 @@ export interface IMovementFilters {
   reasons: readonly MovementReason[];
   personId?: string;
   search: string;
+  // Unset: every branch the account can see.
+  branchId?: string;
 }

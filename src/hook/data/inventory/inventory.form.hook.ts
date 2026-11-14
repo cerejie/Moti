@@ -6,6 +6,7 @@ import { brandListKey, categoryListKey, stockQueryKeys } from "../../../keys/que
 import { itemFormModalKey } from "../../../keys/modal.keys";
 import {
   itemFormSchema,
+  newItemFormSchema,
   type IItemFormInput,
 } from "../../../models/data/inventory/inventory.request";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -16,10 +17,11 @@ import { resolveByName } from "../../../utils/lookup.utils";
 import { useConfirm } from "../../common/confirmation.hook";
 import { useModal } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 import { useBrandOptions } from "../brand/brand.list.hook";
 import { useCategoryOptions } from "../category/category.list.hook";
 
-const toFormValues = (item?: IInventoryItem): IItemFormInput => ({
+const toFormValues = (item: IInventoryItem | undefined, branchId: string): IItemFormInput => ({
   name: item?.name ?? "",
   category: item?.category?.name ?? "",
   brand: item?.brand?.name ?? "",
@@ -28,6 +30,7 @@ const toFormValues = (item?: IInventoryItem): IItemFormInput => ({
   selling_price: item?.selling_price == null ? "" : String(item.selling_price),
   location: item?.location ?? "",
   opening_stock: "0",
+  branch_id: branchId,
 });
 
 const isNew = (records: readonly { id: string }[], id: string | null) =>
@@ -43,16 +46,20 @@ export const useItemForm = () => {
   const { options: brandOptions, brands } = useBrandOptions();
   const queryClient = useQueryClient();
   const refresh = (key: string) => queryClient.invalidateQueries({ queryKey: [key] });
+  // A new item starts in the selected branch; on "All branches" the form asks which.
+  const { writeBranch, activeBranches } = useActiveBranch();
+  const defaultBranchId = writeBranch?.id ?? "";
 
   const form = useForm<IItemFormInput>({
-    resolver: zodResolver(itemFormSchema),
-    defaultValues: toFormValues(item),
+    // An edit never moves stock, so only a new item needs its branch.
+    resolver: zodResolver(item ? itemFormSchema : newItemFormSchema),
+    defaultValues: toFormValues(item, defaultBranchId),
   });
   const { reset } = form;
 
   useEffect(() => {
-    if (modal.visible) reset(toFormValues(item));
-  }, [modal.visible, item, reset]);
+    if (modal.visible) reset(toFormValues(item, defaultBranchId));
+  }, [modal.visible, item, defaultBranchId, reset]);
 
   // A typed category or brand that does not exist yet is created first, so the
   // owner never has to visit the Masterfile to add one.
@@ -85,6 +92,8 @@ export const useItemForm = () => {
     mutation,
     categoryOptions,
     brandOptions,
+    askBranch: !item && !writeBranch,
+    branchOptions: activeBranches.map((branch) => ({ value: branch.id, label: branch.name })),
     onSubmit: (values: IItemFormInput) => mutation.mutate(values),
     onOpenChange: (open: boolean) => {
       if (!open) {

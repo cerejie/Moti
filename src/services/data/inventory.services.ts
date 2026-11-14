@@ -5,6 +5,7 @@ import type {
 import type {
   IInventoryItem,
   IInventorySummary,
+  IItemBranchStock,
 } from "../../models/data/inventory/inventory.response";
 import {
   pageRange,
@@ -24,6 +25,10 @@ const columns =
   "id, item_code, name, category_id, category:categories(name), brand_id, brand:brands(name), unit, on_hand, reorder_level, selling_price, location, stock_status, archived_at, updated_at";
 // One left-joined row per item; an item the branch does not carry has none and reads as 0.
 const branchStockColumns = "branch_stock(on_hand, stock_status)";
+// Inner-joined: only the items the branch carries.
+const carriedStockColumns = "branch_stock!inner(on_hand, stock_status)";
+const itemBranchColumns =
+  "branch_id, on_hand, stock_status, branch:branches!inner(name, sort, archived_at)";
 const alertLimit = 50;
 const categoryCountLimit = 200;
 
@@ -36,6 +41,16 @@ const withBranchStock = ({ branch_stock, ...item }: IBranchStockRow): IInventory
   on_hand: branch_stock[0]?.on_hand ?? 0,
   stock_status: branch_stock[0]?.stock_status ?? "out",
 });
+
+const selectFor = (branchId: string | undefined, carried: boolean) => {
+  if (!branchId) return columns;
+  return `${columns}, ${carried ? carriedStockColumns : branchStockColumns}`;
+};
+
+const toItems = (data: unknown, branchId: string | undefined): IInventoryItem[] =>
+  branchId
+    ? ((data ?? []) as IBranchStockRow[]).map(withBranchStock)
+    : ((data ?? []) as IInventoryItem[]);
 
 const textOrNull = (value: string) => (value.trim() === "" ? null : value.trim());
 
@@ -57,15 +72,18 @@ const inventoryServices = {
   ): Promise<IPaginationResponse<IInventoryItem>> => {
     const [from, to] = pageRange(pagination);
     const { branchId } = filters;
-    let query = supabase
-      .from(table)
-      .select(branchId ? `${columns}, ${branchStockColumns}` : columns, { count: "exact" });
+    const byStatus = filters.view === "low" || filters.view === "out";
+    // A Low / Out filter on the branch row needs the row, so it joins inner too.
+    const carried = Boolean(filters.carriedOnly) || byStatus;
+    let query = supabase.from(table).select(selectFor(branchId, carried), { count: "exact" });
     if (branchId) query = query.eq("branch_stock.branch_id", branchId);
 
     if (filters.view === "archived") query = query.not("archived_at", "is", null);
     else query = query.is("archived_at", null);
-    if (filters.view === "low" || filters.view === "out") {
-      query = query.eq("stock_status", filters.view);
+    if (byStatus) {
+      query = branchId
+        ? query.eq("branch_stock.stock_status", filters.view)
+        : query.eq("stock_status", filters.view);
     }
     if (filters.categoryId) query = query.eq("category_id", filters.categoryId);
     if (filters.brandId) query = query.eq("brand_id", filters.brandId);
@@ -85,21 +103,41 @@ const inventoryServices = {
     const { data, error, count } = await query.order("name").range(from, to);
     if (error) throw toError(error);
 
-    const rows = branchId
-      ? ((data ?? []) as unknown as IBranchStockRow[]).map(withBranchStock)
-      : ((data ?? []) as unknown as IInventoryItem[]);
-    return toPage(rows, count ?? 0, pagination);
+    return toPage(toItems(data, branchId), count ?? 0, pagination);
   },
 
-  getById: async (id: string, signal?: AbortSignal): Promise<IInventoryItem> => {
-    let query = supabase.from(table).select(columns).eq("id", id);
+  // With a branch, on_hand and status are that branch's (0 / Out if it does not carry it).
+  getById: async (
+    id: string,
+    branchId?: string,
+    signal?: AbortSignal,
+  ): Promise<IInventoryItem> => {
+    let query = supabase.from(table).select(selectFor(branchId, false)).eq("id", id);
+    if (branchId) query = query.eq("branch_stock.branch_id", branchId);
     if (signal) query = query.abortSignal(signal);
     const { data, error } = await query.maybeSingle();
     if (error) throw toError(error);
     // RLS hides another shop's item exactly like a missing id.
     if (!data) throw new Error("This item doesn't exist or was removed.");
 
-    return data as unknown as IInventoryItem;
+    return toItems([data], branchId)[0];
+  },
+
+  // Each active branch's count of one item; RLS leaves out branches the account cannot see.
+  getBranchStock: async (itemId: string, signal?: AbortSignal): Promise<IItemBranchStock[]> => {
+    let query = supabase
+      .from("branch_stock")
+      .select(itemBranchColumns)
+      .eq("item_id", itemId)
+      .is("branch.archived_at", null);
+    if (signal) query = query.abortSignal(signal);
+    const { data, error } = await query;
+    if (error) throw toError(error);
+
+    // A handful of rows, and PostgREST cannot order them by the embedded branch's sort.
+    return ((data ?? []) as unknown as IItemBranchStock[]).sort(
+      (a, b) => (a.branch?.sort ?? 0) - (b.branch?.sort ?? 0),
+    );
   },
 
   getSummary: async (signal?: AbortSignal): Promise<IInventorySummary> => {
@@ -118,18 +156,19 @@ const inventoryServices = {
     };
   },
 
-  // A whole category for a stock count; the cap matches what one count can hold.
-  getByCategory: async (categoryId: string): Promise<IInventoryItem[]> => {
+  // A whole category for a stock count, at the branch's counts; the cap matches one count.
+  getByCategory: async (categoryId: string, branchId: string): Promise<IInventoryItem[]> => {
     const { data, error } = await supabase
       .from(table)
-      .select(columns)
+      .select(selectFor(branchId, false))
+      .eq("branch_stock.branch_id", branchId)
       .is("archived_at", null)
       .eq("category_id", categoryId)
       .order("name")
       .limit(categoryCountLimit);
     if (error) throw toError(error);
 
-    return (data ?? []) as unknown as IInventoryItem[];
+    return toItems(data, branchId);
   },
 
   // Emptiest shelves first, so out-of-stock items lead.
@@ -162,6 +201,7 @@ const inventoryServices = {
         p_location: editable.location,
         p_opening_stock: Number(values.opening_stock),
         p_client_id: newWriteId(),
+        p_branch_id: values.branch_id,
       },
     });
   },

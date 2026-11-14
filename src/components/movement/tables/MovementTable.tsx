@@ -6,6 +6,7 @@ import {
   type MovementView,
 } from "../../../enums/stock.enum";
 import { usePagination } from "../../../hook/common/pagination.hook";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import {
   movementPageDefaults,
   useMovementList,
@@ -95,6 +96,14 @@ const columns: IDataTableColumn<IStockMovement>[] = [
     ),
   },
   {
+    key: "branch",
+    title: "Branch",
+    collapse: "xl",
+    mobile: "meta",
+    render: (_, movement) => <span className={mutedText}>{movement.branch?.name ?? "—"}</span>,
+    listRender: (movement) => movement.branch?.name ?? "—",
+  },
+  {
     key: "by",
     title: "By",
     render: (_, movement) => (
@@ -129,7 +138,11 @@ const MovementTable = () => {
   const navigate = useTransitionNavigate();
   const { pagination, goToPage } = usePagination(movementTableKey, movementPageDefaults);
   const { options: personOptions } = useUserOptions();
+  const { branch, multiple } = useActiveBranch();
   const page = query.data;
+  // The Branch column says nothing when one branch is picked or the shop has only one.
+  const visibleColumns =
+    multiple && !branch ? columns : columns.filter((column) => column.key !== "branch");
 
   return (
     <TablePanel
@@ -161,7 +174,7 @@ const MovementTable = () => {
     >
       <DataTable<IStockMovement>
         label="Stock history"
-        columns={columns}
+        columns={visibleColumns}
         data={page?.data ?? []}
         loading={query.isLoading}
         refreshing={query.isFetching && !query.isLoading}

@@ -3,6 +3,8 @@ import type { MovementReason, MovementType } from "../../../enums/stock.enum";
 export interface IStockMovement {
   id: string;
   item_id: string;
+  branch_id: string;
+  branch: { name: string } | null;
   // Set on sale and voided-sale movements, which a transaction wrote.
   transaction_id: string | null;
   item: { name: string; item_code: string; unit: string } | null;

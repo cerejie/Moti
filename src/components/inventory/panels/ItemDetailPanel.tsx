@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { usePermissions } from "../../../hook/data/account/account.permission.hook";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useInventoryItem } from "../../../hook/data/inventory/inventory.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
@@ -17,6 +18,7 @@ import DetailRows from "../../common/table/DetailRows";
 import DetailPageSection from "../../common/view/DetailPageSection";
 import ItemSalesPaceCard from "../cards/ItemSalesPaceCard";
 import ItemStockCard from "../cards/ItemStockCard";
+import ItemBranchStockList from "../lists/ItemBranchStockList";
 import ItemMovementList from "../lists/ItemMovementList";
 import ItemManageActions from "../menus/ItemManageActions";
 
@@ -32,6 +34,7 @@ const ItemDetailPanel = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const query = useInventoryItem(itemId);
   const { isOwner, viewMovements } = usePermissions();
+  const { multiple } = useActiveBranch();
   const item = query.data;
 
   if (query.isLoading) return <EmptyState loading description="Loading item…" />;
@@ -50,7 +53,13 @@ const ItemDetailPanel = () => {
         </p>
       </div>
 
-      <ItemStockCard item={item} />
+      <ItemStockCard item={item} pending={query.isPlaceholderData} />
+
+      {multiple && (
+        <DetailPageSection title="By branch">
+          <ItemBranchStockList item={item} />
+        </DetailPageSection>
+      )}
 
       <DetailPageSection title="Details">
         <div className={detailPageSurface}>

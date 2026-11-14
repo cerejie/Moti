@@ -19,6 +19,7 @@ import { useCountStore } from "../../../store/data/count/count.store";
 import { useDeliveryStore } from "../../../store/data/delivery/delivery.store";
 import { useModal, useModalActions } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 const damagedDefaults: IDamagedFormInput = { quantity: "1", note: "" };
 
@@ -28,6 +29,8 @@ export const useDamagedStockModal = () => useModal<IInventoryItem>(damagedStockM
 export const useDamagedStockForm = () => {
   const { modal, closeModal } = useDamagedStockModal();
   const item = modal.data;
+  // The sheet only opens with a branch picked; its item carries that branch's count.
+  const { writeBranch } = useActiveBranch();
 
   const form = useForm<IDamagedFormInput>({
     resolver: zodResolver(damagedFormSchema),
@@ -46,9 +49,9 @@ export const useDamagedStockForm = () => {
 
   const mutation = useAppMutation(
     (values: IDamagedFormInput) =>
-      item
-        ? movementServices.recordDamaged(item.id, item.name, values)
-        : Promise.reject(new Error("No item selected")),
+      item && writeBranch
+        ? movementServices.recordDamaged(writeBranch.id, item.id, item.name, values)
+        : Promise.reject(new Error(item ? "Pick a branch first" : "No item selected")),
     {
       silentError: true,
       invalidate: stockQueryKeys,
@@ -75,24 +78,26 @@ export const useDamagedStockForm = () => {
 
 // The Stock tab's three actions, and the same three from an item with that item picked.
 // Receive and Count are pages; with an item they open straight on its quantities.
+// The item's on_hand must be the branch's, so on "All branches" the page asks for one first.
 export const useStockActions = () => {
   const navigate = useTransitionNavigate();
   const { openModal } = useModalActions();
   const addToDelivery = useDeliveryStore((state) => state.add);
   const addToCount = useCountStore((state) => state.add);
   const setCountStep = useCountStore((state) => state.setStep);
+  const branchId = useActiveBranch().writeBranch?.id;
 
   return {
     receive: (item?: IInventoryItem) => {
-      if (item) {
-        addToDelivery(item);
+      if (item && branchId) {
+        addToDelivery(branchId, item);
         openModal(deliveryReviewModalKey);
       }
       void navigate(ROUTES.receiveDelivery);
     },
     count: (item?: IInventoryItem) => {
-      if (item) {
-        addToCount(item);
+      if (item && branchId) {
+        addToCount(branchId, item);
         setCountStep("count");
         openModal(countModalKey);
       }
@@ -100,7 +105,7 @@ export const useStockActions = () => {
     },
     // With an item the sheet opens where the owner is; the page mounts it.
     damaged: (item?: IInventoryItem) => {
-      if (item) openModal(damagedStockModalKey, item);
+      if (item && branchId) openModal(damagedStockModalKey, item);
       else void navigate(ROUTES.damagedStock);
     },
   };

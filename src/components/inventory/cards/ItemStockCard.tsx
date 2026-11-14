@@ -1,3 +1,4 @@
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import { onHandUnit, onHandValue } from "../../../styles/inventory/inventory.styles";
 import {
@@ -14,17 +15,22 @@ import StockStatusBadge from "../status/StockStatusBadge";
 
 type IProps = {
   item: IInventoryItem;
+  // The row shown is a cached one that may hold another branch's count.
+  pending: boolean;
 };
 
-const ItemStockCard = ({ item }: IProps) => {
+const ItemStockCard = ({ item, pending }: IProps) => {
   const archived = item.archived_at !== null;
+  const { writeBranch, multiple } = useActiveBranch();
+  // One branch needs no name; with more, the figure says whose it is.
+  const scope = multiple ? (writeBranch?.name ?? "All branches") : null;
 
   return (
     <SectionCard>
       <div className={detailHeroBody}>
         <div className={detailHeroTop}>
           <div className={detailHeroFigure}>
-            <span className={detailHeroLabel}>On hand</span>
+            <span className={detailHeroLabel}>{scope ? `On hand · ${scope}` : "On hand"}</span>
             <span>
               <span className={onHandValue({ status: item.stock_status, size: "xl" })}>
                 {formatNumber(item.on_hand)}
@@ -38,7 +44,7 @@ const ItemStockCard = ({ item }: IProps) => {
           <StockStatusBadge status={item.stock_status} archived={archived} />
         </div>
 
-        {!archived && <StockActions item={item} />}
+        {!archived && <StockActions item={item} disabled={pending} />}
       </div>
     </SectionCard>
   );

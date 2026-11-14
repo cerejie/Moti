@@ -14,6 +14,8 @@ const ItemFormModal = () => {
     mutation,
     categoryOptions,
     brandOptions,
+    askBranch,
+    branchOptions,
     onSubmit,
     onOpenChange,
   } = useItemForm();
@@ -50,6 +52,16 @@ const ItemFormModal = () => {
       description: "You get a low-stock alert when on-hand drops to this quantity.",
       // The selling price has no field while prices are hidden; an edit carries the saved one through.
       fields: [
+        {
+          name: "branch_id",
+          label: "Branch",
+          type: "select",
+          required: true,
+          options: branchOptions,
+          placeholder: "Pick a branch",
+          description: "The branch that carries it and gets the opening stock.",
+          hidden: () => !askBranch,
+        },
         { name: "reorder_level", label: "Warning low stock quantity", type: "number", required: true },
         {
           name: "opening_stock",

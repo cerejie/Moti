@@ -14,6 +14,7 @@ import { useConfirm } from "../../common/confirmation.hook";
 import { useModalActions } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
 import { useShareText } from "../../common/share.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 import { openOrderListQueryKey, useOrderList } from "./order.list.hook";
 
 const orderInvalidations = [[orderListKey]] as const;
@@ -127,13 +128,15 @@ export const useReceiveOrderList = () => {
   const navigate = useTransitionNavigate();
   const { openModal } = useModalActions();
   const fillFromOrderList = useDeliveryStore((state) => state.fillFromOrderList);
+  const { writeBranch } = useActiveBranch();
 
   return (list: IOrderList) => {
     fillFromOrderList(
       list.id,
       list.lines.map(({ item_id, item, quantity }) => ({ item: { ...item, id: item_id }, quantity })),
     );
-    openModal(deliveryReviewModalKey);
+    // On "All branches" the page asks for the branch first; its bar then opens the review.
+    if (writeBranch) openModal(deliveryReviewModalKey);
     void navigate(ROUTES.receiveDelivery);
   };
 };

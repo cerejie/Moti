@@ -1,5 +1,6 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { movementReasonLabels } from "../../../enums/stock.enum";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useItemMovements } from "../../../hook/data/movement/movement.list.hook";
 import {
   itemMeta,
@@ -24,6 +25,9 @@ type IProps = {
 
 const ItemMovementList = ({ itemId }: IProps) => {
   const history = useItemMovements(itemId, true);
+  const { writeBranch, multiple } = useActiveBranch();
+  // On "All branches" the rows mix branches, so each one says where it happened.
+  const nameBranch = multiple && !writeBranch;
 
   if (history.isLoading) return <EmptyState compact loading description="Loading history…" />;
   if (history.isError) {
@@ -45,6 +49,7 @@ const ItemMovementList = ({ itemId }: IProps) => {
               <span className={itemName}>{movementReasonLabels[movement.reason]}</span>
               <span className={itemMeta}>
                 {formatDateTime(movement.created_at)} · {movement.created_by_name}
+                {nameBranch && movement.branch ? ` · ${movement.branch.name}` : ""}
                 {movement.note ? ` · ${movement.note}` : ""}
               </span>
             </RowLink>

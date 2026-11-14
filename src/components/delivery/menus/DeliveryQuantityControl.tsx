@@ -13,17 +13,18 @@ import {
 import AppButton from "../../common/button/AppButton";
 
 type IProps = {
+  branchId: string;
   item: IInventoryItem;
 };
 
 // "Add" until the item is on the delivery, then − qty +; the exact count is typed in the review.
-const DeliveryQuantityControl = ({ item }: IProps) => {
+const DeliveryQuantityControl = ({ branchId, item }: IProps) => {
   const { add, setQuantity, remove } = useDelivery();
   const quantity = useDeliveryStore(selectDeliveryQuantity(item.id));
 
   if (quantity === 0) {
     return (
-      <AppButton size="lg" className={addButton} onPress={() => add(item)}>
+      <AppButton size="lg" className={addButton} onPress={() => add(branchId, item)}>
         <Plus />
         Add
       </AppButton>
@@ -47,7 +48,7 @@ const DeliveryQuantityControl = ({ item }: IProps) => {
         size="icon-lg"
         variant="outline"
         aria-label={`One more ${item.name}`}
-        onPress={() => add(item)}
+        onPress={() => add(branchId, item)}
       >
         <Plus />
       </AppButton>

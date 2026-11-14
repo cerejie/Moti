@@ -12,6 +12,7 @@ import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
 import { useDebouncedSearch } from "../../common/search.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 type IMovementFilterValues = {
   view?: MovementView;
@@ -28,12 +29,16 @@ export const useMovementList = () => {
   const search = useDebouncedSearch(movementTableKey, movementTableKey);
   const { pagination } = usePagination(movementTableKey, movementPageDefaults);
 
+  // Follows the header switcher; "All branches" lists every branch the account can see.
+  const branchId = useActiveBranch().branch?.id;
+
   const view = filters.view ?? "changes";
   const personId = filters.personId;
 
   const query = useQuery({
     queryKey: [
       movementListKey,
+      branchId,
       view,
       personId,
       search,
@@ -42,7 +47,7 @@ export const useMovementList = () => {
     ],
     queryFn: ({ signal }) =>
       movementServices.getList(
-        { reasons: movementViewReasons[view], personId, search },
+        { reasons: movementViewReasons[view], personId, search, branchId },
         pagination,
         signal,
       ),
@@ -87,9 +92,13 @@ export const useMovement = (movementId: string | undefined) => {
   });
 };
 
-export const useItemMovements = (itemId: string | undefined, enabled: boolean) =>
-  useQuery({
-    queryKey: [itemMovementsKey, itemId],
-    queryFn: ({ signal }) => movementServices.getByItem(itemId ?? "", signal),
+// The same branch as the item page's hero, so each balance reads against the count above it.
+export const useItemMovements = (itemId: string | undefined, enabled: boolean) => {
+  const branchId = useActiveBranch().writeBranch?.id;
+
+  return useQuery({
+    queryKey: [itemMovementsKey, itemId, branchId],
+    queryFn: ({ signal }) => movementServices.getByItem(itemId ?? "", branchId, signal),
     enabled: enabled && Boolean(itemId),
   });
+};

@@ -22,6 +22,11 @@ export const itemFormSchema = z.object({
     .regex(/^(\d+(\.\d{1,2})?)?$/, "Enter a price like 250 or 249.50"),
   location: optionalText(60),
   opening_stock: wholeNumber("Opening stock"),
+  // Only a new item uses it: the branch that carries it and takes the opening stock.
+  branch_id: z.string(),
+});
+export const newItemFormSchema = itemFormSchema.extend({
+  branch_id: z.string().min(1, "Pick the branch this item starts in"),
 });
 export type IItemFormInput = z.infer<typeof itemFormSchema>;
 
@@ -40,4 +45,6 @@ export interface IInventoryFilters {
   topSellersFirst?: boolean;
   // Set: on_hand and status are that branch's. Unset: the all-branches total.
   branchId?: string;
+  // With a branch: only the items it carries (the stock list), not every item at 0 (pickers).
+  carriedOnly?: boolean;
 }

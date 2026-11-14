@@ -19,6 +19,14 @@ export interface IInventoryItem {
   updated_at: string;
 }
 
+// One branch's count of an item, for the item page's "By branch" list.
+export interface IItemBranchStock {
+  branch_id: string;
+  on_hand: number;
+  stock_status: StockStatus;
+  branch: { name: string; sort: number } | null;
+}
+
 export interface IInventorySummary {
   item_count: number;
   units_on_hand: number;

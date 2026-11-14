@@ -12,6 +12,7 @@ import {
 import inventoryServices from "../../../services/data/inventory.services";
 import movementServices from "../../../services/data/movement.services";
 import {
+  selectCountBranch,
   selectCountLines,
   selectCountStep,
   useCountStore,
@@ -21,6 +22,7 @@ import { formatCount } from "../../../utils/format.utils";
 import { useFilters } from "../../common/filter.hook";
 import { useModal, useModalActions } from "../../common/modal.hook";
 import { useAppMutation } from "../../common/mutation.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 import { useCategoryOptions } from "../category/category.list.hook";
 
 // What the success prompt shows once the count is gone.
@@ -35,6 +37,7 @@ export const countDifference = (line: ICountLine) =>
 
 export const useCount = () => {
   const lines = useCountStore(selectCountLines);
+  const branchId = useCountStore(selectCountBranch);
   const step = useCountStore(selectCountStep);
   const add = useCountStore((state) => state.add);
   const addMany = useCountStore((state) => state.addMany);
@@ -47,6 +50,7 @@ export const useCount = () => {
 
   return {
     lines,
+    branchId,
     step,
     differences,
     itemCount: lines.length,
@@ -78,9 +82,11 @@ export const useStockCountForm = () => {
   // A count where every shelf matches records nothing, so nothing is sent.
   const mutation = useAppMutation(
     (values: ICountFormInput) =>
-      count.differences.length > 0
-        ? movementServices.recordCount(count.differences, values.note)
-        : Promise.resolve({ queued: false }),
+      count.differences.length === 0
+        ? Promise.resolve({ queued: false })
+        : count.branchId
+          ? movementServices.recordCount(count.branchId, count.differences, values.note)
+          : Promise.reject(new Error("Pick the branch you are counting")),
     {
       silentError: true,
       invalidate: stockQueryKeys,
@@ -128,13 +134,15 @@ export const useCountCategory = () => {
   const { filters } = useFilters<{ categoryId?: string }>(countPickTableKey);
   const { options } = useCategoryOptions();
   const addMany = useCountStore((state) => state.addMany);
+  const { writeBranch } = useActiveBranch();
   const categoryId = filters.categoryId;
 
   const mutation = useAppMutation(
-    (id: string) => inventoryServices.getByCategory(id),
+    ({ id, branchId }: { id: string; branchId: string }) =>
+      inventoryServices.getByCategory(id, branchId).then((items) => ({ items, branchId })),
     {
-      onSuccess: (items) => {
-        addMany(items);
+      onSuccess: ({ items, branchId }) => {
+        addMany(branchId, items);
         toast.success(`${formatCount(items.length, "item")} added to the count`);
       },
     },
@@ -145,7 +153,7 @@ export const useCountCategory = () => {
     categoryName: options.find((option) => option.value === categoryId)?.label,
     pending: mutation.isPending,
     addCategory: () => {
-      if (categoryId) mutation.mutate(categoryId);
+      if (categoryId && writeBranch) mutation.mutate({ id: categoryId, branchId: writeBranch.id });
     },
   };
 };

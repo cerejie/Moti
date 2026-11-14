@@ -15,4 +15,8 @@ export const damagedPickTableKey = "damaged-pick";
 export const transactionHistoryTableKey = "transaction-history";
 export const userTableKey = "users";
 // Lists that follow the header branch switcher; switching sends each back to page 1.
-export const branchScopedTableKeys = [transactionHistoryTableKey] as const;
+export const branchScopedTableKeys = [
+  transactionHistoryTableKey,
+  inventoryTableKey,
+  movementTableKey,
+] as const;

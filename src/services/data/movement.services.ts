@@ -21,7 +21,7 @@ import { newWriteId } from "../../utils/write.utils";
 const table = "stock_movements";
 const itemAlias = "item";
 const columnsWith = (itemJoin: string) =>
-  `id, item_id, transaction_id, ${itemAlias}:${itemJoin}(name, item_code, unit), type, reason, quantity, balance_after, note, created_by_name, created_at`;
+  `id, item_id, branch_id, branch:branches(name), transaction_id, ${itemAlias}:${itemJoin}(name, item_code, unit), type, reason, quantity, balance_after, note, created_by_name, created_at`;
 const columns = columnsWith("inventory_items");
 // An inner join, so a filter on the item's name or code narrows the movements too.
 const searchColumns = columnsWith("inventory_items!inner");
@@ -40,6 +40,7 @@ const movementServices = {
       .select(pattern ? searchColumns : columns, { count: "exact" })
       .in("reason", filters.reasons);
     if (filters.personId) query = query.eq("created_by", filters.personId);
+    if (filters.branchId) query = query.eq("branch_id", filters.branchId);
     if (pattern) {
       query = query.or(`name.ilike.${pattern},item_code.ilike.${pattern}`, {
         referencedTable: itemAlias,
@@ -76,8 +77,13 @@ const movementServices = {
     return data as unknown as IStockMovement;
   },
 
-  getByItem: async (itemId: string, signal?: AbortSignal): Promise<IStockMovement[]> => {
+  getByItem: async (
+    itemId: string,
+    branchId?: string,
+    signal?: AbortSignal,
+  ): Promise<IStockMovement[]> => {
     let query = supabase.from(table).select(columns).eq("item_id", itemId);
+    if (branchId) query = query.eq("branch_id", branchId);
     if (signal) query = query.abortSignal(signal);
     const { data, error } = await query
       .order("created_at", { ascending: false })
@@ -87,8 +93,9 @@ const movementServices = {
     return (data ?? []) as unknown as IStockMovement[];
   },
 
-  // The client id is fixed here, so a queued replay after a lost response is ignored.
+  // The client id and branch are fixed here, so a queued replay is ignored, not applied twice.
   recordDamaged: (
+    branchId: string,
     itemId: string,
     itemName: string,
     values: IDamagedFormInput,
@@ -104,11 +111,13 @@ const movementServices = {
         p_quantity: Number(values.quantity),
         p_note: values.note,
         p_client_id: newWriteId(),
+        p_branch_id: branchId,
       },
     }),
 
   // From an order list, the same save also takes what arrived off that list.
   receiveDelivery: (
+    branchId: string,
     lines: readonly IDeliveryLine[],
     note: string,
     orderListId: string | null,
@@ -117,6 +126,7 @@ const movementServices = {
       p_lines: lines.map((line) => ({ item_id: line.item.id, quantity: line.quantity })),
       p_note: note,
       p_client_id: newWriteId(),
+      p_branch_id: branchId,
     };
     const label = `Receive delivery of ${lines.length} item${lines.length === 1 ? "" : "s"}`;
 
@@ -131,7 +141,11 @@ const movementServices = {
   },
 
   // Only the lines that differ are sent; on_hand_seen is what the screen showed.
-  recordCount: (lines: readonly ICountLine[], note: string): Promise<IMutationResult> =>
+  recordCount: (
+    branchId: string,
+    lines: readonly ICountLine[],
+    note: string,
+  ): Promise<IMutationResult> =>
     runWrite({
       kind: "rpc",
       fn: "record_stock_count",
@@ -144,6 +158,7 @@ const movementServices = {
         })),
         p_note: note,
         p_client_id: newWriteId(),
+        p_branch_id: branchId,
       },
     }),
 };

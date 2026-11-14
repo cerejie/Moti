@@ -6,11 +6,12 @@ import { addButton } from "../../../styles/transaction/transaction.styles";
 import AppButton from "../../common/button/AppButton";
 
 type IProps = {
+  branchId: string;
   item: IInventoryItem;
 };
 
 // The shelf count itself is typed in the count sheet; here an item only joins or leaves it.
-const CountPickControl = ({ item }: IProps) => {
+const CountPickControl = ({ branchId, item }: IProps) => {
   const { add, remove } = useCount();
   const counting = useCountStore(selectIsCounting(item.id));
 
@@ -30,7 +31,7 @@ const CountPickControl = ({ item }: IProps) => {
   }
 
   return (
-    <AppButton size="lg" className={addButton} onPress={() => add(item)}>
+    <AppButton size="lg" className={addButton} onPress={() => add(branchId, item)}>
       <Plus />
       Add
     </AppButton>

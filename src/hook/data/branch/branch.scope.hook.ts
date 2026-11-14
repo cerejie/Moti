@@ -6,6 +6,16 @@ import {
   useBranchStore,
 } from "../../../store/data/branch/branch.store";
 import {
+  selectCountBranch,
+  selectCountLines,
+  useCountStore,
+} from "../../../store/data/count/count.store";
+import {
+  selectDeliveryBranch,
+  selectDeliveryLines,
+  useDeliveryStore,
+} from "../../../store/data/delivery/delivery.store";
+import {
   selectCartBranch,
   selectCartLines,
   useCartStore,
@@ -14,6 +24,18 @@ import { useConfirm } from "../../common/confirmation.hook";
 import { usePermissions } from "../account/account.permission.hook";
 import { useTransitionNavigate } from "../../layout/navigation.hook";
 import { useBranchList } from "./branch.list.hook";
+
+// Something being built for one branch that a switch would move to another.
+type IBranchDraft = {
+  name: string;
+  size: number;
+  branchId: string | null;
+  clear: () => void;
+};
+
+// "cart", "cart and delivery", "cart, delivery and stock count".
+const joinNames = (names: readonly string[]) =>
+  names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
 
 // The switcher's choice, and the one branch a write lands in.
 export const useActiveBranch = () => {
@@ -42,9 +64,26 @@ export const useBranchScope = () => {
   const { manageBranches } = usePermissions();
   const setBranchFilter = useBranchStore((state) => state.setBranchFilter);
   const resetPagination = usePaginationStore((state) => state.resetPagination);
-  const cartBranchId = useCartStore(selectCartBranch);
-  const cartLines = useCartStore(selectCartLines);
-  const clearCart = useCartStore((state) => state.clear);
+  const drafts: IBranchDraft[] = [
+    {
+      name: "cart",
+      size: useCartStore(selectCartLines).length,
+      branchId: useCartStore(selectCartBranch),
+      clear: useCartStore((state) => state.clear),
+    },
+    {
+      name: "delivery",
+      size: useDeliveryStore(selectDeliveryLines).length,
+      branchId: useDeliveryStore(selectDeliveryBranch),
+      clear: useDeliveryStore((state) => state.clear),
+    },
+    {
+      name: "stock count",
+      size: useCountStore(selectCountLines).length,
+      branchId: useCountStore(selectCountBranch),
+      clear: useCountStore((state) => state.clear),
+    },
+  ];
   const { query, branch, activeBranches } = useActiveBranch();
 
   const apply = (branchId: string | null) => {
@@ -52,24 +91,29 @@ export const useBranchScope = () => {
     branchScopedTableKeys.forEach(resetPagination);
   };
 
-  // A cart belongs to one branch, so a switch that changes where it sells empties it first.
+  // A cart, delivery or count belongs to one branch, so a switch that moves it empties it first.
   const setBranch = (branchId: string | null) => {
     const nextWrite =
       branchId ?? (activeBranches.length === 1 ? activeBranches[0].id : null);
-    if (cartLines.length === 0 || nextWrite === cartBranchId) {
+    const moved = drafts.filter(
+      (draft) => draft.size > 0 && draft.branchId !== null && draft.branchId !== nextWrite,
+    );
+    if (moved.length === 0) {
       apply(branchId);
       return;
     }
 
-    const from = activeBranches.find((item) => item.id === cartBranchId)?.name ?? "this branch";
-    const count = cartLines.length;
+    const from = activeBranches.find((item) => item.id === moved[0].branchId)?.name ?? "this branch";
+    const single = moved.length === 1 ? moved[0] : null;
     confirm({
       kind: "danger",
       title: "Switch branch?",
-      message: `The cart holds ${count} item${count === 1 ? "" : "s"} from ${from}. Switching clears it.`,
-      okText: "Clear cart and switch",
+      message: single
+        ? `The ${single.name} holds ${single.size} item${single.size === 1 ? "" : "s"} from ${from}. Switching clears it.`
+        : `The ${joinNames(moved.map((draft) => draft.name))} hold items from ${from}. Switching clears them.`,
+      okText: single ? `Clear ${single.name} and switch` : "Clear and switch",
       onConfirm: () => {
-        clearCart();
+        moved.forEach((draft) => draft.clear());
         apply(branchId);
       },
     });

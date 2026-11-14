@@ -27,8 +27,8 @@ SaaS build, which comes later.
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
-- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phases 1–2 coded
-      2026-11-14 (v1.57, migration 13 waits to be applied); next up: Phase 2 (Transaction)
+- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phases 1–3 coded
+      2026-11-14 (v1.57–v1.59, migration 13 applied); next up: Phase 4 (Dashboard, alerts)
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
       Phase 2 done 2026-11-13 (v1.52, migration 9 applied); Phase 3 coded 2026-11-14 (v1.53,
@@ -590,13 +590,37 @@ Notes (2026-11-14):
 - [x] Transaction detail page: branch in the heading meta; void unchanged.
 - [x] Offline queue: the queued payload carries the branch.
 
-### Phase 3: Inventory and Stock history
+### Phase 3: Inventory and Stock history — coded 2026-11-14 (v1.59, no migration)
 
-- [ ] Inventory list: on-hand and status for the selected branch; "All branches" shows the total.
-- [ ] Item page: hero shows the selected branch (or the total), plus a "By branch" list.
-- [ ] Add stock / deduct: writes to the selected branch, asks when "All branches".
-- [ ] New item: opening stock goes to the chosen branch.
-- [ ] Stock history: Branch column + follows the switcher; movement detail page shows the branch.
+Decided 2026-11-14 (both "A"): with one branch picked, the stock list shows only the items that
+branch carries (Low / Out judged on its `branch_stock` row); "All branches" keeps the totals. A new
+item on "All branches" picks its branch inside the Add item form.
+
+Notes (2026-11-14):
+- "The branch" for reads and writes is `useActiveBranch().writeBranch` (the pick, or the only
+  branch in reach), so a one-branch employee never reads shop-wide totals. Stock history follows
+  `branch` like sales History. `inventoryTableKey` and `movementTableKey` joined
+  `branchScopedTableKeys`.
+- Count sends `on_hand_seen`, so every picker, the item page and "Count all in <category>" read the
+  branch's count (`getById` / `getByCategory` take a branch). The delivery and count drafts carry a
+  `branchId` like the cart; `useBranchScope.setBranch` confirms before a switch that would move any
+  of the three ("Clear stock count and switch").
+- `BranchWriteGate` (`components/branch/panels/`) is the loading → error → `BranchPickPanel` gate;
+  Sell, Receive, Count and Damaged render through it. From an item on "All branches", Receive /
+  Count / Damaged open the page (which asks) instead of pre-picking the total's count; an order
+  list fill opens its review only once a branch is known. Item-page stock actions are disabled
+  while a cached row (possibly another branch's count) is on screen.
+- Known gap: a delivery filled from the order list shows before → after from the total until the
+  order list gets its branch filter.
+- Visual test: owner + employee sweep of the touched screens (68 captures, only the known 36 px
+  inputs), plus a faked "North" (All-branches totals + By branch, North hero / list / pickers,
+  Branch column, pick panel, form Branch field, switch-clears-count confirm on desktop).
+
+- [x] Inventory list: on-hand and status for the selected branch; "All branches" shows the total.
+- [x] Item page: hero shows the selected branch (or the total), plus a "By branch" list.
+- [x] Receive / Count / Damaged: write to the selected branch, ask when "All branches".
+- [x] New item: opening stock goes to the chosen branch.
+- [x] Stock history: Branch column + follows the switcher; movement detail page shows the branch.
 
 ### Phase 4: Dashboard, alerts, notifications
 

@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useActiveBranch } from "../../../hook/data/branch/branch.scope.hook";
 import { useMovement } from "../../../hook/data/movement/movement.list.hook";
 import type { IDetailItem } from "../../../models/common/detail.model";
 import type { IStockMovement } from "../../../models/data/movement/movement.response";
@@ -33,6 +34,7 @@ const detailItems: IDetailItem<IStockMovement>[] = [
 const MovementDetailPanel = () => {
   const { movementId } = useParams<{ movementId: string }>();
   const query = useMovement(movementId);
+  const { multiple } = useActiveBranch();
   const movement = query.data;
 
   if (query.isLoading) return <EmptyState loading description="Loading stock change…" />;
@@ -50,7 +52,13 @@ const MovementDetailPanel = () => {
     <div className={detailPage}>
       <div className={detailPageHeading}>
         <h1 className={detailPageTitle}>{movement.item?.name ?? "Deleted item"}</h1>
-        {movement.item && <p className={detailPageMeta}>{movement.item.item_code}</p>}
+        {(movement.item || multiple) && (
+          <p className={detailPageMeta}>
+            {[movement.item?.item_code, multiple ? movement.branch?.name : null]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
       </div>
 
       <MovementQuantityCard movement={movement} />

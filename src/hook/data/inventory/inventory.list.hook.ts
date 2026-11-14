@@ -12,6 +12,7 @@ import { findCachedRow } from "../../../utils/query.utils";
 import { useFilters } from "../../common/filter.hook";
 import { usePagination } from "../../common/pagination.hook";
 import { useDebouncedSearch } from "../../common/search.hook";
+import { useActiveBranch } from "../branch/branch.scope.hook";
 
 type IInventoryFilterValues = {
   view?: InventoryView;
@@ -27,6 +28,9 @@ export const useInventoryList = () => {
   const search = useDebouncedSearch(inventoryTableKey, inventoryTableKey);
   const { pagination } = usePagination(inventoryTableKey);
 
+  // One branch (picked, or the only one in reach) lists what it carries; else the totals.
+  const branchId = useActiveBranch().writeBranch?.id;
+
   const view = filters.view ?? "all";
   const categoryId = filters.categoryId;
   const brandId = filters.brandId;
@@ -34,6 +38,7 @@ export const useInventoryList = () => {
   const query = useQuery({
     queryKey: [
       inventoryListKey,
+      branchId,
       view,
       categoryId,
       brandId,
@@ -42,7 +47,11 @@ export const useInventoryList = () => {
       pagination.pageSize,
     ],
     queryFn: ({ signal }) =>
-      inventoryServices.getList({ view, categoryId, brandId, search }, pagination, signal),
+      inventoryServices.getList(
+        { view, categoryId, brandId, search, branchId, carriedOnly: true },
+        pagination,
+        signal,
+      ),
     placeholderData: keepPreviousData,
   });
 
@@ -97,16 +106,24 @@ export const useItemPickList = (
 };
 
 // Keyed under the list prefix, so every stock, edit and archive invalidation refreshes it too.
+// The cached row shown first may hold another branch's count until the fetch lands.
 export const useInventoryItem = (itemId: string | undefined) => {
   const queryClient = useQueryClient();
+  const branchId = useActiveBranch().writeBranch?.id;
 
   return useQuery<IInventoryItem>({
-    queryKey: [inventoryListKey, "item", itemId],
-    queryFn: ({ signal }) => inventoryServices.getById(itemId ?? "", signal),
+    queryKey: [inventoryListKey, "item", itemId, branchId],
+    queryFn: ({ signal }) => inventoryServices.getById(itemId ?? "", branchId, signal),
     enabled: Boolean(itemId),
     placeholderData: () => findCachedRow<IInventoryItem>(queryClient, inventoryListKey, itemId),
   });
 };
+
+export const useItemBranchStock = (itemId: string) =>
+  useQuery({
+    queryKey: [inventoryListKey, "by-branch", itemId],
+    queryFn: ({ signal }) => inventoryServices.getBranchStock(itemId, signal),
+  });
 
 export const useInventorySummary = (enabled = true) =>
   useQuery({
