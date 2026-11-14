@@ -2,7 +2,7 @@ import type { IPaginationRequest } from "../../models/common/pagination.model";
 import { create } from "./reset.store";
 
 // Only what was written is kept per key; usePagination layers a table's defaults under it,
-// so a filter's "back to page one" never overwrites that table's page size.
+// so a reset (filter, search, branch switch) falls back to that table's own page size.
 type States = {
   pagination: Record<string, Partial<IPaginationRequest>>;
 };

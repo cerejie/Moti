@@ -8,6 +8,7 @@ const UsersView = () => (
   <ContentView
     title="Team"
     subtitle="Approve sign-ups, add staff and handle password resets"
+    layout="fill"
     actions={<UserCreateButton />}
   >
     <UserTable />

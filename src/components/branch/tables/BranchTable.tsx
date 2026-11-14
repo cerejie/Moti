@@ -90,7 +90,7 @@ const BranchTable = () => {
   ];
 
   return (
-    <TablePanel>
+    <TablePanel fill>
       <DataTable<IBranch>
         label="Branches"
         columns={buildColumns(actionsOf)}
@@ -99,6 +99,7 @@ const BranchTable = () => {
         error={query.error}
         onRetry={() => void query.refetch()}
         emptyText="No branches yet. Add the first one."
+        fill
       />
     </TablePanel>
   );

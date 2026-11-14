@@ -7,6 +7,7 @@ const BranchesView = () => (
   <ContentView
     title="Branches"
     subtitle="Each branch keeps its own stock. Archive a branch once it holds none."
+    layout="fill"
     actions={<BranchCreateButton />}
   >
     <BranchTable />

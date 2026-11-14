@@ -66,6 +66,7 @@ const UserTable = () => {
 
   return (
     <TablePanel
+      fill
       toolbar={
         <ContextSwitch
           label="Account status"
@@ -84,6 +85,7 @@ const UserTable = () => {
         onRetry={() => void query.refetch()}
         emptyText={view === "pending" ? "No sign-ups waiting." : "No accounts here."}
         onRowClick={(user) => void navigate(userPath(user.id))}
+        fill
       />
     </TablePanel>
   );
