@@ -3,7 +3,7 @@
 export const statCard = "@container/stat h-full";
 
 export const statLink =
-  "block h-full rounded-card outline-none transition-transform select-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-pressed:scale-98 motion-reduce:transition-none";
+  "block h-full rounded-card outline-none transition-transform duration-(--motion-fast) ease-(--motion-ease-spring) select-none focus-visible:ring-[3px] focus-visible:ring-ring/50 data-pressed:scale-98 motion-reduce:transition-none";
 
 export const statBody = "flex flex-col gap-2";
 

@@ -3,15 +3,24 @@ import { useTabMenu } from "../../../hook/layout/navigation.hook";
 import {
   tabbarIcon,
   tabbarIndicator,
+  tabbarIndicatorTrack,
   tabbarItem,
   tabbarLabel,
   tabbarList,
   tabbarRoot,
+  type ITabCount,
+  type ITabIndex,
 } from "../../../styles/layout/tabbar.styles";
+import { setNavDirection } from "../../../utils/transition.utils";
+
+const isTabCount = (value: number): value is ITabCount => value >= 2 && value <= 6;
+const isTabIndex = (value: number): value is ITabIndex => value >= 0 && value <= 5;
 
 // TARTAR's floating AppTabBar, fed by the role-filtered tab menu.
 const TabBar = () => {
   const menu = useTabMenu();
+  const activeIndex = menu.findIndex(({ active }) => active);
+  const count = menu.length;
 
   return (
     <nav className={tabbarRoot} aria-label="Primary">
@@ -20,6 +29,8 @@ const TabBar = () => {
           <li key={route.key}>
             <Link
               to={route.path}
+              viewTransition
+              onClick={() => setNavDirection("fade")}
               className={tabbarItem({ active })}
               aria-current={active ? "page" : undefined}
             >
@@ -27,10 +38,14 @@ const TabBar = () => {
                 <route.icon />
               </span>
               <span className={tabbarLabel}>{route.shortLabel ?? route.label}</span>
-              {active && <span className={tabbarIndicator} aria-hidden="true" />}
             </Link>
           </li>
         ))}
+        {isTabCount(count) && isTabIndex(activeIndex) && (
+          <li className={tabbarIndicatorTrack({ count, index: activeIndex })} aria-hidden="true">
+            <span className={tabbarIndicator} />
+          </li>
+        )}
       </ul>
     </nav>
   );

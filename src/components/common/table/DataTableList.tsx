@@ -32,6 +32,7 @@ import {
 import ErrorState from "../status/ErrorState";
 import RefreshBar from "../status/RefreshBar";
 import TableEmptyState from "./TableEmptyState";
+import { contentIn } from "../../../styles/common/motion.styles";
 
 const skeletonRows = 5;
 const emptyMark = "—";
@@ -203,7 +204,7 @@ const DataTableList = <T,>({
   return (
     <div className={cn(dataListFrame, className)}>
       {refreshing ? <RefreshBar placement="above" /> : null}
-      <ul className={dataList} aria-label={label} aria-busy={refreshing}>
+      <ul className={cn(dataList, contentIn)} aria-label={label} aria-busy={refreshing}>
         {rows.map(renderRow)}
       </ul>
     </div>

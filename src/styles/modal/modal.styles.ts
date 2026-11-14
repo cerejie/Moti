@@ -42,8 +42,9 @@ export const modalPinned = "-mx-6 border-t border-border px-6";
 export const modalFooter = `flex-wrap -mx-6 -mb-6 rounded-b-sheet border-t border-border bg-muted/50 px-6 py-4 ${modalActionSize}`;
 
 // While an iOS keyboard is open the sheet rides on top of it and fits the space left.
+// Bottom sheets rise from below the screen edge and leave the same way.
 export const drawerContent =
-  "max-h-[min(92dvh,calc(var(--visible-height)-2rem))] rounded-t-sheet bg-panel data-[side=bottom]:bottom-(--keyboard-inset)";
+  "max-h-[min(92dvh,calc(var(--visible-height)-2rem))] rounded-t-sheet bg-panel data-[side=bottom]:bottom-(--keyboard-inset) duration-(--motion-slow) ease-(--motion-ease-emphasized) data-[side=bottom]:data-entering:translate-y-full data-[side=bottom]:data-exiting:translate-y-full";
 
 // How much of the phone a sheet claims: an action list hugs its content, a record
 // starts at 60%, a form takes the screen below the status bar, a flow all of it.

@@ -21,6 +21,10 @@ export const buttonTone = cva("", {
   defaultVariants: { tone: "none" },
 });
 
+// Every AppButton gives under the finger: a quick shrink that springs back on release.
+export const buttonPress =
+  "duration-(--motion-fast) ease-(--motion-ease-spring) data-pressed:scale-[0.97] motion-reduce:data-pressed:scale-100";
+
 export type IButtonTone = NonNullable<VariantProps<typeof buttonTone>["tone"]>;
 
 // A pushed screen's back control: a quiet round chip pulled into the gutter.

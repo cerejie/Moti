@@ -10,6 +10,9 @@ import {
 } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
+import CountUp from "../../common/view/CountUp";
+
+const formatPieces = (count: number) => formatCount(count, "pc");
 
 // Shows once something is picked; the quantities are checked and saved in the review.
 const DeliveryBar = () => {
@@ -21,7 +24,7 @@ const DeliveryBar = () => {
   return (
     <div className={cartBar}>
       <span className={cartBarText}>
-        <span className={cartBarTotal}>{formatCount(totalQuantity, "pc")}</span>
+        <CountUp value={totalQuantity} format={formatPieces} bump className={cartBarTotal} />
         <span className={itemMeta}>{formatCount(itemCount, "item")}</span>
       </span>
       <AppButton size="lg" onPress={() => openModal()}>

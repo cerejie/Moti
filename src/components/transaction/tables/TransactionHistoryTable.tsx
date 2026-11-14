@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import {
   transactionStatusLabels,
   type TransactionStatus,
@@ -23,6 +22,7 @@ import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
 import TransactionStatusBadge from "../status/TransactionStatusBadge";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 const columns: IDataTableColumn<ITransaction>[] = [
   {
@@ -79,7 +79,7 @@ const TransactionHistoryTable = () => {
   const { filters, setFilters } = useFilters<{ status?: TransactionStatus }>(
     transactionHistoryTableKey,
   );
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const page = query.data;
 
   return (

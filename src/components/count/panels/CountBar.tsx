@@ -10,6 +10,9 @@ import {
 } from "../../../styles/transaction/transaction.styles";
 import { formatCount } from "../../../utils/format.utils";
 import AppButton from "../../common/button/AppButton";
+import CountUp from "../../common/view/CountUp";
+
+const formatItems = (count: number) => formatCount(count, "item");
 
 // Shows once something is picked; the shelf counts are typed in the count sheet.
 const CountBar = () => {
@@ -23,7 +26,7 @@ const CountBar = () => {
   return (
     <div className={cartBar}>
       <span className={cartBarText}>
-        <span className={cartBarTotal}>{formatCount(itemCount, "item")}</span>
+        <CountUp value={itemCount} format={formatItems} bump className={cartBarTotal} />
         <span className={itemMeta}>{countedCount} counted</span>
       </span>
       <AppButton

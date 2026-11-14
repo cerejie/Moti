@@ -20,7 +20,8 @@ export const dataTableCollapse = cva("", {
   },
 });
 
-export const dataTableRow = "group/row border-b border-border hover:bg-muted/40";
+export const dataTableRow =
+  "group/row border-b border-border transition-colors duration-(--motion-fast) hover:bg-muted/40 data-pressed:bg-muted/70";
 
 export const dataTableRowStatic = "hover:bg-transparent";
 
@@ -62,7 +63,7 @@ export const dataList =
   "flex flex-col divide-y divide-foreground/10 border-y border-foreground/10";
 
 export const dataListRow =
-  "relative flex min-h-14 items-center gap-3 px-1 py-3 text-sm transition-colors has-data-pressed:bg-muted/70 has-data-focus-visible:ring-2 has-data-focus-visible:ring-ring has-data-focus-visible:ring-inset";
+  "relative flex min-h-14 items-center gap-3 px-1 py-3 text-sm transition-colors duration-(--motion-fast) ease-(--motion-ease-standard) has-data-pressed:bg-muted/70 has-data-focus-visible:ring-2 has-data-focus-visible:ring-ring has-data-focus-visible:ring-inset";
 
 export const dataListMain = "flex min-w-0 flex-1 flex-col gap-0.5";
 

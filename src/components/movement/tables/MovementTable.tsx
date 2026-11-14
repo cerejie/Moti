@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import {
   movementReasonLabels,
   movementReasonTones,
@@ -33,6 +32,7 @@ import StatusBadge from "../../common/status/StatusBadge";
 import DataTable from "../../common/table/DataTable";
 import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 const columns: IDataTableColumn<IStockMovement>[] = [
   {
@@ -126,7 +126,7 @@ const pathOf = (movement: IStockMovement) =>
 
 const MovementTable = () => {
   const { query, view, setView, narrowed } = useMovementList();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const { pagination, goToPage } = usePagination(movementTableKey, movementPageDefaults);
   const { options: personOptions } = useUserOptions();
   const page = query.data;

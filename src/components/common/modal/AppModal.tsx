@@ -16,6 +16,7 @@ import {
 import { useIsCompact } from "../../../hook/common/breakpoint.hook";
 import { cn } from "@/utils/cn.utils";
 import { useSheetEntry } from "../../../hook/common/sheet.hook";
+import { useSwipeToClose } from "../../../hook/common/swipe.hook";
 import type { ModalSize, SheetKind } from "../../../models/common/view.model";
 import {
   drawerBody,
@@ -34,6 +35,7 @@ import {
   modalPinned,
   modalSize,
 } from "../../../styles/modal/modal.styles";
+import { appSheetDragHeader } from "../../../styles/modal/sheet.styles";
 
 type IProps = {
   open: boolean;
@@ -76,6 +78,9 @@ const AppModal = ({
   const isCompact = useIsCompact();
   const hasCloseBar = hideHeader && dismissible;
   useSheetEntry(open && dismissible, () => onOpenChange(false));
+  const swipeHandlers = useSwipeToClose(() => onOpenChange(false));
+  // A full-screen flow is left through its own steps, not a swipe.
+  const dragHandlers = kind === "flow" ? {} : swipeHandlers;
 
   // Phones get a bottom sheet. The aria drawer is built on Base UI, so the
   // aria sheet from the bottom stands in for it.
@@ -92,7 +97,9 @@ const AppModal = ({
             !hideHeader && drawerHeaderRuled,
             hideHeader && !hasCloseBar && modalHeaderHidden,
             hasCloseBar && drawerCloseBar,
+            kind !== "flow" && appSheetDragHeader,
           )}
+          {...dragHandlers}
         >
           <SheetTitle className={cn(hasCloseBar && modalHeaderHidden)}>
             {title}

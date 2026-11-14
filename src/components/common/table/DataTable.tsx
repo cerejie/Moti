@@ -41,6 +41,7 @@ import DataTableList from "./DataTableList";
 import LoadMoreSentinel from "./LoadMoreSentinel";
 import TableEmptyState from "./TableEmptyState";
 import TablePagination from "./TablePagination";
+import { contentIn } from "../../../styles/common/motion.styles";
 
 const skeletonRows = 5;
 
@@ -120,7 +121,7 @@ const DataTable = <T extends object>({
       <TableRow
         key={key}
         id={key}
-        className={cn(dataTableRow, onRowClick && dataTableRowClickable)}
+        className={cn(dataTableRow, contentIn, onRowClick && dataTableRowClickable)}
         // onAction covers click, tap and Enter; left off, the row is inert.
         onAction={onRowClick ? () => onRowClick(row) : undefined}
       >

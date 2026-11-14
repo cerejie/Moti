@@ -7,7 +7,6 @@ import {
   PackagePlus,
   Pencil,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../../hook/data/account/account.permission.hook";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useItemArchive } from "../../../hook/data/inventory/inventory.form.hook";
@@ -17,6 +16,7 @@ import type { IRowAction } from "../../../models/common/action.model";
 import type { IInventoryItem } from "../../../models/data/inventory/inventory.response";
 import { itemPath } from "../../../utils/route.utils";
 import RowActionMenu from "../../common/table/RowActionMenu";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 type IProps = {
   item: IInventoryItem;
@@ -27,7 +27,7 @@ const InventoryRowActions = ({ item }: IProps) => {
   const { isOwner } = usePermissions();
   const stock = useStockActions();
   const formModal = useModal<IInventoryItem>(itemFormModalKey);
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const { archive, restore } = useItemArchive();
   const archived = item.archived_at !== null;
 

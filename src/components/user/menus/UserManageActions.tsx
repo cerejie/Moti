@@ -8,7 +8,6 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import type { ApprovalStatus } from "../../../enums/role.enum";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useUserActions } from "../../../hook/data/user/user.form.hook";
@@ -21,6 +20,7 @@ import {
   detailManageHint,
 } from "../../../styles/view/detailPage.styles";
 import AppButton from "../../common/button/AppButton";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 type IProps = {
   user: IUser;
@@ -36,7 +36,7 @@ const statusHints: Record<ApprovalStatus, string> = {
 const UserManageActions = ({ user }: IProps) => {
   const userActions = useUserActions();
   const passwordModal = useModal<IUser>(userPasswordModalKey);
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const status = user.approval_status;
 
   return (

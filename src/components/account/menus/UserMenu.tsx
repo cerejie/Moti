@@ -1,5 +1,4 @@
 import { LogOut, Moon, Sun, UserRound } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { effectiveRoleLabels } from "../../../enums/role.enum";
 import { useAccountLogoutHook } from "../../../hook/data/account/account.logout.hook";
 import type { IRowAction } from "../../../models/common/action.model";
@@ -12,9 +11,10 @@ import {
   useAccountStore,
 } from "../../../store/data/account/account.store";
 import AccountMenu from "../../common/layout/AccountMenu";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 const UserMenu = () => {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const name = useAccountStore(selectDisplayName);
   const email = useAccountStore(selectEmail);
   const role = useAccountStore(selectRole);

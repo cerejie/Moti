@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { effectiveRoleLabels } from "../../../enums/role.enum";
 import { useUserList } from "../../../hook/data/user/user.list.hook";
 import type { ISegmentOption } from "../../../models/common/segment.model";
@@ -14,6 +13,7 @@ import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
 import UserRowActions from "../menus/UserRowActions";
 import UserStatusBadges from "../status/UserStatusBadges";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 const columns: IDataTableColumn<IUser>[] = [
   {
@@ -62,7 +62,7 @@ const viewOptions: ISegmentOption<UserView>[] = [
 
 const UserTable = () => {
   const { query, view, setView } = useUserList();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
 
   return (
     <TablePanel

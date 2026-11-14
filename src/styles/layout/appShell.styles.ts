@@ -11,7 +11,9 @@ export const appShellBody = "flex min-h-0 flex-1 gap-3";
 export const appShellInset =
   "min-h-0 min-w-0 overflow-hidden rounded-panel border bg-panel shadow-panel";
 
-export const appShellContent = "min-h-0 flex-1 overflow-y-auto overscroll-contain";
+// Named so a page change animates the content alone (theme.css, view transitions).
+export const appShellContent =
+  "min-h-0 flex-1 overflow-y-auto overscroll-contain [view-transition-name:page]";
 
 // A column at least as tall as the scroll box, so a short page can hold a
 // footer at its foot. Both shells use it.
@@ -39,7 +41,7 @@ export const phoneShell = cva(
 );
 
 export const phoneContent =
-  "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain";
+  "min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [view-transition-name:page]";
 
 export const phoneColumnEnter =
   "motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150";

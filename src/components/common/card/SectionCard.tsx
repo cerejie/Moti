@@ -21,6 +21,7 @@ import {
   sectionCardTitle,
 } from "../../../styles/cards/card.styles";
 import ErrorState from "../status/ErrorState";
+import { contentIn } from "../../../styles/common/motion.styles";
 
 type IProps = {
   title?: string;
@@ -81,7 +82,9 @@ const SectionCard = ({
       ) : null}
 
       <CardContent
-        className={cn(sectionCardBody, flush && sectionCardFlushBody)}
+        // Remounts when loading ends, so the content fades in over the skeleton's place.
+        key={loading ? "loading" : "ready"}
+        className={cn(sectionCardBody, flush && sectionCardFlushBody, !loading && contentIn)}
         aria-busy={loading}
       >
         {renderBody()}

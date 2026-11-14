@@ -78,7 +78,7 @@ const PAGE_TABS = "main [data-slot=view-tabs] [data-slot=toggle-group-item]";
 const SHEETS = {
   owner: [
     { name: "bell", path: "/", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
-    { name: "account-menu", path: "/", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
+    { name: "account-menu", wideOnly: true, path: "/", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
     { name: "item-form", path: "/inventory", open: (p) => p.getByRole("button", { name: "Add item" }).first().click() },
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
@@ -89,7 +89,7 @@ const SHEETS = {
   ],
   employee: [
     { name: "bell", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
-    { name: "account-menu", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
+    { name: "account-menu", wideOnly: true, path: "/transaction", open: (p) => p.getByRole("button", { name: /^Account menu/ }).first().click() },
     { name: "cart", path: "/transaction", open: openCart },
     { name: "txn-detail", path: "/transaction", open: openTransaction },
   ],
@@ -161,8 +161,18 @@ const measure = (page, touch) =>
       if (!["hidden", "clip"].includes(s.overflowX) || s.textOverflow === "ellipsis" || s.webkitLineClamp !== "none") continue;
       if (el.scrollWidth > el.clientWidth + 2 && el.clientWidth > 120) clipped.push(`${el.tagName.toLowerCase()} "${describe(el).slice(0, 30)}" ${el.scrollWidth}>${el.clientWidth}`);
     }
+    const scrollsSideways = (el) => {
+      // The page scroll box is not a sideways row; overflow there is still a finding.
+      for (let node = el.parentElement; node && node.id !== "main-content"; node = node.parentElement) {
+        const x = getComputedStyle(node).overflowX;
+        if ((x === "auto" || x === "scroll") && node.scrollWidth > node.clientWidth + 1) return true;
+      }
+      return false;
+    };
     const offscreen = [];
     for (const el of document.querySelectorAll("button, a[href], th, [role=tab], [role=columnheader]")) {
+      // A chip in a sideways-scrolling row is reached by scrolling the row, not cut off.
+      if (scrollsSideways(el)) continue;
       if (visible(el) && el.getBoundingClientRect().right > vw + 1) offscreen.push(describe(el));
     }
     const small = new Set();
@@ -257,6 +267,8 @@ const run = async (page, ctx) => {
     });
   }
   for (const sheet of keep(SHEETS[ctx.role] ?? [])) {
+    // Phones and portrait tablets have no account menu button; the Account tab stands in.
+    if (sheet.wideOnly && ctx.size !== "desktop") continue;
     await step(ctx, sheet.name, async () => {
       await page.goto(BASE + sheet.path);
       await settle(page);

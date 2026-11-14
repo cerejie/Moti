@@ -3,6 +3,7 @@ import { Button, LinkButton } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/utils/cn.utils";
 import {
+  buttonPress,
   buttonTone,
   type IButtonTone,
 } from "../../../styles/button/button.styles";
@@ -35,7 +36,7 @@ const AppButton = ({
   ...props
 }: IProps) => {
   const isDisabled = disabled || loading;
-  const classes = cn(buttonTone({ tone }), className);
+  const classes = cn(buttonPress, buttonTone({ tone }), className);
 
   const button =
     href === undefined ? (

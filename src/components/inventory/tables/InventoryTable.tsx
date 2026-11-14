@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import {
   inventoryViewLabels,
   inventoryViewValues,
@@ -31,6 +30,7 @@ import TablePanel from "../../common/table/TablePanel";
 import ContextSwitch from "../../common/view/ContextSwitch";
 import InventoryRowActions from "../menus/InventoryRowActions";
 import StockStatusBadge from "../status/StockStatusBadge";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 const columns: IDataTableColumn<IInventoryItem>[] = [
   {
@@ -108,7 +108,7 @@ const InventoryTable = () => {
   const { pagination, goToPage } = usePagination(inventoryTableKey);
   const { options: categoryOptions } = useCategoryOptions();
   const { options: brandOptions } = useBrandOptions();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const page = query.data;
 
   return (

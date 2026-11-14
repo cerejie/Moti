@@ -1,6 +1,12 @@
 import { useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useLocation, useMatches, useNavigate } from "react-router-dom";
+import {
+  matchRoutes,
+  useLocation,
+  useMatches,
+  useNavigate,
+  type NavigateOptions,
+} from "react-router-dom";
 import type { IHeaderBack, IRoute, IRouteHandle } from "../../models/common/route.model";
 import { useLayoutStore } from "../../store/common/layout.store";
 import {
@@ -9,6 +15,11 @@ import {
 } from "../../routes/protected.view.routes";
 import { ROUTES } from "../../routes/route.paths";
 import { isRouteActive } from "../../utils/route.utils";
+import {
+  setNavDirection,
+  watchHistoryPop,
+  type NavDirection,
+} from "../../utils/transition.utils";
 import { usePermissions } from "../data/account/account.permission.hook";
 
 export type INavRoute = IRoute & {
@@ -94,7 +105,8 @@ export const usePushedRoute = () => {
   const pushed = matches.some(({ handle }) => isRouteHandle(handle) && handle.pushed === true);
 
   const goBack = () => {
-    if (key === "default") void navigate(section?.path ?? ROUTES.home);
+    setNavDirection("back");
+    if (key === "default") void navigate(section?.path ?? ROUTES.home, { viewTransition: true });
     else void navigate(-1);
   };
 
@@ -133,4 +145,32 @@ export const useScrollReset = () => {
   useEffect(() => {
     document.getElementById("main-content")?.scrollTo({ top: 0 });
   }, [pathname]);
+};
+
+const isPushedPath = (path: string) =>
+  matchRoutes(protectedViewRoutes, path)?.some(
+    ({ route }) => isRouteHandle(route.handle) && route.handle.pushed === true,
+  ) ?? false;
+
+// Opening a record pushes; leaving one for a list goes back; anything else cross-fades.
+export const navDirectionTo = (path: string, fromPushed: boolean): NavDirection => {
+  if (isPushedPath(path.split(/[?#]/)[0] ?? path)) return "push";
+  return fromPushed ? "back" : "fade";
+};
+
+// Navigates as a view transition, pushing, going back or cross-fading by the target.
+// React Aria's RouterProvider and every row, menu and button that navigates use it.
+export const useTransitionNavigate = () => {
+  const navigate = useNavigate();
+  const { pushed } = usePushedRoute();
+
+  return (path: string, options?: NavigateOptions) => {
+    setNavDirection(navDirectionTo(path, pushed));
+    return navigate(path, { ...options, viewTransition: true });
+  };
+};
+
+// The back gesture is a history pop, which never passes through a navigate call.
+export const useHistoryPopDirection = () => {
+  useEffect(() => watchHistoryPop(), []);
 };

@@ -21,6 +21,8 @@ import {
 import { toneChip, toneText, type Tone } from "../../../styles/common/tone.styles";
 import { formatPeso } from "../../../utils/format.utils";
 import ErrorState from "../status/ErrorState";
+import CountUp from "../view/CountUp";
+import { contentIn } from "../../../styles/common/motion.styles";
 
 type IProps = {
   title: string;
@@ -84,14 +86,18 @@ const StatCard = ({
   }
 
   const card = (
-    <Card size="sm" className={statCard}>
+    <Card size="sm" className={cn(statCard, contentIn)}>
       <CardContent className={statBody}>
         <div className={statHead}>
           <div className={statHeading}>
             <span className={statTitle}>{title}</span>
             <span className={cn(statValue, toneText({ tone: variant }))}>
               {prefix ? <span className={statAffix}>{prefix}</span> : null}
-              {formatValue(value, raw)}
+              {typeof value === "number" ? (
+                <CountUp value={value} format={raw ? String : formatPeso} />
+              ) : (
+                formatValue(value, raw)
+              )}
               {unit ? <span className={statAffix}>{unit}</span> : null}
             </span>
           </div>

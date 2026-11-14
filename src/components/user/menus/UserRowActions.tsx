@@ -9,7 +9,6 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useModal } from "../../../hook/common/modal.hook";
 import { useCanManageUser, useUserActions } from "../../../hook/data/user/user.form.hook";
 import { userPasswordModalKey } from "../../../keys/modal.keys";
@@ -17,6 +16,7 @@ import type { IRowAction } from "../../../models/common/action.model";
 import type { IUser } from "../../../models/data/user/user.response";
 import { userPath } from "../../../utils/route.utils";
 import RowActionMenu from "../../common/table/RowActionMenu";
+import { useTransitionNavigate } from "../../../hook/layout/navigation.hook";
 
 type IProps = {
   user: IUser;
@@ -26,7 +26,7 @@ const UserRowActions = ({ user }: IProps) => {
   const canManage = useCanManageUser();
   const userActions = useUserActions();
   const passwordModal = useModal<IUser>(userPasswordModalKey);
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
 
   const details: IRowAction = {
     key: "details",

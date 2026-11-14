@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { useModal } from "../../../hook/common/modal.hook";
 import {
@@ -7,6 +7,7 @@ import {
   successText,
   successTitle,
 } from "../../../styles/modal/success.styles";
+import { vibrateSuccess } from "../../../utils/haptics.utils";
 import AppButton from "../button/AppButton";
 import AppModal from "./AppModal";
 
@@ -31,6 +32,10 @@ const SuccessModal = ({
   children,
 }: IProps) => {
   const { modal, closeModal } = useModal(modalKey);
+
+  useEffect(() => {
+    if (modal.visible) vibrateSuccess();
+  }, [modal.visible]);
 
   const close = () => {
     closeModal();

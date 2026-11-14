@@ -1,3 +1,4 @@
+import { useEffect, useId } from "react";
 import { SelectionIndicator } from "react-aria-components";
 import type { Selection } from "react-aria-components";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -29,6 +30,15 @@ const ContextSwitch = <T extends string>({
   const isSegmented = options.length <= segmentedOptionLimit;
   const presentation = isSegmented ? "segmented" : "chips";
   const dense = options.length === segmentedOptionLimit;
+  const groupId = useId();
+
+  // A chip row scrolls; keep the picked chip in view when it changes.
+  useEffect(() => {
+    if (isSegmented) return;
+    document
+      .querySelector(`[data-switch="${CSS.escape(groupId)}"] [data-selected]`)
+      ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  }, [groupId, isSegmented, value]);
 
   const handleSelectionChange = (keys: Selection) => {
     if (keys === "all") return;
@@ -45,6 +55,7 @@ const ContextSwitch = <T extends string>({
       selectedKeys={[value]}
       onSelectionChange={handleSelectionChange}
       aria-label={label}
+      data-switch={groupId}
       className={contextSwitch({ presentation })}
     >
       {options.map((option) => (

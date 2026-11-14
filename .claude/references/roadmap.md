@@ -270,14 +270,37 @@ Notes (2026-11-14):
   clicks time out on phone/tablet and the History chip row reports Damaged/Sales off-screen —
   neither screen changed in this phase, left for a later check.
 
-### Phase 6: Motion and premium feel (no new library)
+### Phase 6: Motion and premium feel (no new library) — coded 2026-11-14 (v1.56)
 
-- [ ] Motion tokens (durations, easings) in `theme.css`; everything honours reduced motion.
-- [ ] Pushed pages slide in and back (View Transitions); tab changes cross-fade.
-- [ ] Press feedback on buttons and rows; sliding `ContextSwitch` and tab bar indicators.
-- [ ] Sheets spring and follow the finger; skeletons cross-fade into content.
-- [ ] Stat cards and totals count to their value; the cart bar bumps on add.
-- [ ] Animated check on checkout, Receive and Count; a short vibration on Android.
+- [x] Motion tokens (durations, easings) in `theme.css`; everything honours reduced motion.
+- [x] Pushed pages slide in and back (View Transitions); tab changes cross-fade.
+- [x] Press feedback on buttons and rows; sliding `ContextSwitch` and tab bar indicators.
+- [x] Sheets spring and follow the finger; skeletons cross-fade into content.
+- [x] Stat cards and totals count to their value; the cart bar bumps on add.
+- [x] Animated check on checkout, Receive and Count; a short vibration on Android.
+
+Notes (2026-11-14):
+- Tokens: `--motion-fast/base/slow` (120/200/320 ms) and `--motion-ease-standard/emphasized/spring`
+  in `:root`; used as `duration-(--motion-…)` / `ease-(--motion-ease-…)`. Keyframes `pop`,
+  `check-draw`, `content-in` in `@theme`. Shared classes in `styles/common/motion.styles.ts`.
+- Page motion: the content box is `view-transition-name: page` in both shells; `data-nav` on
+  `<html>` (`utils/transition.utils.ts`) picks push / back / fade. `useTransitionNavigate`
+  (navigation.hook) sets it and passes `viewTransition` — used by `RouteRoot`'s aria
+  `RouterProvider` and every component that navigated with `useNavigate`. A target with
+  `handle.pushed` pushes; leaving a pushed page goes back; else fade. The back gesture is a
+  history pop (`useHistoryPopDirection`). Data hooks (post-save redirects, inbox taps, signed-out
+  flows) still use plain `useNavigate`, so they get the old fade-in only.
+- Tab bar: one indicator `li` slides by `count` / `index` cva variants. Chip rows fade at the
+  right edge on compact and scroll the picked chip into view (decision A for the History chips).
+- `useSwipeToClose`: rubber-bands upward, closes past 96 px or on a flick (> 0.5 px/ms), else
+  springs back; `AppModal` sheets (not `flow`) drag by the header too. Bottom sheets enter and
+  leave from `translate-y-full`.
+- `CountUp` (`components/common/view`) + `useCountUp`: animates the React-rendered text node,
+  so the DOM always ends on the real figure; `bump` springs it via WAAPI. StatCard numbers and
+  the Cart, Delivery, Count and Order list bars use it.
+- `SuccessModal`: badge pops, check draws, `vibrateSuccess()` (Android only) on open.
+- Sweep fixes: `account-menu` is wide-only (phones and portrait tablets have no button; the
+  Account tab stands in), and buttons inside a sideways-scrolling row are not "offscreen".
 
 ## Flow audit (2026-11-13): stock movement and the whole flow
 
