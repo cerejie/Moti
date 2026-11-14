@@ -60,6 +60,8 @@ export const useAnalysisScope = () => {
     // Named only when the shop has more than one branch.
     scopeLabel: multiple ? (writeBranch?.name ?? "All branches") : null,
     aggregate: multiple && !writeBranch,
+    // The picked branch's name when it carries no products, so an empty list isn't read as "all fine".
+    emptyBranch: writeBranch && (writeBranch.branch_stock[0]?.count ?? 0) === 0 ? writeBranch.name : null,
     coverDays,
   };
 };

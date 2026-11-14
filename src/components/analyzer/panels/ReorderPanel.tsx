@@ -1,3 +1,4 @@
+import { PackageOpen } from "lucide-react";
 import {
   analysisMinSales,
   analysisPeriodLabels,
@@ -10,6 +11,7 @@ import {
   useStockAnalysis,
 } from "../../../hook/data/analyzer/analyzer.list.hook";
 import type { ISegmentOption } from "../../../models/common/segment.model";
+import { ROUTES } from "../../../routes/route.paths";
 import type { IStockAnalysisRow } from "../../../models/data/analyzer/analyzer.response";
 import { useAnalyzerStore } from "../../../store/data/analyzer/analyzer.store";
 import {
@@ -23,6 +25,7 @@ import {
   reorderToolbar,
   reorderToolbarLabel,
 } from "../../../styles/analyzer/analyzer.styles";
+import AppButton from "../../common/button/AppButton";
 import SectionCard from "../../common/card/SectionCard";
 import EmptyState from "../../common/status/EmptyState";
 import ErrorState from "../../common/status/ErrorState";
@@ -49,7 +52,7 @@ const isCoverDays = (value: number): value is CoverDays =>
 // questions, so they are two views of one ranked list, never four panels at once.
 const ReorderPanel = () => {
   const { query, period, view, coverDays, setPeriod } = useStockAnalysis();
-  const { scopeLabel, aggregate } = useAnalysisScope();
+  const { scopeLabel, aggregate, emptyBranch } = useAnalysisScope();
   const setCoverDays = useAnalyzerStore((state) => state.setCoverDays);
   const groups = query.data;
   const periodLabel = analysisPeriodLabels[period];
@@ -60,6 +63,20 @@ const ReorderPanel = () => {
     }
     if (!groups) {
       return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
+    }
+    if (emptyBranch) {
+      return (
+        <EmptyState
+          icon={<PackageOpen />}
+          title={`${emptyBranch} has no products yet`}
+          description={`What to buy works from the products a branch has and sells. Add stock to ${emptyBranch} and its suggestions will show here.`}
+          action={
+            <AppButton variant="outline" href={ROUTES.receiveDelivery}>
+              Add stock
+            </AppButton>
+          }
+        />
+      );
     }
 
     if (view === "most_sold") {

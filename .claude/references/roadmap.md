@@ -67,8 +67,12 @@ table above for everything a user reads; routes, tables and reason values keep t
 - Superseded files deleted 2026-11-14 (user's go-ahead): the Dashboard page and
   `components/dashboard/**`, the three success modals and their keys, `InventoryRowActions`,
   `StockTabSwitch`, `movement/panels/StockPanel`, and the then-unused `common/modal/SuccessModal`
-  and `common/card/StatCard` with their style files. `utils/haptics.utils.ts` (`vibrateSuccess`)
-  is now unused and kept.
+  and `common/card/StatCard` with their style files. `utils/haptics.utils.ts` (`vibrateSuccess`,
+  Android-only) deleted too (v1.63, user's go-ahead).
+- What to buy, branch with no products (v1.63): "<Branch> has no products yet" with an **Add
+  stock** link instead of "Nothing needs buying" (`useAnalysisScope().emptyBranch`, from the
+  branch list's `branch_stock(count)`). Add stock now also refreshes the branch list, so the
+  count follows a branch's first delivery. Checked at 390 px: Agdao shows it, Main unchanged.
 - Detail pages (`common/view/DetailPageLayout`): one column on phones; from `xl` a side column
   holds the facts and Manage actions (Sale, Product, Stock change, Team member).
 - Follow-up fixes 2026-11-14: Most sold rows kept their text beside the rank; Check stock count's

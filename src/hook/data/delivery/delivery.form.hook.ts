@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { stockQueryKeys } from "../../../keys/query.keys";
+import { branchListKey, stockQueryKeys } from "../../../keys/query.keys";
 import { deliveryReviewModalKey } from "../../../keys/modal.keys";
 import {
   deliveryFormSchema,
@@ -70,7 +70,8 @@ export const useReceiveDeliveryForm = () => {
         : Promise.reject(new Error("Pick the branch this stock is for")),
     {
       silentError: true,
-      invalidate: stockQueryKeys,
+      // A first delivery is how a branch starts carrying products; its product count must follow.
+      invalidate: [...stockQueryKeys, [branchListKey]],
       successMessage:
         delivery.orderListId !== null
           ? "Stock added. Anything that did not arrive stays on the buying list."
