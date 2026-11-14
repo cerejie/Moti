@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import UserMenu from "../components/account/menus/UserMenu";
+import BranchSwitcher from "../components/branch/menus/BranchSwitcher";
 import AppShell from "../components/common/layout/AppShell";
 import ErrorBoundary from "../components/common/status/ErrorBoundary";
 import InboxBell from "../components/inbox/menus/InboxBell";
@@ -16,7 +17,15 @@ const AppLayout = () => {
   useScrollReset();
 
   return (
-    <AppShell actions={<InboxBell />} accountMenu={<UserMenu />}>
+    <AppShell
+      actions={
+        <>
+          <BranchSwitcher />
+          <InboxBell />
+        </>
+      }
+      accountMenu={<UserMenu />}
+    >
       {/* Keyed by route so navigating away clears a contained error. */}
       <ErrorBoundary
         key={location.pathname}

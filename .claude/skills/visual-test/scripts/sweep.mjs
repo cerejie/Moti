@@ -54,6 +54,7 @@ const SCREENS = {
     { name: "count", path: "/movements/count" },
     { name: "damaged", path: "/movements/damaged" },
     { name: "order-list", path: "/movements/order-list" },
+    { name: "branches", path: "/branches" },
     { name: "users", path: "/users" },
     { name: "account", path: "/account" },
   ],
@@ -68,6 +69,7 @@ const SCREENS = {
     { name: "guard-count", path: "/movements/count", expect: "/transaction" },
     { name: "guard-order-list", path: "/movements/order-list", expect: "/transaction" },
     { name: "guard-users", path: "/users", expect: "/transaction" },
+    { name: "guard-branches", path: "/branches", expect: "/transaction" },
   ],
 };
 
@@ -86,6 +88,8 @@ const SHEETS = {
     { name: "delivery-review", path: "/movements/receive", open: (p) => openPicked(p, /Review delivery/) },
     { name: "count-sheet", path: "/movements/count", open: (p) => openPicked(p, /Enter counts/) },
     { name: "damaged-sheet", path: "/movements/damaged", open: openDamaged },
+    { name: "branch-switcher", path: "/", open: (p) => p.getByRole("button", { name: /^Branch:/ }).first().click() },
+    { name: "branch-form", path: "/branches", open: (p) => p.getByRole("button", { name: "Add branch" }).first().click() },
   ],
   employee: [
     { name: "bell", path: "/transaction", open: (p) => p.getByRole("button", { name: /^Notifications/ }).first().click() },
@@ -350,7 +354,9 @@ const main = async () => {
           const table = rpc ? null : request.url().match(/\/rest\/v1\/(\w+)/)?.[1];
           if (table && table in FIXTURES && method === "GET") {
             const single = (request.headers().accept ?? "").includes("pgrst.object");
-            const body = single ? FIXTURES[table] : [FIXTURES[table]];
+            // An array fixture is the whole list; an object is one row.
+            const rows = FIXTURES[table];
+            const body = single || Array.isArray(rows) ? rows : [rows];
             return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
           }
           if (ORDER_STRIP && method === "GET" && request.url().includes(`order=${ORDER_STRIP}`)) {

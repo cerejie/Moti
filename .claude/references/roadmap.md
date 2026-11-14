@@ -27,7 +27,8 @@ SaaS build, which comes later.
 - [x] V1.5: Pushed detail pages for every list (below), one conversation per phase —
       Phase 1 done 2026-10-28 (v1.45), Phase 2 done 2026-10-28 (v1.46), Phase 3 done 2026-10-28
       (v1.47), Phase 4 done 2026-10-28 (v1.48); V1.5 complete
-- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; starts after V1.7
+- [ ] V1.6: Branches, TARTAR style (below), one conversation per phase; Phase 1 coded
+      2026-11-14 (v1.57, migration 13 waits to be applied); next up: Phase 2 (Transaction)
 - [ ] V1.7: Stock analyzer, order list, receive stock, motion (below), one conversation per
       phase; flow redesign folded in 2026-11-13 (six phases); Phase 1 done 2026-11-13 (v1.51);
       Phase 2 done 2026-11-13 (v1.52, migration 9 applied); Phase 3 coded 2026-11-14 (v1.53,
@@ -517,30 +518,52 @@ TARTAR files to port (`Ejie_Business/TARTAR/src`): `hook/data/branch/branch.{lis
 RLS helper. Moti differences: branches have a **uuid** id (not a slug) and assignments live in a
 `user_branches` table with foreign keys (not a `text[]` on the user).
 
-### Phase 1: Database, Manage branches, header switcher
+### Phase 1: Database, Manage branches, header switcher — coded 2026-11-14 (v1.57, migration 13 waits to be applied)
 
-- [ ] Migration 9 `create_branches` (Claude writes it, the user pastes it into the SQL editor):
+Decided 2026-11-14 (all "A"): one warning level per item, copied onto each `branch_stock` row so
+the status can be generated; archive only with no stock and never the last active branch;
+"All branches" is view-only (writes fall back to Main until Phases 2–3 ask); owners and the
+developer always see the switcher (it hides only for an employee with one branch); a branch
+carries an item once it is created there or receives it (sparse rows, no flood of "Out").
+
+Notes (2026-11-14):
+- Migration is **13** (`20261114000013_create_branches.sql`), not 9; it also gives
+  `receive_delivery`, `record_stock_count` and `receive_order_list` an optional `p_branch_id`.
+  The order list stays one shop-wide list; a delivery picks its branch in Phase 3.
+- Helpers: `app.first_branch()`, `app.can_see_branch()`, `app.write_branch()` (fallback +
+  locks the branch row against a concurrent archive), `app.lock_branch_stock()` (creates the
+  row at 0, locks item then row). A new employee is put in the first branch by a trigger on
+  `users` until Phase 5 adds the picker.
+- `inventory_items.on_hand` / `stock_status` are still the all-branches total, so every screen
+  reads exactly as before; employees still see the total until Phase 3.
+- UI: `components/common/layout/ScopeMenu` (dropdown on wide, sheet on compact) wrapped by
+  `components/branch/menus/BranchSwitcher`, passed through `AppLayout`'s header actions;
+  `/branches` page copies the brand table. `manageBranches` permission.
+- `useStockActions` / `useReceiveOrderList` now use `useTransitionNavigate` (they open pushed
+  pages from a tap, not post-save redirects), so Receive / Count / Damaged slide in.
+
+- [x] Migration 13 `create_branches` (Claude writes it, the user pastes it into the SQL editor):
       `branches` (id, name unique by lower(name), sort, archived_at); `user_branches`
       (user_id, branch_id); `branch_stock` (branch_id, item_id, on_hand ≥ 0, generated
       `stock_status`) backfilled from `inventory_items.on_hand` into Main; `branch_id` (not null,
       FK, indexed) on `transactions` and `stock_movements`, backfilled to Main.
       `inventory_items.on_hand` is kept as the all-branches total, maintained by a trigger on
       `branch_stock` (no column dropped).
-- [ ] RLS: `app.can_see_branch(branch_id)` — owners and the developer always, employees through
+- [x] RLS: `app.can_see_branch(branch_id)` — owners and the developer always, employees through
       `user_branches`; applied to `branch_stock`, `transactions`, `stock_movements`. Branch writes
       are owner-only.
-- [ ] RPCs take a branch: `record_transaction`, `record_movement`, `create_item` (opening stock),
+- [x] RPCs take a branch: `record_transaction`, `record_movement`, `create_item` (opening stock),
       `inventory_summary(p_branch_id default null)`; `void_transaction` returns stock to the
       transaction's own branch. A missing branch falls back to the caller's only branch, else Main,
       so the current app and queued offline writes keep working until Phases 2–3 land.
-- [ ] Low / Out push + inbox trigger moves from `inventory_items` to `branch_stock` and names the
+- [x] Low / Out push + inbox trigger moves from `inventory_items` to `branch_stock` and names the
       branch; the 08:00 digest counts per-branch rows.
-- [ ] Branch slice: `models/data/branch`, `services/data/branch.services.ts`, `branch.list.hook`,
+- [x] Branch slice: `models/data/branch`, `services/data/branch.services.ts`, `branch.list.hook`,
       `branch.manage.hook`, `branch.scope.hook`, `store/data/branch/branch.store.ts` (persisted
       `branchFilter`, key in `storage.keys.ts`), query + modal keys.
-- [ ] `/branches` Manage branches page (owner + developer): table, add, rename, archive — through
+- [x] `/branches` Manage branches page (owner + developer): table, add, rename, archive — through
       `EntityFormModal` and `runWrite`.
-- [ ] Header switcher: desktop `AppHeader`, phone `AppBar`; hidden when the account can see only
+- [x] Header switcher: desktop `AppHeader`, phone `AppBar`; hidden when the account can see only
       one branch. Nothing is filtered by it yet.
 
 ### Phase 2: Transaction

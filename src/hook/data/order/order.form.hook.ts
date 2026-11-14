@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useTransitionNavigate } from "../../layout/navigation.hook";
 import { toast } from "sonner";
 import { deliveryReviewModalKey } from "../../../keys/modal.keys";
 import { orderListKey } from "../../../keys/query.keys";
@@ -124,7 +124,7 @@ export const useShareOrderList = () => {
 
 // Receive delivery opens on its review with the list as the expected quantities.
 export const useReceiveOrderList = () => {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const { openModal } = useModalActions();
   const fillFromOrderList = useDeliveryStore((state) => state.fillFromOrderList);
 

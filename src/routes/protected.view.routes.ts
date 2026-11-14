@@ -146,6 +146,16 @@ export const protectedViewRoutes: IRoute[] = [
     },
   },
   {
+    key: "branches",
+    label: "Branches",
+    path: ROUTES.branches,
+    isNotNav: true,
+    handle: { pushed: true } satisfies IRouteHandle,
+    can: "manageBranches",
+    loader: permissionLoader("manageBranches", ROUTES.transaction),
+    lazy: { Component: async () => (await import("../pages/Branches/BranchesView")).default },
+  },
+  {
     key: "users",
     label: "Team",
     icon: Users,

@@ -11,6 +11,7 @@ export interface IPermissions {
   manageInventory: boolean;
   viewMovements: boolean;
   manageUsers: boolean;
+  manageBranches: boolean;
   receiveStockAlerts: boolean;
 }
 
@@ -32,6 +33,7 @@ export const derivePermissions = (role: EffectiveRole | null): IPermissions => {
     manageInventory: isOwner,
     viewMovements: isOwner,
     manageUsers: isOwner,
+    manageBranches: isOwner,
     receiveStockAlerts: isOwner,
   };
 };

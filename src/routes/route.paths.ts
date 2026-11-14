@@ -15,6 +15,7 @@ export const ROUTES = {
   damagedStock: "/movements/damaged",
   orderList: "/movements/order-list",
   movementDetail: "/movements/:movementId",
+  branches: "/branches",
   users: "/users",
   userDetail: "/users/:userId",
   account: "/account",

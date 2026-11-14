@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useTransitionNavigate } from "../../layout/navigation.hook";
 import { stockQueryKeys } from "../../../keys/query.keys";
 import {
   countModalKey,
@@ -76,7 +76,7 @@ export const useDamagedStockForm = () => {
 // The Stock tab's three actions, and the same three from an item with that item picked.
 // Receive and Count are pages; with an item they open straight on its quantities.
 export const useStockActions = () => {
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const { openModal } = useModalActions();
   const addToDelivery = useDeliveryStore((state) => state.add);
   const addToCount = useCountStore((state) => state.add);

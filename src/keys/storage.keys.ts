@@ -3,3 +3,4 @@ export const syncStorageKey = "moti.sync-queue";
 export const accountStorageKey = "moti.account";
 export const pushPromptStorageKey = "moti.push-prompt";
 export const queryCacheStorageKey = "moti.query-cache";
+export const branchStorageKey = "moti.branch";

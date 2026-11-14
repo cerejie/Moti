@@ -8,6 +8,7 @@ export const inventorySummaryKey = "inventory-summary";
 export const stockAlertsKey = "stock-alerts";
 export const categoryListKey = "category-list";
 export const brandListKey = "brand-list";
+export const branchListKey = "branch-list";
 export const transactionListKey = "transaction-list";
 export const transactionLinesKey = "transaction-lines";
 export const movementListKey = "movement-list";
